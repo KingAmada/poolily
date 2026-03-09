@@ -1,197 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>AeroPool - Airport Carpooling</title>
-    
-    <!-- Tailwind CSS -->
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Leaflet Map Library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- MapLibre -->
+    <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-        
+
         body { font-family: 'Nunito', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-
-        @keyframes pulse-ring { 0% { transform: scale(0.6); opacity: 1; border-width: 8px; } 100% { transform: scale(3.5); opacity: 0; border-width: 1px; } }
-        .animate-pulse-ring { animation: pulse-ring 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
-
-        @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .animate-slide-up { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        @keyframes pop-in { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-pop-in { animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
-        .animate-shake { animation: shake 0.3s ease-in-out; }
-
-        @keyframes bounce-pin { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25%); } }
-        .animate-bounce-pin { animation: bounce-pin 1s infinite; }
-
         .hidden-screen { display: none !important; }
 
-        /* Component Styles */
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        @keyframes pulse-ring { 0%{transform:scale(.6);opacity:1;border-width:8px} 100%{transform:scale(3.5);opacity:0;border-width:1px} }
+        .animate-pulse-ring { animation: pulse-ring 2.5s cubic-bezier(.215,.61,.355,1) infinite; }
+
+        @keyframes slide-up { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+        .animate-slide-up { animation: slide-up .6s cubic-bezier(.16,1,.3,1) forwards; }
+
+        @keyframes pop-in { 0%{transform:scale(.95);opacity:0} 100%{transform:scale(1);opacity:1} }
+        .animate-pop-in { animation: pop-in .4s cubic-bezier(.175,.885,.32,1.275) forwards; }
+
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-5px)} }
+        .animate-shake { animation: shake .3s ease-in-out; }
+
+        @keyframes bounce-pin { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25%)} }
+        .animate-bounce-pin { animation: bounce-pin 1s infinite; }
+
         .btn-primary-3d {
-            width: 100%; background-color: #0f172a; color: white;
-            font-weight: 800; font-size: 1.1rem; padding: 1.1rem 2rem; border-radius: 1.25rem;
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #1e293b; cursor: pointer;
+            width: 100%;
+            background-color: #0f172a;
+            color: white;
+            font-weight: 800;
+            font-size: 1.05rem;
+            padding: 1.05rem 1.4rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 20px rgba(15,23,42,.15), inset 0 1px 1px rgba(255,255,255,.1);
+            transition: all .2s cubic-bezier(.4,0,.2,1);
+            border: 1px solid #1e293b;
+            cursor: pointer;
         }
-        .btn-primary-3d:active { transform: scale(0.98); box-shadow: 0 4px 8px rgba(15, 23, 42, 0.15); }
-        .btn-primary-3d:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-        
+        .btn-primary-3d:active { transform: scale(.98); box-shadow: 0 4px 8px rgba(15,23,42,.15); }
+        .btn-primary-3d:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
         .btn-danger-3d {
-            width: 100%; background-color: #b91c1c; color: white;
-            font-weight: 800; font-size: 1.1rem; padding: 1.1rem 2rem; border-radius: 1.25rem;
-            box-shadow: 0 10px 20px rgba(185, 28, 28, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #991b1b; cursor: pointer;
+            width: 100%;
+            background-color: #b91c1c;
+            color: white;
+            font-weight: 800;
+            font-size: 1.05rem;
+            padding: 1.05rem 1.4rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 20px rgba(185,28,28,.15), inset 0 1px 1px rgba(255,255,255,.2);
+            transition: all .2s cubic-bezier(.4,0,.2,1);
+            border: 1px solid #991b1b;
+            cursor: pointer;
         }
-        .btn-danger-3d:active { transform: scale(0.98); box-shadow: 0 4px 8px rgba(185, 28, 28, 0.15); }
+        .btn-danger-3d:active { transform: scale(.98); box-shadow: 0 4px 8px rgba(185,28,28,.15); }
 
         .glass-panel {
-            background-color: #e8eef3; border-radius: 3rem;
+            background-color: #e8eef3;
+            border-radius: 3rem;
             box-shadow: 12px 12px 24px #c4d0dc, -12px -12px 24px #ffffff;
-            border: 3px solid rgba(255,255,255,0.6);
+            border: 3px solid rgba(255,255,255,.6);
         }
-        .input-3d {
-            width: 100%; background-color: #e8eef3; border-radius: 1.5rem; outline: none;
-            box-shadow: inset 6px 6px 12px #c4d0dc, inset -6px -6px 12px #ffffff;
-            color: #334155; font-weight: 700; transition: all 0.2s; border: 2px solid transparent;
-        }
-        .input-3d:focus { ring: 4px; border-color: rgba(255,255,255,0.5); }
-        .input-error { border-color: #f87171 !important; box-shadow: inset 6px 6px 12px #c4d0dc, inset -6px -6px 12px #ffffff, 0 0 0 4px rgba(248,113,113,0.3) !important; }
-        
-        /* Custom 3D Slider */
-        input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #3b82f6; cursor: pointer; margin-top: -8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.5); border: 2px solid white; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #cbd5e1; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        
-        .custom-leaflet-marker { background: transparent; border: none; }
-        .leaflet-container { z-index: 0 !important; background: transparent; font-family: 'Nunito', sans-serif; height: 100%; width: 100%; position: absolute; }
 
-        /* Infinite 3D Flip Slider Styles */
+        .input-3d {
+            width: 100%;
+            background-color: #e8eef3;
+            border-radius: 1.5rem;
+            outline: none;
+            box-shadow: inset 6px 6px 12px #c4d0dc, inset -6px -6px 12px #ffffff;
+            color: #334155;
+            font-weight: 700;
+            transition: all .2s;
+            border: 2px solid transparent;
+        }
+        .input-3d:focus { border-color: rgba(255,255,255,.5); }
+        .input-error {
+            border-color: #f87171 !important;
+            box-shadow: inset 6px 6px 12px #c4d0dc, inset -6px -6px 12px #ffffff, 0 0 0 4px rgba(248,113,113,.3) !important;
+        }
+
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px; width: 24px; border-radius: 50%;
+            background: #3b82f6; cursor: pointer; margin-top: -8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.2), inset 0 -2px 4px rgba(0,0,0,.2), inset 0 2px 4px rgba(255,255,255,.5);
+            border: 2px solid white;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 8px; cursor: pointer; background: #cbd5e1;
+            border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,.1);
+        }
+
         .slider-container { width: 100%; position: relative; border-radius: 2rem; z-index: 10; overflow: hidden; transform: translateZ(0); margin-bottom: 2rem; }
         .slider-track { display: flex; will-change: transform; width: 100%; }
         .slide { flex: 0 0 100%; width: 100%; }
-        
+
         .flip-box { background-color: transparent; width: 100%; height: 180px; perspective: 1200px; outline: none; }
-        .flip-box-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); transform-style: preserve-3d; border-radius: 2rem; }
+        .flip-box-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 1.2s cubic-bezier(.65,0,.35,1); transform-style: preserve-3d; border-radius: 2rem; }
         .flip-box.is-flipped .flip-box-inner { transform: rotateY(180deg); }
-        
-        .flip-face { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; color: white; box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15); border: 1px solid rgba(255,255,255,0.2); transform-style: preserve-3d; }
+        .flip-face {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 1.5rem; color: white; box-shadow: 0 15px 30px rgba(15,23,42,.15);
+            border: 1px solid rgba(255,255,255,.2); transform-style: preserve-3d;
+        }
         .flip-back { transform: rotateY(180deg); }
-        
         .flip-bg { position: absolute; inset: 0; z-index: 0; border-radius: 2rem; background-size: cover; background-position: center; }
-        .flip-bg::after { content: ''; position: absolute; inset: 0; border-radius: 2rem; background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 100%); }
-        .flip-back .flip-bg::after { background: linear-gradient(to top, rgba(2,6,23,0.98) 0%, rgba(15,23,42,0.7) 100%); }
-        
-        .flip-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 0.25rem; transform: translateZ(50px) scale(0.95); transform-style: preserve-3d; }
-        .flip-kicker { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 900; color: #60a5fa; transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+        .flip-bg::after { content: ''; position: absolute; inset: 0; border-radius: 2rem; background: linear-gradient(to top, rgba(15,23,42,.95) 0%, rgba(15,23,42,.5) 100%); }
+        .flip-back .flip-bg::after { background: linear-gradient(to top, rgba(2,6,23,.98) 0%, rgba(15,23,42,.7) 100%); }
+        .flip-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: .25rem; transform: translateZ(50px) scale(.95); transform-style: preserve-3d; }
+        .flip-kicker { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 900; color: #60a5fa; transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,.8); }
         .flip-back .flip-kicker { color: #4ade80; }
-        .flip-title { font-size: 1.5rem; font-weight: 900; line-height: 1.2; transform: translateZ(40px); text-shadow: 0 8px 16px rgba(0,0,0,0.9); }
-        .flip-desc { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; line-height: 1.4; transform: translateZ(25px); text-shadow: 0 4px 8px rgba(0,0,0,0.8); }
+        .flip-title { font-size: 1.5rem; font-weight: 900; line-height: 1.2; transform: translateZ(40px); text-shadow: 0 8px 16px rgba(0,0,0,.9); }
+        .flip-desc { font-size: .875rem; font-weight: 600; color: #e2e8f0; line-height: 1.4; transform: translateZ(25px); text-shadow: 0 4px 8px rgba(0,0,0,.8); }
+
+        .maplibregl-map {
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            font-family: 'Nunito', sans-serif;
+        }
+        .maplibregl-ctrl-bottom-right,
+        .maplibregl-ctrl-bottom-left {
+            display: none !important;
+        }
+
+        .map-pin {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 3px solid white;
+            box-shadow: 0 8px 16px rgba(0,0,0,.25);
+        }
+        .map-pin.airport { background: #2563eb; }
+        .map-pin.driver { background: #0f172a; }
+        .map-pin.passenger { background: #22c55e; }
+        .map-pin.dest { background: #ef4444; }
+        .map-pin.live {
+            background: #3b82f6;
+            width: 20px;
+            height: 20px;
+            box-shadow: 0 0 0 8px rgba(59,130,246,.15), 0 8px 16px rgba(0,0,0,.25);
+        }
+
+        .pickup-zone-badge {
+            background: rgba(255,255,255,.92);
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(0,0,0,.12);
+            border: 1px solid rgba(255,255,255,.8);
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-slate-800 flex items-center justify-center p-0 md:p-6 selection:bg-blue-300">
-
-    <!-- Device Frame -->
     <div class="w-full md:max-w-[430px] h-[100dvh] md:h-[880px] bg-[#e8eef3] md:rounded-[3.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.5)] relative overflow-hidden md:border-[12px] border-slate-900 flex flex-col text-slate-800">
-        
-        <!-- ==================== HOME SCREEN ==================== -->
+
+        <!-- HOME -->
         <div id="screen-home" class="app-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in">
             <div class="flex justify-between items-center mb-8 shrink-0">
                 <div class="text-3xl font-black text-slate-700 tracking-tighter drop-shadow-sm flex items-center gap-2">
-                    Aero<span class="text-blue-500">Pool</span> 
+                    Aero<span class="text-blue-500">Pool</span>
                     <span class="text-2xl animate-float">✈️</span>
                 </div>
-                <!-- Dynamic User Badge -->
                 <div id="home-user-badge" class="hidden flex items-center gap-3 bg-white/40 px-4 py-2 rounded-2xl shadow-sm border border-white/60">
                     <span id="home-user-name" class="font-bold text-sm text-slate-700">Hi, User</span>
                     <div id="home-user-initial" class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-black">U</div>
                 </div>
             </div>
 
-            <!-- Auto Flipping & Sliding Banner -->
             <div class="slider-container shrink-0">
                 <div class="slider-track" id="home-slider-track">
-                    <!-- Slide 1: General Concept -->
                     <div class="slide">
                         <div class="flip-box">
                             <div class="flip-box-inner">
                                 <div class="flip-face flip-front">
-                                    <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop');"></div>
+                                    <div class="flip-bg" style="background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop');"></div>
                                     <div class="flip-content">
                                         <div class="flip-kicker">Airport Exclusive</div>
                                         <h3 class="flip-title">AeroPool</h3>
-                                        <p class="flip-desc">Drivers pick up a fare back to the city. Passengers get a cheaper ride home.</p>
+                                        <p class="flip-desc">Drivers leaving the airport post spare seats. Passengers get cheaper city rides.</p>
                                     </div>
                                 </div>
                                 <div class="flip-face flip-back">
-                                    <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop');"></div>
+                                    <div class="flip-bg" style="background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop');"></div>
                                     <div class="flip-content">
-                                        <div class="flip-kicker">How It Works</div>
-                                        <h3 class="flip-title">Shared Return</h3>
-                                        <p class="flip-desc">One airport. Two wins. Empty seats become cheaper trips.</p>
+                                        <div class="flip-kicker">Structured Pickup</div>
+                                        <h3 class="flip-title">Fixed Zones. Less Confusion.</h3>
+                                        <p class="flip-desc">Clear pickup points, luggage matching, and safer boarding with a ride PIN.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Slide 2: For Passengers -->
                     <div class="slide">
                         <div class="flip-box">
                             <div class="flip-box-inner">
                                 <div class="flip-face flip-front">
-                                    <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=800&auto=format&fit=crop');"></div>
+                                    <div class="flip-bg" style="background-image:url('https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=800&auto=format&fit=crop');"></div>
                                     <div class="flip-content">
-                                        <div class="flip-kicker">Smart Fares</div>
+                                        <div class="flip-kicker">Smarter Fare</div>
                                         <h3 class="flip-title">Travel Cheaper</h3>
-                                        <p class="flip-desc">Pay up to 50% less by matching with an empty returning vehicle.</p>
+                                        <p class="flip-desc">Compare the city fare side by side and see exactly what you save.</p>
                                     </div>
                                 </div>
                                 <div class="flip-face flip-back">
-                                    <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=800&auto=format&fit=crop');"></div>
+                                    <div class="flip-bg" style="background-image:url('https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=800&auto=format&fit=crop');"></div>
                                     <div class="flip-content">
-                                        <div class="flip-kicker">Quick Matches</div>
-                                        <h3 class="flip-title">Zero Wait Time</h3>
-                                        <p class="flip-desc">Choose from ready drivers and depart straight from the terminal.</p>
+                                        <div class="flip-kicker">Airport Ready</div>
+                                        <h3 class="flip-title">Built for Bags</h3>
+                                        <p class="flip-desc">Small, medium, and large luggage are declared upfront before matching.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Slide 3: For Drivers -->
                     <div class="slide">
                         <div class="flip-box">
                             <div class="flip-box-inner">
                                 <div class="flip-face flip-front">
-                                    <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=800&auto=format&fit=crop');"></div>
+                                    <div class="flip-bg" style="background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=800&auto=format&fit=crop');"></div>
                                     <div class="flip-content">
-                                        <div class="flip-kicker">Maximize Earnings</div>
-                                        <h3 class="flip-title">Never Return Empty</h3>
-                                        <p class="flip-desc">Turn your dead airport miles into profit on the way back.</p>
+                                        <div class="flip-kicker">For Drivers</div>
+                                        <h3 class="flip-title">Never Leave Empty</h3>
+                                        <p class="flip-desc">Post a return trip right after drop-off and monetize your airport exit.</p>
                                     </div>
                                 </div>
                                 <div class="flip-face flip-back">
-                                    <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=800&auto=format&fit=crop');"></div>
+                                    <div class="flip-bg" style="background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=800&auto=format&fit=crop');"></div>
                                     <div class="flip-content">
-                                        <div class="flip-kicker">100% Safe</div>
-                                        <h3 class="flip-title">Verified Security</h3>
-                                        <p class="flip-desc">Every passenger is ID verified so you can focus on the road safely.</p>
+                                        <div class="flip-kicker">Safer Flow</div>
+                                        <h3 class="flip-title">Boarding PIN Protected</h3>
+                                        <p class="flip-desc">The trip starts only after plate check, ride PIN, and dual boarding confirmation.</p>
                                     </div>
                                 </div>
                             </div>
@@ -204,8 +265,8 @@
                 <button onclick="handleRoleSelect('driver')" class="glass-panel w-full relative p-8 hover:shadow-[8px_8px_16px_#c4d0dc,-8px_-8px_16px_#ffffff] active:shadow-[inset_8px_8px_16px_#c4d0dc,inset_-8px_-8px_16px_#ffffff] transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
                     <div class="relative inline-block text-7xl drop-shadow-[0_12px_12px_rgba(0,0,0,0.25)] group-hover:scale-110 transition-transform">🚗</div>
                     <div class="text-center mt-2">
-                        <h2 class="text-3xl font-black text-slate-800 mb-1 drop-shadow-sm">I'm Driving</h2>
-                        <p class="text-slate-500 font-bold px-4 text-sm">Don't go home empty. Pick up a rider.</p>
+                        <h2 class="text-3xl font-black text-slate-800 mb-1 drop-shadow-sm">I Just Dropped Off</h2>
+                        <p class="text-slate-500 font-bold px-4 text-sm">Post your empty airport return trip and pick up a rider.</p>
                     </div>
                 </button>
 
@@ -213,13 +274,13 @@
                     <div class="relative inline-block text-7xl drop-shadow-[0_12px_12px_rgba(0,0,0,0.25)] group-hover:scale-110 transition-transform">🧳</div>
                     <div class="text-center mt-2">
                         <h2 class="text-3xl font-black text-slate-800 mb-1 drop-shadow-sm">Need a Ride</h2>
-                        <p class="text-slate-500 font-bold px-4 text-sm">Hop in with a driver heading back.</p>
+                        <p class="text-slate-500 font-bold px-4 text-sm">Match with a driver already leaving the airport for the city.</p>
                     </div>
                 </button>
             </div>
         </div>
 
-        <!-- ==================== AUTH SCREEN ==================== -->
+        <!-- AUTH -->
         <div id="screen-auth" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in overflow-y-auto no-scrollbar pb-10">
             <div class="mb-6 flex items-center gap-4">
                 <button onclick="setStep('idle', 'home')" class="w-12 h-12 rounded-full bg-[#e8eef3] shadow-[4px_4px_8px_#c4d0dc,-4px_-4px_8px_#ffffff] flex items-center justify-center active:shadow-[inset_2px_2px_4px_#c4d0dc] transition-all cursor-pointer">
@@ -227,61 +288,57 @@
                 </button>
                 <div>
                     <h1 id="auth-heading" class="text-3xl font-black text-slate-800 tracking-tight leading-tight">Create Profile</h1>
-                    <p id="auth-subheading" class="text-slate-500 font-bold text-sm">Strictly verified for security.</p>
+                    <p id="auth-subheading" class="text-slate-500 font-bold text-sm">Strictly verified for airport safety.</p>
                 </div>
             </div>
 
-            <!-- Auth Tabs -->
             <div class="flex bg-[#e8eef3] p-2 rounded-3xl shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] mb-6 border border-white/40">
                 <button id="tab-signup" onclick="setAuthMode('signup')" class="flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100">Sign Up</button>
                 <button id="tab-login" onclick="setAuthMode('login')" class="flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 text-slate-500 hover:text-slate-700 scale-95">Log In</button>
             </div>
 
             <div class="space-y-5 flex-1 mt-2">
-                <!-- Phone -->
                 <div class="relative">
                     <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="phone" width="20"></i></div>
-                    <input type="tel" id="auth-phone" placeholder="Phone Number (Digits only)" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30" oninput="handlePhoneInput(event, 'phone-error')">
-                    <p id="phone-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
-                </div>
-                
-                <!-- PIN Code -->
-                <div class="relative">
-                    <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="lock" width="20"></i></div>
-                    <input type="password" id="auth-pin" placeholder="4-Digit PIN" maxlength="4" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30 tracking-[0.5em] font-black" oninput="handlePinInput(event, 'pin-error')">
-                    <p id="pin-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
+                    <input type="tel" id="auth-phone" placeholder="Phone Number (Digits only)" class="input-3d pl-14 pr-5 py-4" oninput="handlePhoneInput(event)">
+                    <p id="phone-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i><span class="error-text"></span></p>
                 </div>
 
-                <!-- Signup Specific Fields -->
+                <div class="relative">
+                    <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="lock" width="20"></i></div>
+                    <input type="password" id="auth-pin" placeholder="4-Digit PIN" maxlength="4" class="input-3d pl-14 pr-5 py-4 tracking-[0.5em] font-black" oninput="handlePinInput(event)">
+                    <p id="pin-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i><span class="error-text"></span></p>
+                </div>
+
                 <div id="signup-fields" class="space-y-5">
                     <div class="relative">
                         <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="user" width="20"></i></div>
-                        <input type="text" id="auth-name" placeholder="Full Legal Name" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30" oninput="clearError('name-error')">
-                        <p id="name-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
+                        <input type="text" id="auth-name" placeholder="Full Legal Name" class="input-3d pl-14 pr-5 py-4" oninput="clearError('name-error')">
+                        <p id="name-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i><span class="error-text"></span></p>
                     </div>
 
                     <div id="plateNumber-container" class="relative hidden">
                         <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="car" width="20"></i></div>
-                        <input type="text" id="auth-plateNumber" placeholder="Vehicle Plate Number (e.g. ABC-123)" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30 uppercase" oninput="clearError('plate-error')">
-                        <p id="plate-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
+                        <input type="text" id="auth-plateNumber" placeholder="Vehicle Plate Number (e.g. ABC-123)" class="input-3d pl-14 pr-5 py-4 uppercase" oninput="clearError('plate-error')">
+                        <p id="plate-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i><span class="error-text"></span></p>
                     </div>
 
                     <div class="relative">
                         <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="id-card" width="20"></i></div>
-                        <select id="auth-idType" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30 appearance-none cursor-pointer" onchange="handleIdTypeChange()">
+                        <select id="auth-idType" class="input-3d pl-14 pr-5 py-4 appearance-none cursor-pointer" onchange="handleIdTypeChange()">
                             <option value="" disabled selected>Select ID Document</option>
                             <option value="nin">National ID (NIN) - 11 Digits</option>
                             <option value="passport">International Passport</option>
                             <option value="license">Driver's License</option>
                         </select>
                         <div class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm">▼</div>
-                        <p id="idType-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
+                        <p id="idType-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i><span class="error-text"></span></p>
                     </div>
 
                     <div id="idNumber-container" class="relative hidden-screen animate-pop-in">
                         <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="shield-check" width="20"></i></div>
-                        <input type="text" id="auth-idNumber" placeholder="Document ID Number" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30" oninput="handleIdNumberInput(event)">
-                        <p id="idNumber-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
+                        <input type="text" id="auth-idNumber" placeholder="Document ID Number" class="input-3d pl-14 pr-5 py-4" oninput="handleIdNumberInput(event)">
+                        <p id="idNumber-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i><span class="error-text"></span></p>
                     </div>
 
                     <div class="bg-[#e8eef3] rounded-[1.5rem] shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] p-6 border-2 border-dashed border-blue-300 relative overflow-hidden group cursor-pointer active:scale-[0.98] transition-all mt-2">
@@ -303,12 +360,11 @@
             <button id="btn-auth-submit" onclick="validateAuth()" class="btn-primary-3d mt-8 shrink-0">Create Profile & Continue</button>
         </div>
 
-        <!-- ==================== DESTINATION SCREEN ==================== -->
+        <!-- DESTINATION -->
         <div id="screen-destination" class="app-screen hidden-screen flex flex-col h-full relative animate-pop-in">
-            <!-- Background Live Map -->
             <div class="absolute inset-0 z-0 bg-[#e8eef3]">
-                <div id="dest-real-map"></div>
-                <div class="absolute inset-0 bg-[#e8eef3]/40 pointer-events-none z-10"></div>
+                <div id="dest-real-map" class="absolute inset-0"></div>
+                <div class="absolute inset-0 bg-[#e8eef3]/35 pointer-events-none z-10"></div>
                 <div class="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none z-10"></div>
             </div>
 
@@ -324,7 +380,6 @@
                 </h1>
 
                 <div class="glass-panel p-6 mb-auto relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
-                    
                     <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md p-3 rounded-3xl mb-4 shadow-sm relative z-30">
                         <div class="w-12 h-12 bg-[#e8eef3] rounded-2xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
                             <i data-lucide="map-pin" class="text-blue-500" width="20"></i>
@@ -333,14 +388,11 @@
                             <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pickup Location</p>
                             <div class="relative w-full">
                                 <select id="pickup-location" class="w-full bg-transparent font-bold text-slate-800 outline-none appearance-none cursor-pointer">
-                                    <option value="International Arrival">International Arrival</option>
-                                    <option value="Local Departure">Local Departure</option>
-                                    <option value="Parking Lot">Parking Lot</option>
-                                    <option value="Terminal A">Terminal A</option>
-                                    <option value="Terminal B">Terminal B</option>
-                                    <option value="Terminal C">Terminal C</option>
-                                    <option value="Terminal D">Terminal D</option>
-                                    <option value="On my way">On my way</option>
+                                    <option value="International Arrivals">International Arrivals</option>
+                                    <option value="Domestic Arrivals">Domestic Arrivals</option>
+                                    <option value="Car Park B">Car Park B</option>
+                                    <option value="Pickup Bay 1">Pickup Bay 1</option>
+                                    <option value="Pickup Bay 2">Pickup Bay 2</option>
                                 </select>
                                 <div class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
                             </div>
@@ -349,25 +401,83 @@
 
                     <div class="w-1 h-6 border-l-[3px] border-dashed border-blue-300 ml-8 my-1"></div>
 
-                    <!-- Searchable Destination Input -->
                     <div class="flex items-center gap-4 relative mt-2 z-40">
                         <div class="w-12 flex justify-center text-red-500 drop-shadow-[0_4px_4px_rgba(239,68,68,0.4)] shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                         </div>
                         <div class="w-full relative">
-                            <input type="text" id="dest-search-input" placeholder="Search destination area..." class="input-3d px-5 py-4 focus:ring-4 ring-blue-400/30 bg-white/80 backdrop-blur-md" oninput="filterDestinations()" onclick="filterDestinations()" autocomplete="off">
-                            
-                            <!-- Custom Dropdown -->
-                            <div id="dest-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.15)] border-2 border-slate-100 max-h-60 overflow-y-auto z-50">
-                                <!-- Populated via JS -->
+                            <input type="text" id="dest-search-input" placeholder="Search destination area..." class="input-3d px-5 py-4 bg-white/80 backdrop-blur-md" oninput="filterDestinations()" onclick="filterDestinations()" autocomplete="off">
+                            <div id="dest-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.15)] border-2 border-slate-100 max-h-60 overflow-y-auto z-50"></div>
+                        </div>
+                    </div>
+
+                    <!-- Passenger options -->
+                    <div id="passenger-trip-options" class="hidden flex-col gap-4 mt-6 pt-4 border-t-2 border-dashed border-slate-300/50">
+                        <h3 class="font-black text-slate-700 mb-1">Ride Details</h3>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative">
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Route mode</p>
+                                <select id="route-mode" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                    <option value="Shared ride">Shared ride</option>
+                                    <option value="Private ride">Private ride</option>
+                                    <option value="Hub drop">Hub drop</option>
+                                </select>
+                            </div>
+                            <div class="relative">
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Urgency</p>
+                                <select id="departure-urgency" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                    <option value="Leaving now">Leaving now</option>
+                                    <option value="10 mins">10 mins</option>
+                                    <option value="20 mins">20 mins</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Small bags</p>
+                                <select id="luggage-small" class="input-3d px-3 py-3 text-sm bg-white/60">
+                                    <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                                </select>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Medium</p>
+                                <select id="luggage-medium" class="input-3d px-3 py-3 text-sm bg-white/60">
+                                    <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                                </select>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Large</p>
+                                <select id="luggage-large" class="input-3d px-3 py-3 text-sm bg-white/60">
+                                    <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="price-comparison-card" class="bg-white/70 border border-white rounded-2xl p-4 shadow-sm">
+                            <p class="text-xs uppercase tracking-wider font-black text-slate-500 mb-2">Fare comparison</p>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">Uber est</p>
+                                    <p id="uber-estimate" class="font-black text-slate-700">₦18,000</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">AeroPool</p>
+                                    <p id="aeropool-estimate" class="font-black text-blue-600">₦8,500</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">You save</p>
+                                    <p id="you-save" class="font-black text-green-600">₦9,500</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Driver Trip Options -->
+                    <!-- Driver options -->
                     <div id="driver-options-container" class="hidden flex-col gap-4 mt-6 pt-4 border-t-2 border-dashed border-slate-300/50">
-                        <h3 class="font-black text-slate-700 mb-1">Trip Details</h3>
-                        
+                        <h3 class="font-black text-slate-700 mb-1">Return Trip Details</h3>
+
                         <div class="flex gap-4">
                             <div class="flex-1 relative">
                                 <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Seats available</p>
@@ -375,34 +485,56 @@
                                     <option value="1">1 seat</option>
                                     <option value="2">2 seats</option>
                                     <option value="3">3 seats</option>
+                                    <option value="4">4 seats</option>
                                 </select>
-                                <div class="absolute right-4 bottom-3 text-slate-400 pointer-events-none text-xs">▼</div>
                             </div>
                             <div class="flex-1 relative">
-                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Drop style</p>
-                                <select id="driver-drop" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
-                                    <option value="Hub drop">Hub drop</option>
-                                    <option value="Door drop">Door drop</option>
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Trunk space</p>
+                                <select id="driver-trunk-space" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                    <option value="Small">Small</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Large">Large</option>
                                 </select>
-                                <div class="absolute right-4 bottom-3 text-slate-400 pointer-events-none text-xs">▼</div>
                             </div>
                         </div>
-                        
-                        <div class="relative w-full mt-2">
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative">
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Ride type</p>
+                                <select id="driver-route-mode" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                    <option value="Shared ride">Shared ride</option>
+                                    <option value="Private ride">Private ride</option>
+                                    <option value="Hub drop">Hub drop</option>
+                                </select>
+                            </div>
+                            <div class="relative">
+                                <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Can wait</p>
+                                <select id="driver-wait-time" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                    <option value="5 mins">5 mins</option>
+                                    <option value="10 mins">10 mins</option>
+                                    <option value="15 mins">15 mins</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="relative w-full mt-1">
                             <div class="flex justify-between items-end mb-2 ml-2 mr-2">
                                 <p class="text-xs font-bold text-slate-500">Departure window</p>
                                 <p id="departure-display" class="text-sm font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-full">Leaving now</p>
                             </div>
                             <input type="range" id="driver-departure" min="0" max="60" step="5" value="0" class="w-full mt-2" oninput="updateDepartureDisplay(this.value)">
                             <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-bold px-1">
-                                <span>Now</span>
-                                <span>30m</span>
-                                <span>1h</span>
+                                <span>Now</span><span>30m</span><span>1h</span>
                             </div>
                         </div>
+
+                        <label class="flex items-center gap-3 mt-2 bg-white/60 rounded-2xl px-4 py-3 border border-white">
+                            <input id="driver-has-ac" type="checkbox" checked />
+                            <span class="font-bold text-slate-700">AC available</span>
+                        </label>
                     </div>
 
-                    <!-- Passenger Photo Upload -->
+                    <!-- Passenger photo -->
                     <div id="passenger-photo-container" class="hidden mt-6 pt-4 border-t-2 border-dashed border-slate-300/50">
                         <p class="font-black text-slate-700 mb-3">Selfie for Driver Verification</p>
                         <div class="flex items-center gap-4">
@@ -410,13 +542,11 @@
                                 <i data-lucide="user" width="28"></i>
                             </div>
                             <div class="flex flex-col gap-2 flex-1">
-                                <!-- Native Camera Trigger -->
                                 <div class="relative w-full">
                                     <button onclick="openCamera()" class="w-full bg-white text-slate-700 font-black text-sm py-2.5 px-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-all">
                                         <i data-lucide="camera" width="16"></i> Snap Selfie
                                     </button>
                                 </div>
-                                <!-- File Upload Trigger -->
                                 <div class="relative w-full">
                                     <input type="file" id="passenger-photo-upload" class="absolute inset-0 opacity-0 cursor-pointer z-10" accept="image/*" onchange="handlePhotoUpload(event)">
                                     <button class="w-full bg-[#e8eef3] text-slate-600 font-bold text-sm py-2.5 px-4 rounded-xl shadow-[4px_4px_8px_#c4d0dc,-4px_-4px_8px_#ffffff] flex items-center justify-center gap-2 active:shadow-[inset_2px_2px_4px_#c4d0dc] transition-all">
@@ -433,23 +563,23 @@
             </div>
         </div>
 
-        <!-- ==================== SEARCHING SCREEN ==================== -->
+        <!-- SEARCHING -->
         <div id="screen-searching" class="app-screen hidden-screen flex flex-col items-center justify-center h-full relative p-6 animate-pop-in">
             <div class="absolute inset-0 bg-[#e8eef3]/80 backdrop-blur-sm z-0"></div>
 
             <div class="relative w-80 h-80 flex items-center justify-center mb-16 z-10">
                 <div class="absolute inset-0 border-[4px] border-blue-400 rounded-full animate-pulse-ring"></div>
-                <div class="absolute inset-0 border-[4px] border-blue-400 rounded-full animate-pulse-ring" style="animation-delay: 1s;"></div>
-                
+                <div class="absolute inset-0 border-[4px] border-blue-400 rounded-full animate-pulse-ring" style="animation-delay:1s;"></div>
+
                 <div class="relative z-10 w-36 h-36 bg-[#e8eef3] rounded-[3rem] shadow-[15px_15px_30px_#c4d0dc,-15px_-15px_30px_#ffffff,inset_0_0_15px_rgba(255,255,255,0.9)] flex items-center justify-center border-4 border-white text-[5rem]">
                     <span id="search-role-emoji">🚗</span>
                 </div>
 
                 <div class="absolute top-0 right-4 animate-float">
-                    <div class="w-16 h-16 bg-[#e8eef3] rounded-full shadow-[8px_8px_16px_#c4d0dc,-8px_-8px_16px_#ffffff] flex items-center justify-center text-3xl border-2 border-white" id="search-float-1">👱‍♂️</div>
+                    <div class="w-16 h-16 bg-[#e8eef3] rounded-full shadow-[8px_8px_16px_#c4d0dc,-8px_-8px_16px_#ffffff] flex items-center justify-center text-3xl border-2 border-white">👱‍♂️</div>
                 </div>
-                <div class="absolute bottom-4 left-2 animate-float" style="animation-delay: 1.5s;">
-                    <div class="w-14 h-14 bg-[#e8eef3] rounded-full shadow-[8px_8px_16px_#c4d0dc,-8px_-8px_16px_#ffffff] flex items-center justify-center text-2xl border-2 border-white" id="search-float-2">👩‍🦰</div>
+                <div class="absolute bottom-4 left-2 animate-float" style="animation-delay:1.5s;">
+                    <div class="w-14 h-14 bg-[#e8eef3] rounded-full shadow-[8px_8px_16px_#c4d0dc,-8px_-8px_16px_#ffffff] flex items-center justify-center text-2xl border-2 border-white">👩‍🦰</div>
                 </div>
             </div>
 
@@ -461,58 +591,46 @@
             </div>
         </div>
 
-        <!-- ==================== MARKETPLACE SCREEN (Passengers Only) ==================== -->
+        <!-- MARKETPLACE -->
         <div id="screen-marketplace" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in bg-[#e8eef3]">
             <div class="flex justify-between items-center mb-6 shrink-0">
                 <button onclick="setStep('destination')" class="w-12 h-12 rounded-full bg-[#e8eef3] shadow-[4px_4px_8px_#c4d0dc,-4px_-4px_8px_#ffffff] flex items-center justify-center active:shadow-[inset_2px_2px_4px_#c4d0dc] transition-all cursor-pointer">
                     <i data-lucide="chevron-left" class="text-slate-600"></i>
                 </button>
                 <div class="text-right">
-                    <h1 class="text-2xl font-black text-slate-800 tracking-tight leading-tight">3 Drivers found</h1>
+                    <h1 id="marketplace-header-count" class="text-2xl font-black text-slate-800 tracking-tight leading-tight">3 Drivers found</h1>
                     <p class="text-slate-500 font-bold text-xs uppercase tracking-wider">Heading to your area</p>
                 </div>
             </div>
 
-            <div id="marketplace-filters" class="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-2 shrink-0">
-                <!-- Filters injected via JS -->
-            </div>
-
-            <div id="marketplace-list" class="flex-1 overflow-y-auto no-scrollbar space-y-5 pb-10">
-                <!-- Populated via JS -->
-            </div>
+            <div id="marketplace-filters" class="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-2 shrink-0"></div>
+            <div id="marketplace-list" class="flex-1 overflow-y-auto no-scrollbar space-y-5 pb-10"></div>
         </div>
 
-        <!-- ==================== MATCHED SCREEN ==================== -->
+        <!-- MATCHED -->
         <div id="screen-matched" class="app-screen hidden-screen flex flex-col h-full relative overflow-hidden animate-pop-in bg-[#d0dbe6]">
-            <!-- Live Pre-Ride Map Background -->
             <div class="absolute inset-0 z-0 bg-[#e8eef3]">
-                <div id="matched-real-map" class="w-full h-full opacity-70 saturate-150 contrast-125"></div>
+                <div id="matched-real-map" class="absolute inset-0 opacity-75 saturate-150 contrast-125"></div>
                 <div class="absolute inset-0 bg-[#e8eef3]/20 pointer-events-none z-10"></div>
                 <div class="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none z-10"></div>
             </div>
-            
             <div class="absolute inset-0 bg-gradient-to-t from-[#e8eef3] via-[#e8eef3]/50 to-transparent z-0 pointer-events-none"></div>
 
             <div class="mt-auto relative z-10 p-5 animate-slide-up pb-8 w-full">
-                <!-- DYNAMIC DRIVER / PASSENGER MATCH CARD -->
-                <div id="matched-card-container" class="glass-panel p-6 w-full">
-                    <!-- Populated via JS depending on role -->
-                </div>
+                <div id="matched-card-container" class="glass-panel p-6 w-full"></div>
             </div>
         </div>
 
-        <!-- ==================== TRACKING SCREEN ==================== -->
+        <!-- TRACKING -->
         <div id="screen-tracking" class="app-screen hidden-screen flex flex-col h-full relative overflow-hidden bg-[#c0ccd9] animate-pop-in">
-            <!-- Real Leaflet Map Container -->
             <div class="absolute inset-0 z-0 bg-[#e8eef3]">
-                <div id="real-map-container" class="w-full h-full"></div>
+                <div id="real-map-container" class="absolute inset-0"></div>
                 <div class="absolute inset-0 bg-[#e8eef3]/20 pointer-events-none z-10"></div>
                 <div class="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none z-10"></div>
             </div>
 
             <div class="absolute inset-0 bg-gradient-to-b from-[#e8eef3]/95 via-transparent to-[#e8eef3]/95 z-10 pointer-events-none"></div>
 
-            <!-- Tracking Card Elements -->
             <div class="relative z-30 p-6 pt-12 animate-slide-up flex justify-between items-start">
                 <div class="bg-[#e8eef3] rounded-[2rem] p-5 shadow-[12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff] flex items-center gap-5 border-[3px] border-white/60">
                     <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.1)] border border-blue-200 shrink-0">
@@ -525,7 +643,7 @@
                 </div>
             </div>
 
-            <div class="mt-auto relative z-20 p-6 animate-slide-up" style="animation-delay: 0.2s">
+            <div class="mt-auto relative z-20 p-6 animate-slide-up" style="animation-delay:.2s">
                 <div class="glass-panel p-7">
                     <div class="flex justify-between items-center mb-8">
                         <div class="flex items-center gap-4">
@@ -534,7 +652,7 @@
                             </div>
                             <div class="overflow-hidden">
                                 <h4 id="track-user-name" class="font-black text-slate-800 text-xl truncate">Sarah T.</h4>
-                                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mt-1 truncate">Verified User • ABC-123</p>
+                                <p id="track-user-meta" class="text-slate-500 text-xs font-bold uppercase tracking-wider mt-1 truncate">Verified User</p>
                             </div>
                         </div>
                         <div class="w-14 h-14 rounded-full bg-[#e8eef3] flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] text-blue-500 border border-white shrink-0">
@@ -544,7 +662,6 @@
 
                     <div class="flex gap-3 w-full">
                         <button onclick="endTrip()" class="flex-1 btn-danger-3d !py-4 !text-base">End Trip</button>
-                        <!-- Share Ride Button (Passenger Only) -->
                         <button id="btn-share-ride" onclick="shareRideDetails()" class="hidden bg-green-500 text-white font-black text-sm px-5 py-4 rounded-[1.25rem] shadow-[0_8px_16px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2 active:scale-95 transition-all shrink-0 border border-green-400">
                             <i data-lucide="message-circle" class="fill-current text-white" width="18"></i> Share Ride
                         </button>
@@ -553,16 +670,24 @@
             </div>
         </div>
 
-        <!-- ==================== HISTORY TAB ==================== -->
+        <!-- WALLET TAB -->
+        <div id="screen-wallet" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in pb-24">
+            <h1 class="text-3xl font-black text-slate-800 mb-6 drop-shadow-sm">My Wallet</h1>
+            <div id="wallet-content" class="flex-1 overflow-y-auto no-scrollbar space-y-6 pb-6">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+
+        <!-- HISTORY TAB -->
         <div id="screen-history" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in pb-24">
             <h1 class="text-3xl font-black text-slate-800 mb-6 drop-shadow-sm">Ride History</h1>
             <div id="history-list" class="flex-1 overflow-y-auto no-scrollbar space-y-4"></div>
         </div>
 
-        <!-- ==================== PROFILE TAB ==================== -->
+        <!-- PROFILE TAB -->
         <div id="screen-profile" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in pb-24">
             <h1 class="text-3xl font-black text-slate-800 mb-8 drop-shadow-sm">My Profile</h1>
-            
+
             <div class="flex flex-col items-center mb-8">
                 <div class="w-32 h-32 rounded-[2.5rem] bg-[#e8eef3] shadow-[12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff] flex items-center justify-center text-5xl border-4 border-white mb-4 relative">
                     🧑‍💼
@@ -583,16 +708,21 @@
                     <span class="text-green-600 font-black text-sm uppercase bg-green-100 px-3 py-1 rounded-full">Verified</span>
                 </div>
             </div>
+
             <button onclick="handleLogout()" class="btn-danger-3d mt-auto flex items-center justify-center gap-2">
                 <i data-lucide="log-out" width="20"></i> Log Out
             </button>
         </div>
 
-        <!-- ==================== BOTTOM NAV ==================== -->
+        <!-- BOTTOM NAV -->
         <div id="bottom-nav" class="hidden absolute bottom-6 left-6 right-6 bg-[#e8eef3] rounded-[2rem] p-3 flex justify-between items-center shadow-[12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff] border-2 border-white/60 z-50">
             <button onclick="setTab('home')" id="nav-home" class="flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300">
                 <i data-lucide="home" width="24" class="mb-1"></i>
                 <span class="text-[10px] font-black uppercase tracking-wider">Home</span>
+            </button>
+            <button onclick="setTab('wallet')" id="nav-wallet" class="flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300 text-slate-400 hover:text-slate-600 scale-95">
+                <i data-lucide="wallet" width="24" class="mb-1"></i>
+                <span class="text-[10px] font-black uppercase tracking-wider">Wallet</span>
             </button>
             <button onclick="setTab('history')" id="nav-history" class="flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300 text-slate-400 hover:text-slate-600 scale-95">
                 <i data-lucide="history" width="24" class="mb-1"></i>
@@ -603,14 +733,13 @@
                 <span class="text-[10px] font-black uppercase tracking-wider">Profile</span>
             </button>
         </div>
-        
-        <!-- ==================== LIVE CAMERA MODAL ==================== -->
+
+        <!-- CAMERA MODAL -->
         <div id="camera-modal" class="fixed inset-0 bg-slate-900/95 z-[100] hidden flex-col items-center justify-center p-6 backdrop-blur-md opacity-0 transition-opacity duration-300">
             <div class="w-full max-w-[350px] bg-white rounded-[2rem] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.5)] flex flex-col items-center transform scale-95 transition-transform duration-300" id="camera-modal-inner">
                 <h3 class="font-black text-slate-800 text-lg mb-4 flex items-center gap-2"><i data-lucide="camera" class="text-blue-500"></i> Face verification</h3>
                 <div class="w-full aspect-[3/4] bg-slate-200 rounded-[1.5rem] overflow-hidden mb-5 relative shadow-inner border-4 border-slate-100">
                     <video id="camera-feed" class="w-full h-full object-cover scale-x-[-1]" autoplay playsinline></video>
-                    <!-- Targeting Oval Overlay -->
                     <div class="absolute inset-0 border-[40px] border-white/30 rounded-full scale-110 pointer-events-none mix-blend-overlay"></div>
                 </div>
                 <div class="flex gap-3 w-full">
@@ -620,31 +749,37 @@
             </div>
             <canvas id="camera-canvas" class="hidden"></canvas>
         </div>
-
     </div>
 
-    <!-- Application Logic -->
     <script>
-        // State
-        const state = {
-            user: null,
-            activeTab: 'home',
-            step: 'idle',
-            role: null,
-            authMode: 'signup',
-            currentLocation: { lat: 9.0065, lng: 7.1986 }, // Default Abuja Nnamdi Azikiwe Airport
-            watchId: null,
-            rideDetails: { pickup: 'International Arrival', area: '', price: 0, seats: '1', departure: 'Leaving now', dropStyle: 'Hub drop', passengerPhoto: null },
-            
-            destMapInstance: null, destMarkers: [],
-            matchMapInstance: null, matchPassengerMarker: null, matchDriverMarker: null, approachInterval: null, driverDistance: null,
-            trackMapInstance: null, trackMarkerInstance: null, trackRouteLine: null,
-            
-            selectedDriver: null,
-            sortBy: 'best' 
+        // Update MAP_STYLE to not rely on maplibre default api
+        const MAP_STYLE = {
+            version: 8,
+            sources: {
+                'osm-tiles': {
+                    type: 'raster',
+                    tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                    tileSize: 256,
+                    attribution: '© OpenStreetMap contributors'
+                }
+            },
+            layers: [{
+                id: 'osm-tiles-layer',
+                type: 'raster',
+                source: 'osm-tiles',
+                minzoom: 0,
+                maxzoom: 22
+            }]
         };
 
-        // Static Real World Abuja Coordinates Data
+        const pickupPoints = [
+            { name: 'International Arrivals', lat: 9.0065, lng: 7.1986 },
+            { name: 'Domestic Arrivals', lat: 9.0092, lng: 7.2015 },
+            { name: 'Car Park B', lat: 9.0115, lng: 7.1954 },
+            { name: 'Pickup Bay 1', lat: 9.0048, lng: 7.2050 },
+            { name: 'Pickup Bay 2', lat: 9.0029, lng: 7.2027 }
+        ];
+
         const abujaDestinations = [
             { area: "Wuse", desc: "Zone 1–7", price: 7500, lat: 9.0765, lng: 7.4666 },
             { area: "Jabi", desc: "Mall / Lake area", price: 8000, lat: 9.0687, lng: 7.4244 },
@@ -661,9 +796,27 @@
         ];
 
         const mockDrivers = [
-            { id: 1, avatar: "👨🏽", name: "Ibrahim S.", car: "Toyota Camry", plate: "ABJ-204KT", phone: "+2348012345671", rating: 4.9, price: 7500, savings: 4500, eta: "5 min", seats: "2 seats", drop: "Door drop", badges: ["ID verified", "Phone verified", "Plate matched"], departure: "Leaving in 6 mins", departureMins: 6, match: 96 },
-            { id: 2, avatar: "👩🏽", name: "Amaka O.", car: "Honda Accord", plate: "KUJ-884RM", phone: "+2348012345672", rating: 4.8, price: 7000, savings: 5000, eta: "7 min", seats: "1 seat", drop: "Hub drop", badges: ["ID verified", "Phone verified"], departure: "Leaving in 10 mins", departureMins: 10, match: 92 },
-            { id: 3, avatar: "👨🏿", name: "David T.", car: "Lexus ES350", plate: "BWR-117AA", phone: "+2348012345673", rating: 5.0, price: 8500, savings: 3500, eta: "4 min", seats: "3 seats", drop: "Door drop", badges: ["Highest rated", "ID verified", "Shareable trip"], departure: "Leaving in 14 mins", departureMins: 14, match: 88 }
+            {
+                id: 1, avatar: "👨🏽", name: "Ibrahim S.", car: "Toyota Camry", plate: "ABJ-204KT",
+                phone: "+2348012345671", rating: 4.9, price: 7500, savings: 10500, eta: "5 min",
+                seats: 2, trunkSpace: "Medium", routeMode: "Shared ride", hasAc: true,
+                waitTime: "10 mins", departure: "Leaving in 6 mins", departureMins: 6, match: 96,
+                badges: ["ID verified", "Phone verified", "Plate matched"]
+            },
+            {
+                id: 2, avatar: "👩🏽", name: "Amaka O.", car: "Honda Accord", plate: "KUJ-884RM",
+                phone: "+2348012345672", rating: 4.8, price: 7000, savings: 11000, eta: "7 min",
+                seats: 1, trunkSpace: "Small", routeMode: "Hub drop", hasAc: true,
+                waitTime: "5 mins", departure: "Leaving in 10 mins", departureMins: 10, match: 92,
+                badges: ["ID verified", "Phone verified"]
+            },
+            {
+                id: 3, avatar: "👨🏿", name: "David T.", car: "Lexus ES350", plate: "BWR-117AA",
+                phone: "+2348012345673", rating: 5.0, price: 8500, savings: 9500, eta: "4 min",
+                seats: 3, trunkSpace: "Large", routeMode: "Private ride", hasAc: true,
+                waitTime: "15 mins", departure: "Leaving in 14 mins", departureMins: 14, match: 88,
+                badges: ["Highest rated", "ID verified", "Shareable trip"]
+            }
         ];
 
         const mockHistory = [
@@ -671,26 +824,210 @@
             { date: 'Mar 2nd, 2:15 PM', role: 'driver', dest: 'Wuse', price: '₦7,500', status: 'Completed' }
         ];
 
-        // Boot
+        const state = {
+            user: null,
+            activeTab: 'home',
+            step: 'idle',
+            role: null,
+            authMode: 'signup',
+            currentLocation: { lat: 9.0065, lng: 7.1986 },
+            watchId: null,
+            rideDetails: {
+                pickup: 'International Arrivals',
+                area: '',
+                price: 0,
+                uberEstimate: 0,
+                seats: '1',
+                departure: 'Leaving now',
+                dropStyle: 'Hub drop',
+                routeMode: 'Shared ride',
+                luggage: { small: 0, medium: 0, large: 0 },
+                passengerPhoto: null,
+                trunkSpace: 'Medium',
+                hasAc: true,
+                waitTime: '10 mins',
+                boardingPin: null
+            },
+            boarding: {
+                driverArrived: false,
+                passengerVerifiedPlate: false,
+                pinVerified: false,
+                passengerBoarded: false,
+                driverBoardedConfirmed: false
+            },
+            selectedDriver: null,
+            sortBy: 'best',
+            approachInterval: null,
+            driverDistance: null,
+            matchPassengerMarker: null,
+            matchDriverMarker: null,
+            trackDriverMarker: null,
+            trackDestMarker: null,
+            cameraStream: null
+        };
+
+        const MapManager = {
+            maps: {},
+            destroy(name) {
+                const entry = this.maps[name];
+                if (!entry) return;
+                try {
+                    if (entry.markers) entry.markers.forEach(m => m.remove());
+                    if (entry.routeSourceId && entry.map && entry.map.getStyle()) {
+                        if (entry.map.getLayer(entry.routeLayerId)) entry.map.removeLayer(entry.routeLayerId);
+                        if (entry.map.getSource(entry.routeSourceId)) entry.map.removeSource(entry.routeSourceId);
+                    }
+                    entry.map.remove();
+                } catch (err) {
+                    console.warn('Map destroy warning:', name, err);
+                }
+                delete this.maps[name];
+            },
+            destroyAll() {
+                Object.keys(this.maps).forEach(name => this.destroy(name));
+            },
+            create(name, containerId, center, zoom = 12) {
+                this.destroy(name);
+                const map = new maplibregl.Map({
+                    container: containerId,
+                    style: MAP_STYLE,
+                    center: [center.lng, center.lat],
+                    zoom,
+                    attributionControl: false
+                });
+                this.maps[name] = {
+                    map,
+                    markers: [],
+                    routeSourceId: `${name}-route-source`,
+                    routeLayerId: `${name}-route-layer`
+                };
+                return this.maps[name];
+            },
+            addMarker(name, lngLat, className = 'live', html = '') {
+                const entry = this.maps[name];
+                if (!entry) return null;
+                const el = document.createElement('div');
+                if (html) el.innerHTML = html;
+                else el.className = `map-pin ${className}`;
+                const marker = new maplibregl.Marker({ element: el })
+                    .setLngLat([lngLat.lng, lngLat.lat])
+                    .addTo(entry.map);
+                entry.markers.push(marker);
+                return marker;
+            },
+            drawRoute(name, coords, color = '#3b82f6') {
+                const entry = this.maps[name];
+                if (!entry) return;
+
+                const apply = () => {
+                    const geojson = {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: coords.map(c => [c.lng, c.lat])
+                        }
+                    };
+
+                    if (entry.map.getSource(entry.routeSourceId)) {
+                        entry.map.getSource(entry.routeSourceId).setData(geojson);
+                    } else {
+                        entry.map.addSource(entry.routeSourceId, { type: 'geojson', data: geojson });
+                        entry.map.addLayer({
+                            id: entry.routeLayerId,
+                            type: 'line',
+                            source: entry.routeSourceId,
+                            paint: {
+                                'line-color': color,
+                                'line-width': 5,
+                                'line-opacity': 0.85,
+                                'line-dasharray': [2, 2]
+                            }
+                        });
+                    }
+                };
+
+                if (entry.map.isStyleLoaded()) apply();
+                else entry.map.on('load', apply);
+            },
+            fit(name, coords, padding = 60) {
+                const entry = this.maps[name];
+                if (!entry || !coords.length) return;
+                const bounds = new maplibregl.LngLatBounds(
+                    [coords[0].lng, coords[0].lat],
+                    [coords[0].lng, coords[0].lat]
+                );
+                coords.forEach(c => bounds.extend([c.lng, c.lat]));
+                entry.map.fitBounds(bounds, { padding, duration: 800 });
+            }
+        };
+
+        function refreshIcons(target = document) {
+            lucide.createIcons({ root: target });
+        }
+
+        function resetBoardingState() {
+            state.boarding = {
+                driverArrived: false,
+                passengerVerifiedPlate: false,
+                pinVerified: false,
+                passengerBoarded: false,
+                driverBoardedConfirmed: false
+            };
+        }
+
+        function generateRidePin() {
+            return String(Math.floor(1000 + Math.random() * 9000));
+        }
+
+        function generateVirtualAccount() {
+            const random6 = Math.floor(100000 + Math.random() * 900000);
+            return `5770${random6}`;
+        }
+
+        function showToast(msg) {
+            let toast = document.getElementById('toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-notification';
+                toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-2xl z-[999] opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap';
+                document.body.appendChild(toast);
+            }
+            toast.innerText = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2500);
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            try {
+                document.execCommand('copy');
+                showToast('Account Number Copied!');
+            } catch (err) {
+                showToast('Failed to copy');
+            }
+            document.body.removeChild(el);
+        }
+
         window.onload = () => {
-            lucide.createIcons();
+            refreshIcons(document.body);
             renderHistory();
             updateUI();
-            
-            // Close dropdown if clicked outside
+
             document.addEventListener('click', function(e) {
                 const searchInput = document.getElementById('dest-search-input');
                 const dropDown = document.getElementById('dest-dropdown');
-                if(searchInput && dropDown && !searchInput.contains(e.target) && !dropDown.contains(e.target)) {
+                if (searchInput && dropDown && !searchInput.contains(e.target) && !dropDown.contains(e.target)) {
                     dropDown.classList.add('hidden');
                 }
             });
         };
 
-        // UI Core
         function updateUI() {
             document.querySelectorAll('.app-screen').forEach(el => el.classList.add('hidden-screen'));
-            
+
             const bottomNav = document.getElementById('bottom-nav');
             if (state.user && state.step === 'idle') {
                 bottomNav.classList.remove('hidden');
@@ -710,6 +1047,9 @@
                     document.getElementById('home-user-badge').classList.add('hidden');
                     document.getElementById('home-user-badge').classList.remove('flex');
                 }
+                if (state.activeTab === 'wallet') {
+                    renderWallet();
+                }
             } else {
                 document.getElementById(`screen-${state.step}`).classList.remove('hidden-screen');
             }
@@ -718,11 +1058,10 @@
                 document.getElementById('profile-name').innerText = state.user.name;
                 document.getElementById('profile-phone').innerText = state.user.phone;
             }
-            
-            // Toggle Share Button
+
             const shareBtn = document.getElementById('btn-share-ride');
-            if(shareBtn) {
-                if(state.step === 'tracking' && state.role === 'passenger') {
+            if (shareBtn) {
+                if (state.step === 'tracking' && state.role === 'passenger') {
                     shareBtn.classList.remove('hidden');
                     shareBtn.classList.add('flex');
                 } else {
@@ -733,44 +1072,53 @@
         }
 
         function updateNavStyles() {
-            ['home', 'history', 'profile'].forEach(tab => {
+            ['home', 'wallet', 'history', 'profile'].forEach(tab => {
                 const btn = document.getElementById(`nav-${tab}`);
-                if (state.activeTab === tab) {
-                    btn.className = "flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100";
-                } else {
-                    btn.className = "flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300 text-slate-400 hover:text-slate-600 scale-95";
-                }
+                if (!btn) return;
+                btn.className = state.activeTab === tab
+                    ? "flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100"
+                    : "flex-1 flex flex-col items-center justify-center py-2 rounded-[1.2rem] transition-all duration-300 text-slate-400 hover:text-slate-600 scale-95";
             });
         }
 
-        function setTab(tab) { state.activeTab = tab; updateUI(); }
+        function setTab(tab) {
+            state.activeTab = tab;
+            updateUI();
+            refreshIcons(document.getElementById(`screen-${tab}`));
+        }
 
         function setStep(newStep, newTab = null) {
+            const previousStep = state.step;
             state.step = newStep;
             if (newTab) state.activeTab = newTab;
-            
-            // Clear tracking or animating bounds when leaving
-            if (state.step !== 'tracking' && state.step !== 'destination' && state.step !== 'matched' && state.watchId) {
+
+            if (previousStep !== 'destination' && MapManager.maps.dest) MapManager.destroy('dest');
+            if (previousStep !== 'matched' && MapManager.maps.match) MapManager.destroy('match');
+            if (previousStep !== 'tracking' && MapManager.maps.track) MapManager.destroy('track');
+
+            if (state.step !== 'tracking' && state.watchId) {
                 navigator.geolocation.clearWatch(state.watchId);
                 state.watchId = null;
             }
-            if (state.step !== 'matched' && state.approachInterval) {
+
+            if (state.approachInterval) {
                 clearInterval(state.approachInterval);
                 state.approachInterval = null;
             }
 
             updateUI();
-            
-            // Fix Leaflet sizing immediately after container unhides
+
             setTimeout(() => {
-                if (state.destMapInstance && state.step === 'destination') state.destMapInstance.invalidateSize();
-                if (state.matchMapInstance && state.step === 'matched') state.matchMapInstance.invalidateSize();
-                if (state.trackMapInstance && state.step === 'tracking') state.trackMapInstance.invalidateSize();
-            }, 100);
+                if (state.step === 'destination') initDestinationMap();
+                if (state.step === 'matched') initMatchMap();
+                if (state.step === 'tracking') initOrUpdateTrackingMap(state.currentLocation);
+                refreshIcons(document.getElementById(`screen-${state.step === 'idle' ? state.activeTab : state.step}`) || document.body);
+            }, 120);
         }
 
         function handleRoleSelect(role) {
             state.role = role;
+            resetBoardingState();
             if (!state.user) {
                 setAuthMode('signup');
                 setStep('auth');
@@ -780,19 +1128,18 @@
             }
         }
 
-        // Auth Logic
         function setAuthMode(mode) {
             state.authMode = mode;
             const btnSignup = document.getElementById('tab-signup');
             const btnLogin = document.getElementById('tab-login');
-            
+
             if (mode === 'signup') {
                 btnSignup.className = "flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100";
                 btnLogin.className = "flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 text-slate-500 hover:text-slate-700 scale-95";
                 document.getElementById('signup-fields').classList.remove('hidden');
                 document.getElementById('auth-heading').innerText = "Create Profile";
                 document.getElementById('btn-auth-submit').innerText = "Create Profile & Continue";
-                if(state.role === 'driver') document.getElementById('plateNumber-container').classList.remove('hidden');
+                if (state.role === 'driver') document.getElementById('plateNumber-container').classList.remove('hidden');
                 else document.getElementById('plateNumber-container').classList.add('hidden');
             } else {
                 btnLogin.className = "flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100";
@@ -801,6 +1148,7 @@
                 document.getElementById('auth-heading').innerText = "Welcome Back";
                 document.getElementById('btn-auth-submit').innerText = "Log In";
             }
+            refreshIcons(document.getElementById('screen-auth'));
         }
 
         function handleIdTypeChange() {
@@ -808,13 +1156,18 @@
             const container = document.getElementById('idNumber-container');
             const input = document.getElementById('auth-idNumber');
             clearError('idType-error');
-            if (val) { container.classList.remove('hidden-screen'); input.value = ''; input.placeholder = val === 'nin' ? '11 Digit NIN' : 'ID Number'; }
-            else { container.classList.add('hidden-screen'); }
+            if (val) {
+                container.classList.remove('hidden-screen');
+                input.value = '';
+                input.placeholder = val === 'nin' ? '11 Digit NIN' : 'ID Number';
+            } else {
+                container.classList.add('hidden-screen');
+            }
         }
-        
+
         function handleAuthIdUpload(e) {
             const status = document.getElementById('auth-id-status');
-            if(e.target.files.length > 0) {
+            if (e.target.files.length > 0) {
                 status.innerText = 'Uploaded: ' + e.target.files[0].name;
                 status.className = 'text-green-600 text-sm font-black mt-2 text-center bg-white/50 py-1 rounded-full mx-8 border border-white';
             }
@@ -822,91 +1175,131 @@
 
         function handlePhoneInput(e) { clearError('phone-error'); e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11); }
         function handlePinInput(e) { clearError('pin-error'); e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); }
-        function handleIdNumberInput(e) { clearError('idNumber-error'); if (document.getElementById('auth-idType').value === 'nin') { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11); } }
-        
+        function handleIdNumberInput(e) { clearError('idNumber-error'); if (document.getElementById('auth-idType').value === 'nin') e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11); }
+
         function clearError(id) {
             const el = document.getElementById(id);
-            if(el) { el.classList.add('hidden'); el.classList.remove('flex'); const input = el.previousElementSibling; if(input) input.classList.remove('input-error', 'animate-shake'); }
+            if (!el) return;
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+            const input = el.previousElementSibling;
+            if (input) input.classList.remove('input-error', 'animate-shake');
         }
 
         function showError(id, msg, inputId) {
             const el = document.getElementById(id);
+            if (!el) return;
             el.querySelector('.error-text').innerText = msg;
-            el.classList.remove('hidden'); el.classList.add('flex');
+            el.classList.remove('hidden');
+            el.classList.add('flex');
             const input = document.getElementById(inputId);
-            if(input) { input.classList.add('input-error', 'animate-shake'); setTimeout(() => input.classList.remove('animate-shake'), 300); }
+            if (input) {
+                input.classList.add('input-error', 'animate-shake');
+                setTimeout(() => input.classList.remove('animate-shake'), 300);
+            }
         }
 
         function validateAuth() {
             let isValid = true;
             const phone = document.getElementById('auth-phone').value;
             const pin = document.getElementById('auth-pin').value;
-            
+
             if (phone.length < 10) { showError('phone-error', 'Phone must be 10 or 11 digits', 'auth-phone'); isValid = false; }
             if (pin.length !== 4) { showError('pin-error', 'PIN must be 4 digits', 'auth-pin'); isValid = false; }
-
             if (!isValid) return;
+
+            let finalName = "John Doe";
 
             if (state.authMode === 'signup') {
                 const name = document.getElementById('auth-name').value.trim();
-                const plateNum = document.getElementById('auth-plateNumber').value;
+                const plateNum = document.getElementById('auth-plateNumber').value.trim();
                 const idType = document.getElementById('auth-idType').value;
-                const idNumber = document.getElementById('auth-idNumber').value;
-                
+                const idNumber = document.getElementById('auth-idNumber').value.trim();
+
                 if (name.length < 2) { showError('name-error', 'Enter valid name', 'auth-name'); isValid = false; }
-                if (state.role === 'driver' && plateNum.length < 5) { showError('plate-error', 'Enter valid Plate', 'auth-plateNumber'); isValid = false; }
+                if (state.role === 'driver' && plateNum.length < 5) { showError('plate-error', 'Enter valid plate', 'auth-plateNumber'); isValid = false; }
                 if (!idType) { showError('idType-error', 'Please select an ID type', 'auth-idType'); isValid = false; }
-                
+
                 if (idType === 'nin' && idNumber.length !== 11) {
                     showError('idNumber-error', 'NIN must be exactly 11 digits', 'auth-idNumber'); isValid = false;
                 } else if (idType && idNumber.length < 5) {
                     showError('idNumber-error', 'Please enter a valid ID number', 'auth-idNumber'); isValid = false;
                 }
-                
+
                 if (!isValid) return;
-                state.user = { name, phone, plateNumber: state.role === 'driver' ? plateNum : null };
+                finalName = name;
+                
+                state.user = { 
+                    name: finalName, 
+                    phone, 
+                    plateNumber: state.role === 'driver' ? plateNum : null 
+                };
             } else {
-                state.user = { name: "John Doe", phone: phone, plateNumber: state.role === 'driver' ? 'ABC-123' : null };
+                finalName = state.role === 'driver' ? "Driver User" : "Passenger User";
+                state.user = { 
+                    name: finalName, 
+                    phone, 
+                    plateNumber: state.role === 'driver' ? 'ABC-123' : null 
+                };
             }
+
+            // Provision a Wallet for the user
+            state.user.wallet = {
+                balance: 15500, // mock starting balance
+                virtualAccount: generateVirtualAccount(),
+                transactions: [
+                    { id: 'TX1', type: 'credit', amount: 20000, date: 'Today, 08:30 AM', title: 'Bank Transfer' },
+                    { id: 'TX2', type: 'debit', amount: 4500, date: 'Yesterday, 14:15 PM', title: 'Ride to Airport' }
+                ]
+            };
 
             setupDestinationScreen();
             setStep('destination');
         }
 
-        function handleLogout() { state.user = null; state.role = null; setStep('idle', 'home'); }
+        function handleLogout() {
+            state.user = null;
+            state.role = null;
+            MapManager.destroyAll();
+            setStep('idle', 'home');
+        }
 
-        // --- DESTINATION SCREEN & MAP LOGIC --- //
         function setupDestinationScreen() {
             const heading = document.getElementById('dest-heading');
             const btn = document.getElementById('btn-request');
             const driverOptionsContainer = document.getElementById('driver-options-container');
             const passengerPhotoContainer = document.getElementById('passenger-photo-container');
-            
+            const passengerTripOptions = document.getElementById('passenger-trip-options');
+
             if (state.role === 'driver') {
                 heading.innerHTML = "Where are you<br>heading back to?";
                 btn.innerText = "Go Online & Wait";
-                driverOptionsContainer.classList.remove('hidden'); driverOptionsContainer.classList.add('flex');
-                if (passengerPhotoContainer) passengerPhotoContainer.classList.add('hidden');
+                driverOptionsContainer.classList.remove('hidden');
+                driverOptionsContainer.classList.add('flex');
+                passengerPhotoContainer.classList.add('hidden');
+                passengerTripOptions.classList.add('hidden');
+                passengerTripOptions.classList.remove('flex');
             } else {
                 heading.innerHTML = "Where to in<br>the city?";
                 btn.innerText = "Find a Ride";
-                driverOptionsContainer.classList.add('hidden'); driverOptionsContainer.classList.remove('flex');
-                if (passengerPhotoContainer) passengerPhotoContainer.classList.remove('hidden');
+                driverOptionsContainer.classList.add('hidden');
+                driverOptionsContainer.classList.remove('flex');
+                passengerPhotoContainer.classList.remove('hidden');
+                passengerTripOptions.classList.remove('hidden');
+                passengerTripOptions.classList.add('flex');
             }
 
-            setTimeout(initDestinationMap, 100);
+            setTimeout(initDestinationMap, 120);
         }
 
         function filterDestinations() {
             const query = document.getElementById('dest-search-input').value.toLowerCase();
             const dd = document.getElementById('dest-dropdown');
-            
             const filtered = abujaDestinations.filter(d => d.area.toLowerCase().includes(query) || d.desc.toLowerCase().includes(query));
-            
-            if(filtered.length > 0) {
+
+            if (filtered.length > 0) {
                 dd.innerHTML = filtered.map(d => `
-                    <div class="p-4 border-b border-slate-100 hover:bg-blue-50 cursor-pointer transition-colors flex justify-between items-center" 
-                         onclick="selectDestination('${d.area}', ${d.price})">
+                    <div class="p-4 border-b border-slate-100 hover:bg-blue-50 cursor-pointer transition-colors flex justify-between items-center" onclick="selectDestination('${d.area.replace(/'/g, "\\'")}', ${d.price})">
                         <div>
                             <p class="font-black text-slate-700 text-sm">${d.area}</p>
                             <p class="text-xs font-bold text-slate-500 mt-0.5">${d.desc}</p>
@@ -914,11 +1307,10 @@
                         <span class="font-black text-blue-600 text-sm">₦${d.price.toLocaleString()}</span>
                     </div>
                 `).join('');
-                dd.classList.remove('hidden');
             } else {
-                dd.innerHTML = `<div class="p-4 text-center text-slate-400 font-bold text-sm">No exact areas found. Try Wuse, Lugbe...</div>`;
-                dd.classList.remove('hidden');
+                dd.innerHTML = `<div class="p-4 text-center text-slate-400 font-bold text-sm">No exact areas found. Try Wuse, Jabi, Lugbe...</div>`;
             }
+            dd.classList.remove('hidden');
         }
 
         function selectDestination(area, price) {
@@ -926,6 +1318,11 @@
             document.getElementById('dest-dropdown').classList.add('hidden');
             state.rideDetails.area = area;
             state.rideDetails.price = price;
+            const uberEstimate = price + 9500;
+            state.rideDetails.uberEstimate = uberEstimate;
+            document.getElementById('uber-estimate').innerText = `₦${uberEstimate.toLocaleString()}`;
+            document.getElementById('aeropool-estimate').innerText = `₦${price.toLocaleString()}`;
+            document.getElementById('you-save').innerText = `₦${(uberEstimate - price).toLocaleString()}`;
         }
 
         function updateDepartureDisplay(val) {
@@ -935,30 +1332,24 @@
         }
 
         function initDestinationMap() {
-            const loc = state.currentLocation; // Using Abuja default
-            if (!state.destMapInstance) {
-                state.destMapInstance = L.map('dest-real-map', { zoomControl: false, attributionControl: false }).setView([loc.lat, loc.lng], 13);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(state.destMapInstance);
-            }
-            state.destMapInstance.invalidateSize();
-            state.destMapInstance.setView([loc.lat, loc.lng], 13); // Force center on Abuja
-            
-            state.destMarkers.forEach(m => state.destMapInstance.removeLayer(m));
-            state.destMarkers = [];
+            const loc = state.currentLocation;
+            const entry = MapManager.create('dest', 'dest-real-map', loc, 11);
 
-            // Add Airport Pin
-            const airportIcon = L.divIcon({
-                className: 'custom-leaflet-marker',
-                html: `<div class="text-blue-600 drop-shadow-[0_10px_10px_rgba(59,130,246,0.4)] animate-bounce-pin"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-                iconSize: [48, 48], iconAnchor: [24, 48]
+            entry.map.on('load', () => {
+                MapManager.addMarker('dest', loc, 'airport');
+                pickupPoints.forEach(p => {
+                    MapManager.addMarker('dest', p, '', `<div class="pickup-zone-badge">${p.name}</div>`);
+                });
+
+                if (state.role === 'passenger') {
+                    const offsets = [
+                        { lat: loc.lat + 0.016, lng: loc.lng + 0.012 },
+                        { lat: loc.lat - 0.012, lng: loc.lng + 0.009 },
+                        { lat: loc.lat + 0.008, lng: loc.lng - 0.018 }
+                    ];
+                    offsets.forEach(d => MapManager.addMarker('dest', d, 'driver'));
+                }
             });
-            state.destMarkers.push(L.marker([loc.lat, loc.lng], {icon: airportIcon, zIndexOffset: 1000}).addTo(state.destMapInstance));
-
-            if (state.role === 'passenger') {
-                const driverIcon = L.divIcon({ className: 'custom-leaflet-marker', html: `<div class="text-3xl drop-shadow-md">🚕</div>`, iconSize: [32,32], iconAnchor: [16,16] });
-                const offsets = [[0.015, 0.02], [-0.02, 0.01], [0.01, -0.03]];
-                offsets.forEach(off => { state.destMarkers.push(L.marker([loc.lat + off[0], loc.lng + off[1]], {icon: driverIcon}).addTo(state.destMapInstance)); });
-            }
         }
 
         function handlePhotoUpload(e) {
@@ -973,29 +1364,23 @@
             }
         }
 
-        // --- NATIVE CAMERA MODAL LOGIC --- //
-        let videoStream = null;
-
         async function openCamera() {
             const modal = document.getElementById('camera-modal');
             const inner = document.getElementById('camera-modal-inner');
             const video = document.getElementById('camera-feed');
-            
+
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            // Trigger fade in
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 inner.classList.remove('scale-95');
                 inner.classList.add('scale-100');
             }, 10);
-            
+
             try {
-                // Request front facing camera
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                video.srcObject = videoStream;
+                state.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = state.cameraStream;
             } catch (err) {
-                console.error("Camera access error:", err);
                 alert("Unable to access camera. Please allow permissions or use Upload Photo instead.");
                 closeCamera();
             }
@@ -1004,70 +1389,78 @@
         function closeCamera() {
             const modal = document.getElementById('camera-modal');
             const inner = document.getElementById('camera-modal-inner');
-            
+
             modal.classList.add('opacity-0');
             inner.classList.remove('scale-100');
             inner.classList.add('scale-95');
-            
+
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
-                if (videoStream) {
-                    videoStream.getTracks().forEach(track => track.stop());
-                    videoStream = null;
+                if (state.cameraStream) {
+                    state.cameraStream.getTracks().forEach(track => track.stop());
+                    state.cameraStream = null;
                 }
-            }, 300); // Wait for transition
+            }, 300);
         }
 
         function takeSnapshot() {
             const video = document.getElementById('camera-feed');
             const canvas = document.getElementById('camera-canvas');
             const ctx = canvas.getContext('2d');
-            
-            if(!videoStream) return;
 
-            // Draw current video frame to hidden canvas
+            if (!state.cameraStream) return;
+
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            
-            // Flip the context horizontally if it's a front facing camera to match the preview
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Convert to Base64 image
+
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
             state.rideDetails.passengerPhoto = dataUrl;
-            
             document.getElementById('photo-preview').innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-full" />`;
             document.getElementById('photo-error').classList.add('hidden');
-            
+
             closeCamera();
         }
 
-        // --- FLOW TRANSITIONS --- //
         function startSearching() {
             const destInput = document.getElementById('dest-search-input');
-            if(!state.rideDetails.area || destInput.value.trim() === '') {
-                destInput.classList.add('input-error', 'animate-shake'); setTimeout(() => destInput.classList.remove('animate-shake'), 300); return;
+            if (!state.rideDetails.area || destInput.value.trim() === '') {
+                destInput.classList.add('input-error', 'animate-shake');
+                setTimeout(() => destInput.classList.remove('animate-shake'), 300);
+                return;
             }
 
             if (state.role === 'passenger' && !state.rideDetails.passengerPhoto) {
-                document.getElementById('photo-error').classList.remove('hidden'); document.getElementById('photo-error').classList.add('flex'); return;
+                document.getElementById('photo-error').classList.remove('hidden');
+                document.getElementById('photo-error').classList.add('flex');
+                return;
             }
 
             state.rideDetails.pickup = document.getElementById('pickup-location').value;
-            
-            if(state.role === 'driver') {
+            resetBoardingState();
+
+            if (state.role === 'driver') {
                 state.rideDetails.seats = document.getElementById('driver-seats').value;
-                state.rideDetails.dropStyle = document.getElementById('driver-drop').value;
+                state.rideDetails.trunkSpace = document.getElementById('driver-trunk-space').value;
+                state.rideDetails.routeMode = document.getElementById('driver-route-mode').value;
+                state.rideDetails.waitTime = document.getElementById('driver-wait-time').value;
+                state.rideDetails.hasAc = document.getElementById('driver-has-ac').checked;
+            } else {
+                state.rideDetails.routeMode = document.getElementById('route-mode').value;
+                state.rideDetails.departure = document.getElementById('departure-urgency').value;
+                state.rideDetails.luggage = {
+                    small: Number(document.getElementById('luggage-small').value),
+                    medium: Number(document.getElementById('luggage-medium').value),
+                    large: Number(document.getElementById('luggage-large').value)
+                };
+                state.rideDetails.boardingPin = generateRidePin();
             }
 
-            const trackingEmoji = document.getElementById('search-role-emoji');
-            if(trackingEmoji) {
-                trackingEmoji.innerText = state.role === 'driver' ? '🚗' : '🧳';
-            }
-            
+            document.getElementById('search-role-emoji').innerText = state.role === 'driver' ? '🚗' : '🧳';
+
             if (state.role === 'driver') {
                 document.getElementById('search-heading').innerText = 'Online & Waiting...';
                 document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Listening for passengers';
@@ -1075,57 +1468,65 @@
                 document.getElementById('search-heading').innerText = 'Scanning Airport...';
                 document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Finding best matches';
             }
-            lucide.createIcons();
-
+            refreshIcons(document.getElementById('screen-searching'));
             setStep('searching');
 
             setTimeout(() => {
-                if(state.role === 'driver') {
+                if (state.role === 'driver') {
                     setupMatchedDriverScreen();
                     setStep('matched');
                 } else {
                     renderMarketplace();
                     setStep('marketplace');
                 }
-            }, 2500);
+            }, 2200);
         }
 
-        // --- MARKETPLACE FOR PASSENGERS --- //
         function applySort(type) {
             state.sortBy = type;
             renderMarketplace();
         }
 
-        function renderMarketplace() {
-            // Render Filters dynamically based on active state
-            const filterContainer = document.getElementById('marketplace-filters');
-            if (filterContainer) {
-                const filters = [
-                    { id: 'best', label: 'Best Match' },
-                    { id: 'fare', label: 'Lowest Fare' },
-                    { id: 'fastest', label: 'Fastest Departure' }
-                ];
-                filterContainer.innerHTML = filters.map(f => {
-                    const isActive = state.sortBy === f.id;
-                    const baseClass = "px-4 py-2 rounded-full text-xs whitespace-nowrap cursor-pointer transition-all border";
-                    const activeClass = "bg-slate-800 text-white border-slate-800 shadow-md font-black";
-                    const inactiveClass = "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 font-bold";
-                    return `<span onclick="applySort('${f.id}')" class="${baseClass} ${isActive ? activeClass : inactiveClass}">${f.label}</span>`;
-                }).join('');
+        function getFilteredDrivers() {
+            let drivers = [...mockDrivers];
+
+            if (state.rideDetails.routeMode) {
+                drivers = drivers.filter(d =>
+                    state.rideDetails.routeMode === 'Shared ride' ? true : d.routeMode === state.rideDetails.routeMode
+                );
             }
 
-            // Sort logic
-            let sortedDrivers = [...mockDrivers];
-            if (state.sortBy === 'fare') {
-                sortedDrivers.sort((a, b) => a.price - b.price);
-            } else if (state.sortBy === 'fastest') {
-                sortedDrivers.sort((a, b) => a.departureMins - b.departureMins);
-            } else {
-                sortedDrivers.sort((a, b) => b.match - a.match); // Best match default
+            const totalBags = state.rideDetails.luggage.small + state.rideDetails.luggage.medium + state.rideDetails.luggage.large;
+            if (totalBags >= 2) {
+                drivers = drivers.filter(d => d.trunkSpace !== 'Small');
             }
+            if (state.rideDetails.luggage.large >= 1) {
+                drivers = drivers.filter(d => d.trunkSpace === 'Medium' || d.trunkSpace === 'Large');
+            }
+
+            if (state.sortBy === 'fare') drivers.sort((a, b) => a.price - b.price);
+            else if (state.sortBy === 'fastest') drivers.sort((a, b) => a.departureMins - b.departureMins);
+            else drivers.sort((a, b) => b.match - a.match);
+
+            return drivers;
+        }
+
+        function renderMarketplace() {
+            const filters = [
+                { id: 'best', label: 'Best Match' },
+                { id: 'fare', label: 'Lowest Fare' },
+                { id: 'fastest', label: 'Fastest Departure' }
+            ];
+
+            document.getElementById('marketplace-filters').innerHTML = filters.map(f => {
+                const isActive = state.sortBy === f.id;
+                return `<span onclick="applySort('${f.id}')" class="px-4 py-2 rounded-full text-xs whitespace-nowrap cursor-pointer transition-all border ${isActive ? 'bg-slate-800 text-white border-slate-800 shadow-md font-black' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 font-bold'}">${f.label}</span>`;
+            }).join('');
+
+            const sortedDrivers = getFilteredDrivers();
+            document.getElementById('marketplace-header-count').innerText = `${sortedDrivers.length} Drivers found`;
 
             const list = document.getElementById('marketplace-list');
-            
             list.innerHTML = sortedDrivers.map(d => `
                 <div class="bg-white rounded-[2rem] p-5 shadow-[0_8px_20px_rgba(0,0,0,0.06)] border border-slate-100">
                     <div class="flex justify-between items-start mb-3">
@@ -1140,42 +1541,45 @@
                         </div>
                         <div class="text-right">
                             <span class="font-black text-xl text-slate-800">₦${d.price.toLocaleString()}</span>
-                            <br><span class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full">Save ~₦${d.savings.toLocaleString()}</span>
+                            <br><span class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full">Save ~₦${(state.rideDetails.uberEstimate - d.price).toLocaleString()}</span>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-3 gap-2 mb-3 bg-[#f8fafc] p-2 rounded-xl border border-slate-100">
                         <div class="text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">ETA</p><p class="text-xs font-black text-slate-700">${d.eta}</p></div>
                         <div class="text-center border-l border-r border-slate-200"><p class="text-[10px] text-slate-400 font-bold uppercase">Seats</p><p class="text-xs font-black text-slate-700">${d.seats}</p></div>
-                        <div class="text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">Style</p><p class="text-xs font-black text-slate-700">${d.drop}</p></div>
+                        <div class="text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">Trunk</p><p class="text-xs font-black text-slate-700">${d.trunkSpace}</p></div>
                     </div>
-                    
-                    <div class="flex flex-wrap gap-1 mb-4">
+
+                    <div class="flex flex-wrap gap-1 mb-3">
                         <span class="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5"><i data-lucide="star" width="10" fill="currentColor"></i> ${d.rating}</span>
+                        <span class="bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded-full font-bold">${d.routeMode}</span>
+                        ${d.hasAc ? `<span class="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold">AC</span>` : ''}
                         ${d.badges.map(b => `<span class="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold">${b}</span>`).join('')}
                     </div>
 
-                    <div class="bg-slate-50 p-2 rounded-lg mb-4 border border-slate-100">
-                        <p class="text-[10px] font-bold text-slate-600 truncate"><span class="text-blue-500">${d.departure}</span></p>
-                        <p class="text-[10px] font-bold text-slate-500 truncate">From ${state.rideDetails.pickup} • To ${state.rideDetails.area}</p>
+                    <div class="bg-slate-50 p-3 rounded-lg mb-4 border border-slate-100 space-y-1">
+                        <p class="text-[10px] font-bold text-slate-600"><span class="text-blue-500">${d.departure}</span> • Can wait ${d.waitTime}</p>
+                        <p class="text-[10px] font-bold text-slate-500">From ${state.rideDetails.pickup} • To ${state.rideDetails.area}</p>
+                        <p class="text-[10px] font-bold text-slate-500">Luggage fit: ${d.trunkSpace} trunk</p>
                     </div>
-                    
+
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-black text-green-500 flex items-center gap-1">
                             <i data-lucide="check-circle-2" width="14"></i> ${d.match}% fit
                         </span>
-                        <button onclick="chooseDriver(${d.id})" class="btn-primary-3d !py-2 !px-6 !rounded-xl !text-sm !w-auto">
-                            Choose
-                        </button>
+                        <button onclick="chooseDriver(${d.id})" class="btn-primary-3d !py-2 !px-6 !rounded-xl !text-sm !w-auto">Choose</button>
                     </div>
                 </div>
             `).join('');
-            lucide.createIcons();
+
+            refreshIcons(document.getElementById('screen-marketplace'));
         }
 
         function chooseDriver(id) {
             state.selectedDriver = mockDrivers.find(d => d.id === id);
-            
+            resetBoardingState();
+
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/90 backdrop-blur-sm rounded-[2rem] border border-white">
@@ -1184,91 +1588,69 @@
                     <p class="text-sm font-bold text-slate-500">Contacting driver to confirm your ride request...</p>
                 </div>
             `;
-            
-            // Re-render Background map to show Driver Approaching
-            initMatchMap();
             setStep('matched');
 
-            // Simulate Driver Confirmation Delay
             setTimeout(() => {
                 if (state.step === 'matched' && state.role === 'passenger') {
                     setupMatchedPassengerScreen();
                 }
-            }, 3000);
+            }, 2600);
         }
 
-        // --- LIVE PRE-RIDE MAP --- //
         function initMatchMap() {
-            const pLoc = state.currentLocation; // Airport
-            let dLoc = { lat: pLoc.lat - 0.015, lng: pLoc.lng - 0.015 }; // driver starting slightly off
-            
-            if (!state.matchMapInstance) {
-                state.matchMapInstance = L.map('matched-real-map', { zoomControl: false, attributionControl: false }).setView([pLoc.lat, pLoc.lng], 13);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(state.matchMapInstance);
-            }
-            state.matchMapInstance.invalidateSize();
-            
-            if(state.matchPassengerMarker) state.matchMapInstance.removeLayer(state.matchPassengerMarker);
-            if(state.matchDriverMarker) state.matchMapInstance.removeLayer(state.matchDriverMarker);
-            
-            const pIcon = L.divIcon({ className: 'custom-leaflet-marker', html: `<div class="text-3xl drop-shadow-md">🧍</div>`, iconSize: [32, 32] });
-            const dIcon = L.divIcon({ className: 'custom-leaflet-marker', html: `<div class="text-3xl drop-shadow-md">🚗</div>`, iconSize: [32, 32] });
-            
-            state.matchPassengerMarker = L.marker([pLoc.lat, pLoc.lng], {icon: pIcon, zIndexOffset: 1000}).addTo(state.matchMapInstance);
-            state.matchDriverMarker = L.marker([dLoc.lat, dLoc.lng], {icon: dIcon}).addTo(state.matchMapInstance);
-            
-            state.driverDistance = 100; // Mock distance metric
-            
-            // Animate driver approaching passenger
-            if(state.approachInterval) clearInterval(state.approachInterval);
-            state.approachInterval = setInterval(() => {
-                dLoc.lat += (pLoc.lat - dLoc.lat) * 0.15;
-                dLoc.lng += (pLoc.lng - dLoc.lng) * 0.15;
-                state.matchDriverMarker.setLatLng([dLoc.lat, dLoc.lng]);
-                
-                // Calculate mock distance for button enabling
-                state.driverDistance -= 5;
-                const startBtn = document.getElementById('btn-start-ride');
-                const waitingText = document.getElementById('waiting-text');
-                
-                if(startBtn && state.driverDistance <= 20) {
-                    startBtn.disabled = false;
-                    if(waitingText) {
-                        waitingText.innerText = state.role === 'driver' ? "Passenger reached!" : "Driver has arrived!";
-                        waitingText.classList.remove('animate-pulse');
-                        waitingText.classList.add('text-green-600');
+            const passengerLoc = pickupPoints.find(p => p.name === state.rideDetails.pickup) || state.currentLocation;
+            const driverLoc = { lat: passengerLoc.lat - 0.015, lng: passengerLoc.lng - 0.015 };
+            const entry = MapManager.create('match', 'matched-real-map', passengerLoc, 12);
+
+            entry.map.on('load', () => {
+                state.matchPassengerMarker = MapManager.addMarker('match', passengerLoc, 'passenger');
+                state.matchDriverMarker = MapManager.addMarker('match', driverLoc, 'driver');
+                MapManager.drawRoute('match', [driverLoc, passengerLoc], '#0f172a');
+                MapManager.fit('match', [driverLoc, passengerLoc], 80);
+
+                state.driverDistance = 100;
+
+                if (state.approachInterval) clearInterval(state.approachInterval);
+                state.approachInterval = setInterval(() => {
+                    driverLoc.lat += (passengerLoc.lat - driverLoc.lat) * 0.18;
+                    driverLoc.lng += (passengerLoc.lng - driverLoc.lng) * 0.18;
+                    if (state.matchDriverMarker) state.matchDriverMarker.setLngLat([driverLoc.lng, driverLoc.lat]);
+                    MapManager.drawRoute('match', [driverLoc, passengerLoc], '#0f172a');
+                    state.driverDistance -= 8;
+
+                    if (state.driverDistance <= 20 && !state.boarding.driverArrived) {
+                        const waitingText = document.getElementById('waiting-text');
+                        if (waitingText) {
+                            waitingText.innerText = state.role === 'driver'
+                                ? 'You are at pickup. Mark “Driver Arrived”.'
+                                : 'Driver is at pickup. Verify plate before boarding.';
+                            waitingText.classList.remove('animate-pulse');
+                            waitingText.classList.add('text-green-600');
+                        }
                     }
-                }
-                
-            }, 1000);
-            
-            // Frame bounds beautifully
-            const bounds = L.latLngBounds([pLoc.lat, pLoc.lng], [dLoc.lat, dLoc.lng]);
-            state.matchMapInstance.fitBounds(bounds, { padding: [50, 50] });
+                }, 1000);
+            });
         }
 
-
-        // --- COMPACT DRIVER REQUEST UI & MATCHED SCREEN --- //
         function setupMatchedDriverScreen() {
-            initMatchMap(); // Shows passenger waiting
-            
+            initMatchMap();
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
                 <div class="bg-white rounded-[2rem] p-5 shadow-xl border border-slate-100 mb-6 relative overflow-hidden">
                     <h3 class="text-sm uppercase tracking-widest text-blue-600 font-black mb-4 flex items-center gap-1 justify-center w-full">
                         <i data-lucide="bell-ring" width="16" class="animate-bounce"></i> New Request
                     </h3>
-                
+
                     <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full blur-xl"></div>
-                    
+
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-16 h-16 rounded-full bg-slate-200 border-2 border-white shadow-md overflow-hidden shrink-0">
-                            <img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" class="w-full h-full object-cover"/>
+                            ${state.rideDetails.passengerPhoto ? `<img src="${state.rideDetails.passengerPhoto}" class="w-full h-full object-cover"/>` : `<img src="https://ui-avatars.com/api/?name=Passenger&background=0D8ABC&color=fff" class="w-full h-full object-cover"/>`}
                         </div>
                         <div>
-                            <h4 class="font-black text-slate-800 text-xl">Sarah T.</h4>
+                            <h4 class="font-black text-slate-800 text-xl">Passenger</h4>
                             <div class="flex items-center text-xs text-slate-500 font-bold gap-1 mt-0.5">
-                                <i data-lucide="star" class="text-yellow-500" fill="currentColor" width="12"></i> 4.9
+                                <i data-lucide="shield-check" width="12"></i> Selfie uploaded
                             </div>
                         </div>
                         <div class="ml-auto text-right">
@@ -1276,7 +1658,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2 relative z-10">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-3 relative z-10">
                         <div class="flex items-start gap-2">
                             <div class="mt-0.5"><i data-lucide="map-pin" class="text-blue-500" width="14"></i></div>
                             <div>
@@ -1284,13 +1666,25 @@
                                 <p class="text-xs font-black text-slate-700">${state.rideDetails.pickup}</p>
                             </div>
                         </div>
-                        <div class="w-0.5 h-3 bg-slate-200 ml-[6px]"></div>
                         <div class="flex items-start gap-2">
-                            <div class="mt-0.5 text-red-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                            <div class="mt-0.5 text-red-500"><i data-lucide="map-pinned" width="14"></i></div>
                             <div>
                                 <p class="text-[10px] uppercase font-bold text-slate-400 leading-tight">Heading to</p>
                                 <p class="text-xs font-black text-slate-700">${state.rideDetails.area}</p>
-                                <p class="text-[10px] font-bold text-blue-500 mt-0.5">Requested: Door Drop</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-white rounded-xl p-2 border border-slate-100 text-center">
+                                <p class="text-[10px] uppercase font-bold text-slate-400">Mode</p>
+                                <p class="text-xs font-black text-slate-700">${state.rideDetails.routeMode}</p>
+                            </div>
+                            <div class="bg-white rounded-xl p-2 border border-slate-100 text-center">
+                                <p class="text-[10px] uppercase font-bold text-slate-400">Urgency</p>
+                                <p class="text-xs font-black text-slate-700">${state.rideDetails.departure}</p>
+                            </div>
+                            <div class="bg-white rounded-xl p-2 border border-slate-100 text-center">
+                                <p class="text-[10px] uppercase font-bold text-slate-400">Bags</p>
+                                <p class="text-xs font-black text-slate-700">${state.rideDetails.luggage.small + state.rideDetails.luggage.medium + state.rideDetails.luggage.large}</p>
                             </div>
                         </div>
                     </div>
@@ -1304,34 +1698,42 @@
                     </div>
                 </div>
             `;
-            lucide.createIcons();
+            refreshIcons(container);
         }
 
         function acceptTrip() {
             const actionsContainer = document.getElementById('driver-match-actions');
             actionsContainer.innerHTML = `
-                <p id="waiting-text" class="text-center text-sm font-bold text-slate-500 animate-pulse">Drive to passenger location...</p>
-                <button id="btn-start-ride" onclick="startTracking()" class="btn-primary-3d w-full" disabled>Start Ride</button>
+                <div class="space-y-4">
+                    <p id="waiting-text" class="text-center text-sm font-bold text-slate-500 animate-pulse">Drive to passenger pickup point...</p>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                        <p class="text-[10px] uppercase tracking-wider font-black text-slate-400 mb-2">Boarding verification</p>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <button onclick="markDriverArrived()" class="bg-white text-slate-700 font-black text-sm py-3 px-4 rounded-xl border border-slate-200">Driver Arrived</button>
+                            <button onclick="confirmDriverBoarded()" class="bg-white text-slate-700 font-black text-sm py-3 px-4 rounded-xl border border-slate-200">Passenger Boarded</button>
+                        </div>
+                        <input id="ride-pin-input" type="password" maxlength="4" placeholder="Enter 4-digit ride PIN" class="input-3d px-5 py-4 bg-white/90 tracking-[0.35em] font-black text-center" oninput="this.value=this.value.replace(/\\D/g,'').slice(0,4)">
+                        <button onclick="verifyRidePin()" class="btn-primary-3d mt-3 !py-3">Verify PIN</button>
+
+                        <div id="driver-boarding-status" class="mt-3 text-xs font-bold text-slate-500 space-y-1">
+                            <p>• Wait for passenger to verify your plate</p>
+                            <p>• Ask for ride PIN only after passenger is inside</p>
+                        </div>
+                    </div>
+
+                    <button id="btn-start-ride" onclick="startTracking()" class="btn-primary-3d w-full" disabled>Start Ride</button>
+                </div>
             `;
-            
-            // Immediately check if already close enough during animation
-            if (state.driverDistance <= 20) {
-                const startBtn = document.getElementById('btn-start-ride');
-                const waitingText = document.getElementById('waiting-text');
-                if (startBtn) startBtn.disabled = false;
-                if (waitingText) {
-                    waitingText.innerText = "Passenger reached!";
-                    waitingText.classList.remove('animate-pulse');
-                    waitingText.classList.add('text-green-600');
-                }
-            }
-            lucide.createIcons();
+            refreshIcons(actionsContainer);
+            renderBoardingStatus();
         }
 
         function setupMatchedPassengerScreen() {
-            const container = document.getElementById('matched-card-container');
+            initMatchMap();
             const d = state.selectedDriver;
-            
+            const container = document.getElementById('matched-card-container');
+
             container.innerHTML = `
                 <div class="bg-white rounded-[2rem] p-5 shadow-xl border border-slate-100 mb-6">
                     <h3 class="text-sm uppercase tracking-widest text-green-600 font-black mb-4 flex items-center gap-1 justify-center">
@@ -1339,9 +1741,7 @@
                     </h3>
 
                     <div class="flex items-center gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                        <div class="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-3xl border border-slate-100 shrink-0">
-                            ${d.avatar}
-                        </div>
+                        <div class="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-3xl border border-slate-100 shrink-0">${d.avatar}</div>
                         <div class="flex-1">
                             <h4 class="font-black text-slate-800 text-lg">${d.name}</h4>
                             <p class="text-xs font-bold text-slate-500">${d.car} • <span class="uppercase font-black">${d.plate}</span></p>
@@ -1351,6 +1751,17 @@
                                 <i data-lucide="phone" width="16"></i>
                             </a>
                         </div>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-4 text-center">
+                        <p class="text-[10px] uppercase tracking-wider font-black text-blue-500">Boarding PIN</p>
+                        <p class="text-3xl font-black text-slate-800 tracking-[0.25em] ml-[0.25em]">${state.rideDetails.boardingPin}</p>
+                        <p class="text-xs font-bold text-slate-500 mt-2">Verify plate first, then give this PIN only after you are inside the vehicle.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button onclick="confirmPassengerPlate()" class="bg-white text-slate-700 font-black text-sm py-3 px-4 rounded-xl border border-slate-200">Plate Verified</button>
+                        <button onclick="markPassengerBoarded()" class="bg-white text-slate-700 font-black text-sm py-3 px-4 rounded-xl border border-slate-200">I’m Boarded</button>
                     </div>
 
                     <div class="flex justify-between items-center mb-2">
@@ -1366,58 +1777,132 @@
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <p id="waiting-text" class="text-center text-sm font-bold text-slate-500 animate-pulse">Waiting for driver to arrive...</p>
+                    <p id="waiting-text" class="text-center text-sm font-bold text-slate-500 animate-pulse">Waiting for driver to arrive and verify ride PIN...</p>
                     <button id="btn-start-ride" onclick="startTracking()" class="btn-primary-3d w-full" disabled>Start Ride</button>
                 </div>
             `;
-            lucide.createIcons();
+            refreshIcons(container);
+            renderBoardingStatus();
         }
-        
+
         function rejectRide() {
             setStep('searching');
             document.getElementById('search-heading').innerText = 'Online & Waiting...';
             document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Listening for next passenger';
-            lucide.createIcons();
+            refreshIcons(document.getElementById('screen-searching'));
 
             setTimeout(() => {
                 if (state.step === 'searching' && state.role === 'driver') {
                     setupMatchedDriverScreen();
                     setStep('matched');
                 }
-            }, 3000);
+            }, 2600);
         }
 
-        // --- IN-RIDE TRACKING SCREEN --- //
+        function markDriverArrived() {
+            state.boarding.driverArrived = true;
+            const waitingText = document.getElementById('waiting-text');
+            if (waitingText) {
+                waitingText.innerText = 'Passenger should verify your plate and enter the vehicle.';
+                waitingText.classList.remove('animate-pulse');
+            }
+            renderBoardingStatus();
+        }
+
+        function confirmDriverBoarded() {
+            state.boarding.driverBoardedConfirmed = true;
+            renderBoardingStatus();
+        }
+
+        function verifyRidePin() {
+            const input = document.getElementById('ride-pin-input');
+            if (!input) return;
+
+            if (input.value === state.rideDetails.boardingPin) {
+                state.boarding.pinVerified = true;
+                input.classList.remove('input-error');
+                renderBoardingStatus();
+            } else {
+                input.classList.add('input-error', 'animate-shake');
+                setTimeout(() => input.classList.remove('animate-shake'), 300);
+            }
+        }
+
+        function confirmPassengerPlate() {
+            state.boarding.passengerVerifiedPlate = true;
+            renderBoardingStatus();
+        }
+
+        function markPassengerBoarded() {
+            state.boarding.passengerBoarded = true;
+            renderBoardingStatus();
+        }
+
+        function renderBoardingStatus() {
+            const startBtn = document.getElementById('btn-start-ride');
+            const waitingText = document.getElementById('waiting-text');
+            const driverStatus = document.getElementById('driver-boarding-status');
+
+            const ready = state.boarding.driverArrived &&
+                          state.boarding.passengerVerifiedPlate &&
+                          state.boarding.pinVerified &&
+                          state.boarding.passengerBoarded &&
+                          state.boarding.driverBoardedConfirmed;
+
+            if (startBtn) startBtn.disabled = !ready;
+
+            if (driverStatus) {
+                driverStatus.innerHTML = `
+                    <p class="${state.boarding.driverArrived ? 'text-green-600' : 'text-slate-500'}">• Driver arrived ${state.boarding.driverArrived ? '✓' : ''}</p>
+                    <p class="${state.boarding.pinVerified ? 'text-green-600' : 'text-slate-500'}">• Ride PIN verified ${state.boarding.pinVerified ? '✓' : ''}</p>
+                    <p class="${state.boarding.driverBoardedConfirmed ? 'text-green-600' : 'text-slate-500'}">• Driver confirms passenger boarded ${state.boarding.driverBoardedConfirmed ? '✓' : ''}</p>
+                `;
+            }
+
+            if (waitingText && ready) {
+                waitingText.innerText = 'Boarding complete. Safe to start the trip.';
+                waitingText.classList.remove('animate-pulse');
+                waitingText.classList.add('text-green-600');
+            } else if (waitingText && state.role === 'passenger') {
+                const steps = [];
+                if (!state.boarding.driverArrived) steps.push('driver arrival');
+                if (!state.boarding.passengerVerifiedPlate) steps.push('plate verification');
+                if (!state.boarding.pinVerified) steps.push('ride PIN');
+                if (!state.boarding.passengerBoarded) steps.push('your boarding confirmation');
+                if (!state.boarding.driverBoardedConfirmed) steps.push('driver boarding confirmation');
+                waitingText.innerText = `Pending: ${steps.join(', ')}`;
+            }
+        }
+
         function startTracking() {
             setStep('tracking');
-            
-            const trackingEmoji = document.getElementById('tracking-emoji');
-            if (trackingEmoji) {
-                trackingEmoji.innerText = state.role === 'driver' ? '🚗' : '🚕';
-            }
-            
+
             const trackAvatar = document.getElementById('track-avatar');
             const trackName = document.getElementById('track-user-name');
-            
+            const trackMeta = document.getElementById('track-user-meta');
+
             if (state.role === 'driver') {
-                trackAvatar.innerHTML = `<img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" class="w-full h-full object-cover"/>`;
-                trackName.innerText = 'Sarah T.';
+                trackAvatar.innerHTML = state.rideDetails.passengerPhoto
+                    ? `<img src="${state.rideDetails.passengerPhoto}" class="w-full h-full object-cover"/>`
+                    : `<img src="https://ui-avatars.com/api/?name=Passenger&background=0D8ABC&color=fff" class="w-full h-full object-cover"/>`;
+                trackName.innerText = 'Passenger';
+                trackMeta.innerText = `Verified Rider • Pickup ${state.rideDetails.pickup}`;
             } else {
                 trackAvatar.innerHTML = state.selectedDriver ? state.selectedDriver.avatar : '👨';
                 trackName.innerText = state.selectedDriver ? state.selectedDriver.name : 'Driver';
+                trackMeta.innerText = state.selectedDriver ? `${state.selectedDriver.car} • ${state.selectedDriver.plate}` : 'Verified Driver';
             }
 
-            // Update Status Text intelligently
             document.getElementById('tracking-status-title').innerText = "Approaching destination";
             document.getElementById('tracking-subtext').innerText = `Arriving at ${state.rideDetails.area}`;
-            
+
             setTimeout(() => {
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition((pos) => {
                         state.currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                         initOrUpdateTrackingMap(state.currentLocation);
-                    }, (err) => {
-                        initOrUpdateTrackingMap(state.currentLocation); // fallback to Abuja Airport
+                    }, () => {
+                        initOrUpdateTrackingMap(state.currentLocation);
                     });
 
                     state.watchId = navigator.geolocation.watchPosition(
@@ -1425,73 +1910,49 @@
                             state.currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
                             initOrUpdateTrackingMap(state.currentLocation);
                         },
-                        (error) => console.warn("GPS Watch Error"), { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+                        () => {},
+                        { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
                     );
                 } else {
                     initOrUpdateTrackingMap(state.currentLocation);
                 }
-            }, 300);
+            }, 250);
         }
 
         function initOrUpdateTrackingMap(loc) {
-            if (!state.trackMapInstance) {
-                state.trackMapInstance = L.map('real-map-container', { zoomControl: false, attributionControl: false }).setView([loc.lat, loc.lng], 13);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(state.trackMapInstance);
-                
-                const customIcon = L.divIcon({
-                    className: 'custom-leaflet-marker',
-                    html: `<div class="w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(0,0,0,0.3)] flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-                    iconSize: [32, 32], iconAnchor: [16, 32]
-                });
-                state.trackMarkerInstance = L.marker([loc.lat, loc.lng], {icon: customIcon, zIndexOffset: 1000}).addTo(state.trackMapInstance);
-                
-                // Draw Actual Route to Destination
-                const destData = abujaDestinations.find(d => d.area === state.rideDetails.area);
-                if(destData) {
-                    const destLoc = [destData.lat, destData.lng];
-                    
-                    const destIcon = L.divIcon({
-                        className: 'custom-leaflet-marker',
-                        html: `<div class="text-red-500 drop-shadow-[0_10px_10px_rgba(239,68,68,0.4)]"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-                        iconSize: [48, 48], iconAnchor: [24, 48]
-                    });
-                    L.marker(destLoc, {icon: destIcon}).addTo(state.trackMapInstance);
-                    
-                    // Draw Dashed Polyline Route and save it to state
-                    if (state.trackRouteLine) {
-                        state.trackMapInstance.removeLayer(state.trackRouteLine);
-                    }
-                    
-                    state.trackRouteLine = L.polyline([[loc.lat, loc.lng], destLoc], {
-                        color: '#3b82f6', weight: 5, dashArray: '10, 10', opacity: 0.8
-                    }).addTo(state.trackMapInstance);
-                    
-                    // Auto-frame map to show both the car and destination
-                    state.trackMapInstance.fitBounds(state.trackRouteLine.getBounds(), { padding: [50, 50] });
-                }
+            const destData = abujaDestinations.find(d => d.area === state.rideDetails.area);
+            if (!destData) return;
+            const destination = { lat: destData.lat, lng: destData.lng };
 
+            if (!MapManager.maps.track) {
+                const entry = MapManager.create('track', 'real-map-container', loc, 11);
+
+                entry.map.on('load', () => {
+                    state.trackDriverMarker = MapManager.addMarker('track', loc, 'live');
+                    state.trackDestMarker = MapManager.addMarker('track', destination, 'dest');
+                    MapManager.drawRoute('track', [loc, destination], '#3b82f6');
+                    MapManager.fit('track', [loc, destination], 90);
+
+                    const geolocate = new maplibregl.GeolocateControl({
+                        positionOptions: { enableHighAccuracy: true },
+                        trackUserLocation: true,
+                        showUserHeading: true
+                    });
+                    entry.map.addControl(geolocate, 'top-right');
+                });
             } else {
-                state.trackMapInstance.invalidateSize();
-                state.trackMarkerInstance.setLatLng([loc.lat, loc.lng]);
-                
-                // Update Route Line dynamically as the car moves
-                if (state.trackRouteLine) {
-                    const destData = abujaDestinations.find(d => d.area === state.rideDetails.area);
-                    if (destData) {
-                        state.trackRouteLine.setLatLngs([[loc.lat, loc.lng], [destData.lat, destData.lng]]);
-                    }
-                }
+                if (state.trackDriverMarker) state.trackDriverMarker.setLngLat([loc.lng, loc.lat]);
+                MapManager.drawRoute('track', [loc, destination], '#3b82f6');
             }
         }
-        
+
         function shareRideDetails() {
             let message = "";
             if (state.role === 'passenger' && state.selectedDriver) {
                 const d = state.selectedDriver;
-                message = `I'm on my way to ${state.rideDetails.area} via AeroPool! \n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nTrack my ride: https://aeropool.app/track/demo-1234`;
+                message = `I'm on my way to ${state.rideDetails.area} via AeroPool!\n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nPickup: ${state.rideDetails.pickup}\nTrack my ride: https://aeropool.app/track/demo-1234`;
             }
-            
-            if(message) {
+            if (message) {
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
             }
@@ -1500,18 +1961,106 @@
         function endTrip() {
             state.role = null;
             state.selectedDriver = null;
-            state.rideDetails = { pickup: 'International Arrival', area: '', price: 0, seats: '1', departure: 'Leaving now', dropStyle: 'Hub drop', passengerPhoto: null };
-            document.getElementById('dest-search-input').value = '';
-            
-            // Clean up tracking map lines if it exists
-            if (state.trackMapInstance) {
-                if (state.trackRouteLine) state.trackMapInstance.removeLayer(state.trackRouteLine);
-                state.trackMapInstance.remove();
-                state.trackMapInstance = null;
-                state.trackRouteLine = null;
+            state.rideDetails = {
+                pickup: 'International Arrivals',
+                area: '',
+                price: 0,
+                uberEstimate: 0,
+                seats: '1',
+                departure: 'Leaving now',
+                dropStyle: 'Hub drop',
+                routeMode: 'Shared ride',
+                luggage: { small: 0, medium: 0, large: 0 },
+                passengerPhoto: null,
+                trunkSpace: 'Medium',
+                hasAc: true,
+                waitTime: '10 mins',
+                boardingPin: null
+            };
+            resetBoardingState();
+
+            if (state.watchId) {
+                navigator.geolocation.clearWatch(state.watchId);
+                state.watchId = null;
+            }
+            if (state.approachInterval) {
+                clearInterval(state.approachInterval);
+                state.approachInterval = null;
             }
 
+            MapManager.destroyAll();
+            document.getElementById('dest-search-input').value = '';
             setStep('idle', 'home');
+        }
+
+        function renderWallet() {
+            if (!state.user || !state.user.wallet) return;
+            const w = state.user.wallet;
+            const content = document.getElementById('wallet-content');
+            if (!content) return;
+
+            content.innerHTML = `
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Available Balance</p>
+                    <h2 class="text-4xl font-black mb-6">₦${w.balance.toLocaleString()}</h2>
+                    <div class="flex gap-3 relative z-10">
+                        <button class="flex-1 bg-white/10 hover:bg-white/20 active:scale-95 transition-all py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 backdrop-blur-sm border border-white/10">
+                            <i data-lucide="arrow-down-to-line" width="16"></i> Withdraw
+                        </button>
+                        <button class="flex-1 bg-blue-600 hover:bg-blue-500 active:scale-95 transition-all py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30">
+                            <i data-lucide="plus" width="16"></i> Add Funds
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-[#e8eef3] rounded-[1.5rem] p-5 shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] border border-white/50">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Add funds via bank transfer</p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-white">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Bank</span>
+                            <span class="text-sm font-black text-slate-800">Stanbic IBTC</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-white">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase block mb-0.5">Account Number</span>
+                                <span class="text-lg font-black text-slate-800 tracking-widest">${w.virtualAccount}</span>
+                            </div>
+                            <button onclick="copyToClipboard('${w.virtualAccount}')" class="w-10 h-10 bg-[#e8eef3] rounded-full shadow-[4px_4px_8px_#c4d0dc,-4px_-4px_8px_#ffffff] flex items-center justify-center text-blue-600 active:shadow-[inset_2px_2px_4px_#c4d0dc] transition-all">
+                                <i data-lucide="copy" width="16"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/50 p-3 rounded-xl border border-white">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Account Name</span>
+                            <span class="text-sm font-black text-slate-800 text-right truncate pl-4">AeroPool - ${state.user.name}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-black text-slate-800 mb-4">Recent Transactions</h3>
+                    <div class="space-y-3 pb-8">
+                        ${w.transactions.map(tx => `
+                            <div class="bg-white rounded-[1.2rem] p-4 shadow-sm border border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full ${tx.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} flex items-center justify-center shrink-0">
+                                        <i data-lucide="${tx.type === 'credit' ? 'arrow-down-left' : 'arrow-up-right'}" width="18"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-slate-800 text-sm leading-tight">${tx.title}</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase mt-0.5">${tx.date}</p>
+                                    </div>
+                                </div>
+                                <span class="font-black ${tx.type === 'credit' ? 'text-green-600' : 'text-slate-800'}">
+                                    ${tx.type === 'credit' ? '+' : '-'}₦${tx.amount.toLocaleString()}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            refreshIcons(content);
         }
 
         function renderHistory() {
@@ -1533,52 +2082,36 @@
                     </div>
                 </div>
             `).join('');
-            lucide.createIcons();
+            refreshIcons(document.getElementById('screen-history'));
         }
     </script>
 
     <script>
-        // Infinite Push Carousel & Flip Engine
         async function initHeroSlider() {
             const track = document.getElementById('home-slider-track');
             if (!track) return;
-            
             const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-            while(true) {
+            while (true) {
                 const slides = track.querySelectorAll('.slide');
                 const currentBox = slides[0].querySelector('.flip-box');
 
-                // 1. Show Front
-                await sleep(3500); 
-                
-                // 2. Flip to Back
-                currentBox.classList.add('is-flipped'); 
-                
-                // 3. Show Back
-                await sleep(3500); 
-                
-                // 4. Slide out to the left
-                track.style.transition = 'transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)';
-                track.style.transform = `translateX(-100%)`;
+                await sleep(3500);
+                currentBox.classList.add('is-flipped');
+                await sleep(3500);
 
-                // Wait for sliding animation to finish
-                await sleep(900); 
+                track.style.transition = 'transform .8s cubic-bezier(.65,0,.35,1)';
+                track.style.transform = 'translateX(-100%)';
+                await sleep(900);
 
-                // 5. DOM Manipulation: Move the old slide to the end, instantly reset track position
                 track.style.transition = 'none';
-                track.style.transform = `translateX(0)`;
-                track.appendChild(slides[0]); 
+                track.style.transform = 'translateX(0)';
+                track.appendChild(slides[0]);
 
-                // 6. Secretly unflip the slide that was just moved so it's ready for its next turn
                 const inner = currentBox.querySelector('.flip-box-inner');
                 inner.style.transition = 'none';
                 currentBox.classList.remove('is-flipped');
-                
-                // Force a browser reflow so the instant change processes correctly
                 void currentBox.offsetWidth;
-                
-                // Restore transition to the un-flipped card
                 inner.style.transition = '';
             }
         }
