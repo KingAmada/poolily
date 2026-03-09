@@ -3,11 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AeroPool - Airport Carpooling</title>
-   
+    
+    <!-- ==================== ROBUST SEO & META DATA ==================== -->
+    <!-- Primary Meta Tags -->
+    <title>AeroPool - Airport Carpooling | Save Fares & Share Rides</title>
+    <meta name="title" content="AeroPool - Airport Carpooling | Save Fares & Share Rides">
+    <meta name="description" content="AeroPool connects empty returning airport drivers with passengers heading to the city. Enjoy up to 50% cheaper rides, zero wait time, and strictly verified security.">
+    <meta name="keywords" content="airport carpool, rideshare, cheap airport transfer, airport taxi alternative, AeroPool, share a ride, verified driver, Abuja airport rides, save transport fare, carpooling app">
+    <meta name="author" content="AeroPool Inc.">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://aeropool.app/">
+
+    <!-- Favicon / Touch Icons (SVG Data URI for zero-dependency loading) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aeropool.app/">
+    <meta property="og:title" content="AeroPool - Airport Carpooling | Travel Cheaper">
+    <meta property="og:description" content="Pay up to 50% less by matching with an empty returning vehicle from the airport. Safe, AI-verified, and fast matches.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&auto=format&fit=crop">
+    <meta property="og:site_name" content="AeroPool">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Cards -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aeropool.app/">
+    <meta property="twitter:title" content="AeroPool - Premium Airport Carpooling">
+    <meta property="twitter:description" content="Don't ride back to the city empty. Drivers earn more, passengers pay less. Join AeroPool today.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=1200&auto=format&fit=crop">
+
+    <!-- Structured Data (JSON-LD) for Search Engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "AeroPool",
+      "url": "https://aeropool.app",
+      "operatingSystem": "Web, iOS, Android",
+      "applicationCategory": "TravelApplication",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1250"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "NGN"
+      },
+      "description": "AeroPool connects empty returning airport drivers with passengers heading to the city for cheaper and faster rides. We offer AI-verified secure matching.",
+      "featureList": [
+        "Up to 50% cheaper airport transfers",
+        "Zero wait time matching",
+        "Strictly verified drivers and passengers",
+        "Real-time trip tracking"
+      ],
+      "provider": {
+        "@type": "Organization",
+        "name": "AeroPool Inc.",
+        "url": "https://aeropool.app",
+        "logo": "https://aeropool.app/logo.png"
+      }
+    }
+    </script>
+    <!-- ================================================================ -->
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-   
+    
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
  
@@ -20,7 +89,7 @@
  
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-       
+        
         body { font-family: 'Nunito', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -57,7 +126,7 @@
         }
         .btn-primary-3d:active { transform: scale(0.98); box-shadow: 0 4px 8px rgba(15, 23, 42, 0.15); }
         .btn-primary-3d:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-       
+        
         .btn-danger-3d {
             width: 100%; background-color: #b91c1c; color: white;
             font-weight: 800; font-size: 1.1rem; padding: 1.1rem 2rem; border-radius: 1.25rem;
@@ -78,35 +147,35 @@
         }
         .input-3d:focus { ring: 4px; border-color: rgba(255,255,255,0.5); }
         .input-error { border-color: #f87171 !important; box-shadow: inset 6px 6px 12px #c4d0dc, inset -6px -6px 12px #ffffff, 0 0 0 4px rgba(248,113,113,0.3) !important; }
-       
+        
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #3b82f6; cursor: pointer; margin-top: -8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.5); border: 2px solid white; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #cbd5e1; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-       
+        
         .custom-leaflet-marker { background: transparent; border: none; }
         .mapboxgl-map { z-index: 0 !important; background: transparent; font-family: 'Nunito', sans-serif; height: 100%; width: 100%; position: absolute; }
  
         .slider-container { width: 100%; position: relative; border-radius: 2rem; z-index: 10; overflow: hidden; transform: translateZ(0); margin-bottom: 2rem; }
         .slider-track { display: flex; will-change: transform; width: 100%; }
         .slide { flex: 0 0 100%; width: 100%; }
-       
+        
         .flip-box { background-color: transparent; width: 100%; height: 180px; perspective: 1200px; outline: none; }
         .flip-box-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); transform-style: preserve-3d; border-radius: 2rem; }
         .flip-box.is-flipped .flip-box-inner { transform: rotateY(180deg); }
-       
+        
         .flip-face { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; color: white; box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15); border: 1px solid rgba(255,255,255,0.2); transform-style: preserve-3d; }
         .flip-back { transform: rotateY(180deg); }
-       
+        
         .flip-bg { position: absolute; inset: 0; z-index: 0; border-radius: 2rem; background-size: cover; background-position: center; }
         .flip-bg::after { content: ''; position: absolute; inset: 0; border-radius: 2rem; background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 100%); }
         .flip-back .flip-bg::after { background: linear-gradient(to top, rgba(2,6,23,0.98) 0%, rgba(15,23,42,0.7) 100%); }
-       
+        
         .flip-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 0.25rem; transform: translateZ(50px) scale(0.95); transform-style: preserve-3d; }
         .flip-kicker { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 900; color: #60a5fa; transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
         .flip-back .flip-kicker { color: #4ade80; }
         .flip-title { font-size: 1.5rem; font-weight: 900; line-height: 1.2; transform: translateZ(40px); text-shadow: 0 8px 16px rgba(0,0,0,0.9); }
         .flip-desc { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; line-height: 1.4; transform: translateZ(25px); text-shadow: 0 4px 8px rgba(0,0,0,0.8); }
-       
+        
         .profile-img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: inherit; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; cursor: pointer; }
         .profile-img-container:hover .profile-img-overlay { opacity: 1; }
     </style>
@@ -115,23 +184,23 @@
  
     <!-- Device Frame -->
     <div class="w-full md:max-w-[430px] h-[100dvh] md:h-[880px] bg-[#e8eef3] md:rounded-[3.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.5)] relative overflow-hidden md:border-[12px] border-slate-900 flex flex-col text-slate-800">
-       
+        
         <!-- ==================== AI VERIFICATION OVERLAY ==================== -->
         <div id="verification-overlay" class="absolute inset-0 z-[200] hidden flex-col items-center justify-center bg-slate-900/95 backdrop-blur-md px-6 animate-pop-in">
             <h2 class="text-white font-black text-2xl mb-8 flex items-center gap-3">
                 <i data-lucide="scan-face" class="text-blue-400" width="28" height="28"></i> AI Verification
             </h2>
-           
+            
             <div class="flex gap-4 w-full max-w-[320px] mb-8">
                 <!-- ID Card Image -->
                 <div class="flex-1 bg-slate-800 rounded-2xl border border-slate-700 relative overflow-hidden aspect-[3/4] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                    <img id="verify-id-img" src="" class="w-full h-full object-cover opacity-40 grayscale transition-all duration-700" />
+                    <img id="verify-id-img" src="" class="w-full h-full object-cover opacity-40 grayscale transition-all duration-700" alt="Verification ID" />
                     <div id="scan-line-1" class="absolute inset-0 border-t-[3px] border-blue-400 shadow-[0_-5px_20px_rgba(96,165,250,0.6)] animate-scan"></div>
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900 to-transparent pt-6 pb-2 text-center text-[10px] font-black text-blue-200 uppercase tracking-widest z-10">ID Document</div>
                 </div>
                 <!-- Selfie Image -->
                 <div class="flex-1 bg-slate-800 rounded-2xl border border-slate-700 relative overflow-hidden aspect-[3/4] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                    <img id="verify-selfie-img" src="" class="w-full h-full object-cover opacity-40 grayscale transition-all duration-700" />
+                    <img id="verify-selfie-img" src="" class="w-full h-full object-cover opacity-40 grayscale transition-all duration-700" alt="Live Selfie" />
                     <div id="scan-line-2" class="absolute inset-0 border-t-[3px] border-green-400 shadow-[0_-5px_20px_rgba(74,222,128,0.6)] animate-scan" style="animation-delay: 0.5s;"></div>
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900 to-transparent pt-6 pb-2 text-center text-[10px] font-black text-green-200 uppercase tracking-widest z-10">Live Selfie</div>
                 </div>
@@ -146,7 +215,7 @@
                     <div id="verify-progress-bar" class="h-full bg-blue-500 w-0 transition-all duration-500 ease-out"></div>
                 </div>
             </div>
-           
+            
             <div id="verify-success" class="hidden flex-col items-center mt-8 animate-pop-in">
                 <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white mb-3 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
                     <i data-lucide="check" width="32" height="32"></i>
@@ -266,7 +335,7 @@
                     <input type="tel" id="auth-phone" placeholder="Phone Number (Digits only)" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30" oninput="handlePhoneInput(event, 'phone-error')">
                     <p id="phone-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
                 </div>
-               
+                
                 <!-- PIN Code -->
                 <div class="relative">
                     <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="lock" width="20"></i></div>
@@ -391,7 +460,7 @@
                 </h1>
  
                 <div class="glass-panel p-6 mb-auto relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
-                   
+                    
                     <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md p-3 rounded-3xl mb-4 shadow-sm relative z-30">
                         <div class="w-12 h-12 bg-[#e8eef3] rounded-2xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
                             <i data-lucide="map-pin" class="text-blue-500" width="20"></i>
@@ -423,7 +492,7 @@
                         </div>
                         <div class="w-full relative">
                             <input type="text" id="dest-search-input" placeholder="Search destination area..." class="input-3d px-5 py-4 focus:ring-4 ring-blue-400/30 bg-white/80 backdrop-blur-md" oninput="filterDestinations()" onclick="filterDestinations()" autocomplete="off">
-                           
+                            
                             <!-- Custom Dropdown -->
                             <div id="dest-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.15)] border-2 border-slate-100 max-h-60 overflow-y-auto z-50">
                                 <!-- Populated via JS -->
@@ -434,7 +503,7 @@
                     <!-- Driver Trip Options -->
                     <div id="driver-options-container" class="hidden flex-col gap-4 mt-6 pt-4 border-t-2 border-dashed border-slate-300/50">
                         <h3 class="font-black text-slate-700 mb-1">Trip Details</h3>
-                       
+                        
                         <div class="flex gap-4">
                             <div class="flex-1 relative">
                                 <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Seats available</p>
@@ -458,7 +527,7 @@
                                 <div class="absolute right-4 bottom-3 text-slate-400 pointer-events-none text-xs">▼</div>
                             </div>
                         </div>
-                       
+                        
                         <div class="relative w-full mt-2">
                             <div class="flex justify-between items-end mb-2 ml-2 mr-2">
                                 <p class="text-xs font-bold text-slate-500">Departure window</p>
@@ -485,7 +554,7 @@
             <div class="relative w-80 h-80 flex items-center justify-center mb-16 z-10">
                 <div class="absolute inset-0 border-[4px] border-blue-400 rounded-full animate-pulse-ring"></div>
                 <div class="absolute inset-0 border-[4px] border-blue-400 rounded-full animate-pulse-ring" style="animation-delay: 1s;"></div>
-               
+                
                 <div class="relative z-10 w-36 h-36 bg-[#e8eef3] rounded-[3rem] shadow-[15px_15px_30px_#c4d0dc,-15px_-15px_30px_#ffffff,inset_0_0_15px_rgba(255,255,255,0.9)] flex items-center justify-center border-4 border-white text-[5rem]">
                     <span id="search-role-emoji">🚗</span>
                 </div>
@@ -535,7 +604,7 @@
                 <div class="absolute inset-0 bg-[#e8eef3]/20 pointer-events-none z-10"></div>
                 <div class="absolute inset-0 bg-blue-500/5 mix-blend-overlay pointer-events-none z-10"></div>
             </div>
-           
+            
             <div class="absolute inset-0 bg-gradient-to-t from-[#e8eef3] via-[#e8eef3]/50 to-transparent z-0 pointer-events-none"></div>
  
             <div class="mt-auto relative z-10 p-5 animate-slide-up pb-8 w-full">
@@ -601,7 +670,7 @@
         <!-- ==================== HISTORY TAB ==================== -->
         <div id="screen-history" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in pb-24">
             <h1 class="text-3xl font-black text-slate-800 mb-6 drop-shadow-sm">History</h1>
-           
+            
             <!-- Sub-tabs -->
             <div class="flex bg-[#e8eef3] p-1.5 rounded-3xl shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] mb-6 border border-white/50 shrink-0">
                 <button id="tab-hist-rides" onclick="setHistoryMode('rides')" class="flex-1 py-2.5 rounded-2xl font-black text-sm transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100">Rides</button>
@@ -615,11 +684,11 @@
         <!-- ==================== PROFILE TAB ==================== -->
         <div id="screen-profile" class="app-screen hidden-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in pb-24 overflow-y-auto no-scrollbar">
             <h1 class="text-3xl font-black text-slate-800 mb-6 drop-shadow-sm">My Profile</h1>
-           
+            
             <div class="flex flex-col items-center mb-8">
                 <!-- Profile Image with Upload overlay -->
                 <div class="w-32 h-32 rounded-[2.5rem] bg-[#e8eef3] shadow-[12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff] flex items-center justify-center text-5xl border-4 border-white mb-4 relative profile-img-container overflow-hidden">
-                    <img id="profile-display-img" src="" class="hidden w-full h-full object-cover">
+                    <img id="profile-display-img" src="" class="hidden w-full h-full object-cover" alt="Profile Display">
                     <span id="profile-emoji-fallback">🧑‍💼</span>
                     <input type="file" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="handleProfilePhoto(event)">
                     <div class="profile-img-overlay z-10 pointer-events-none">
@@ -656,7 +725,7 @@
                         <!-- Passenger Topup Button -->
                         <button onclick="handleTopUp()" id="wallet-topup-btn" class="w-full bg-white/20 hover:bg-white/30 text-white font-black py-3 rounded-xl mt-4 backdrop-blur-md transition-colors border border-white/30 hidden z-10 relative">Top Up Wallet</button>
                     </div>
-                   
+                    
                     <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 mb-6">
                         <div class="flex justify-between items-end mb-3">
                             <h4 class="font-black text-slate-700 text-sm">Recent Transactions</h4>
@@ -673,7 +742,7 @@
                     <div class="bg-[#e8eef3] p-6 rounded-[2rem] shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] border-2 border-white/50 mb-6">
                         <h3 class="font-black text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="building-2" class="text-blue-500"></i> Payout Details</h3>
                         <p class="text-xs font-bold text-slate-500 mb-3">Your connected bank account for withdrawals.</p>
-                       
+                        
                         <div class="relative w-full mb-4">
                             <select id="driver-bank-select" class="input-3d px-4 py-4 text-sm appearance-none cursor-pointer font-bold text-slate-700 bg-white/60">
                                 <option value="" disabled selected>Select Bank</option>
@@ -681,9 +750,9 @@
                             </select>
                             <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
                         </div>
-                       
+                        
                         <input type="text" id="driver-acc-num" placeholder="10 Digit Account Number" maxlength="10" class="input-3d px-4 py-4 mb-4 text-sm font-bold bg-white/60" oninput="verifyDriverAccount(event)">
-                       
+                        
                         <input type="text" id="driver-acc-name" placeholder="Account Name (Must match profile)" readonly class="input-3d px-4 py-4 text-sm font-bold bg-slate-200 text-slate-500 cursor-not-allowed border border-slate-300/50">
                         <p id="payout-error" class="text-red-500 text-xs font-bold mt-2 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> Name does not match profile</p>
  
@@ -733,11 +802,11 @@
                 <span class="text-[10px] font-black uppercase tracking-wider">Profile</span>
             </button>
         </div>
-       
+        
         <!-- ==================== GENERIC MODALS ==================== -->
         <div id="app-modal" class="fixed inset-0 bg-slate-900/95 z-[100] hidden flex-col items-center justify-end md:justify-center p-0 md:p-6 backdrop-blur-md opacity-0 transition-opacity duration-300">
             <div class="w-full h-[85vh] md:h-auto md:max-h-[85vh] md:max-w-[400px] bg-[#e8eef3] rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 shadow-[0_-20px_60px_rgba(0,0,0,0.3)] md:shadow-2xl flex flex-col transform translate-y-full md:translate-y-0 md:scale-95 transition-transform duration-300 relative overflow-hidden" id="app-modal-inner">
-               
+                
                 <!-- Close btn -->
                 <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500 z-10 active:scale-95">
                     <i data-lucide="x" width="20"></i>
@@ -758,7 +827,7 @@
                 <div id="support-modal-content" class="hidden flex-col h-full overflow-y-auto no-scrollbar pb-6">
                     <h3 class="font-black text-slate-800 text-2xl mb-2 flex items-center gap-2 mt-4"><i data-lucide="help-circle" class="text-blue-500"></i> Support & FAQ</h3>
                     <p class="text-sm font-bold text-slate-500 mb-6">How can we help you today?</p>
-                   
+                    
                     <div class="space-y-3 mb-6">
                         <div class="bg-white p-4 rounded-2xl shadow-sm cursor-pointer hover:bg-slate-50">
                             <h4 class="font-black text-slate-700 text-sm mb-1">How does matching work?</h4>
@@ -773,7 +842,7 @@
                             <p class="text-xs text-slate-500 font-bold">Earnings are credited immediately and can be withdrawn to your bank instantly.</p>
                         </div>
                     </div>
-                   
+                    
                     <button class="w-full bg-blue-100 text-blue-600 font-black py-4 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform mt-auto">
                         <i data-lucide="headphones" width="18"></i> Chat with Support
                     </button>
@@ -782,7 +851,7 @@
                 <div id="complaint-modal-content" class="hidden flex-col h-full">
                     <h3 class="font-black text-slate-800 text-2xl mb-2 flex items-center gap-2 mt-4"><i data-lucide="message-square" class="text-red-500"></i> Ride Feedback</h3>
                     <p class="text-sm font-bold text-slate-500 mb-6">Let us know about your recent experience.</p>
-                   
+                    
                     <div class="space-y-4 flex-1">
                         <select class="input-3d px-5 py-4 font-bold text-slate-700 appearance-none bg-white">
                             <option>Driver/Passenger Behavior</option>
@@ -792,23 +861,23 @@
                         </select>
                         <textarea class="input-3d px-5 py-4 h-32 resize-none font-bold text-slate-600 bg-white" placeholder="Describe what happened..."></textarea>
                     </div>
-                   
+                    
                     <button onclick="closeModal()" class="btn-primary-3d mt-auto md:mt-8">Submit Feedback</button>
                 </div>
  
                 <div id="about-modal-content" class="hidden flex-col h-full overflow-y-auto no-scrollbar pb-6">
                     <h3 class="font-black text-slate-800 text-2xl mb-2 flex items-center gap-2 mt-4"><i data-lucide="info" class="text-slate-600"></i> About AeroPool</h3>
-                   
+                    
                     <div class="bg-white rounded-2xl p-5 shadow-sm text-sm font-bold text-slate-600 space-y-4 mb-6">
                         <p>AeroPool bridges the gap between empty returning airport rides and passengers seeking affordable transit.</p>
-                       
+                        
                         <h4 class="font-black text-slate-800 text-base border-b pb-1">Terms & Conditions</h4>
                         <p class="text-xs">By using this application, you agree to our verification protocols, shared ride policies, and community guidelines ensuring safety for all parties.</p>
-                       
+                        
                         <h4 class="font-black text-slate-800 text-base border-b pb-1">Privacy Policy</h4>
                         <p class="text-xs">Your ID, selfie, and location data are strictly used for ride matching and security verification. We do not sell data to third parties.</p>
                     </div>
-                   
+                    
                     <p class="text-center text-xs font-bold text-slate-400 mt-auto">Version 1.0.0 &copy; 2026 AeroPool</p>
                 </div>
  
@@ -867,11 +936,11 @@
             currentLocation: { lat: 9.0065, lng: 7.1986 }, // Default Abuja Nnamdi Azikiwe Airport
             watchId: null,
             rideDetails: { pickup: 'International Arrival', area: '', price: 0, seats: '1', departure: 'Leaving now', dropStyle: 'Hub drop', passengerPhoto: null },
-           
+            
             destMapInstance: null, destMarkers: [],
             matchMapInstance: null, matchPassengerMarker: null, matchDriverMarker: null, approachInterval: null, driverDistance: null,
             trackMapInstance: null, trackMarkerInstance: null, trackRouteSource: false,
-           
+            
             selectedDriver: null,
             sortBy: 'best'
         };
@@ -1081,7 +1150,7 @@
             renderHistory();
             populateBanks();
             updateUI();
-           
+            
             // Close dropdown if clicked outside
             document.addEventListener('click', function(e) {
                 const searchInput = document.getElementById('dest-search-input');
@@ -1095,7 +1164,7 @@
         // UI Core
         function updateUI() {
             document.querySelectorAll('.app-screen').forEach(el => el.classList.add('hidden-screen'));
-           
+            
             const bottomNav = document.getElementById('bottom-nav');
             if (state.user && state.step === 'idle') {
                 bottomNav.classList.remove('hidden');
@@ -1143,7 +1212,7 @@
             } else {
                 document.getElementById(`screen-${state.step}`).classList.remove('hidden-screen');
             }
-           
+            
             const shareBtn = document.getElementById('btn-share-ride');
             if(shareBtn) {
                 if(state.step === 'tracking' && state.role === 'passenger') {
@@ -1170,7 +1239,7 @@
         function setStep(newStep, newTab = null) {
             state.step = newStep;
             if (newTab) state.activeTab = newTab;
-           
+            
             if (state.step !== 'tracking' && state.step !== 'destination' && state.step !== 'matched' && state.watchId) {
                 navigator.geolocation.clearWatch(state.watchId);
                 state.watchId = null;
@@ -1181,7 +1250,7 @@
             }
  
             updateUI();
-           
+            
             setTimeout(() => {
                 if (state.destMapInstance && state.step === 'destination') state.destMapInstance.resize();
                 if (state.matchMapInstance && state.step === 'matched') state.matchMapInstance.resize();
@@ -1208,14 +1277,14 @@
             state.authMode = mode;
             const btnSignup = document.getElementById('tab-signup');
             const btnLogin = document.getElementById('tab-login');
-           
+            
             if (mode === 'signup') {
                 btnSignup.className = "flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100";
                 btnLogin.className = "flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 text-slate-500 hover:text-slate-700 scale-95";
                 document.getElementById('signup-fields').classList.remove('hidden');
                 document.getElementById('auth-heading').innerText = "Create Profile";
                 document.getElementById('btn-auth-submit').innerText = "Create Profile & Continue";
-               
+                
                 if(state.role === 'driver') {
                     document.getElementById('plateNumber-container').classList.remove('hidden');
                     document.getElementById('auth-driver-payout-container').classList.remove('hidden');
@@ -1254,7 +1323,7 @@
             if(e.target.files.length > 0) {
                 status.innerText = 'Uploaded: ' + e.target.files[0].name;
                 status.className = 'text-green-600 text-sm font-black mt-2 text-center bg-white/50 py-1 rounded-full mx-8 border border-white';
-               
+                
                 const reader = new FileReader();
                 reader.onload = (ev) => { authIdData = ev.target.result; };
                 reader.readAsDataURL(e.target.files[0]);
@@ -1296,7 +1365,7 @@
                 e.target.value = e.target.value.slice(0, 12);
             }
         }
-       
+        
         function clearError(id) {
             const el = document.getElementById(id);
             if(el) { el.classList.add('hidden'); el.classList.remove('flex'); const input = el.previousElementSibling; if(input && input.tagName==='INPUT') input.classList.remove('input-error', 'animate-shake'); }
@@ -1315,7 +1384,7 @@
             input.value = input.value.replace(/\D/g, '');
             const nameField = document.getElementById('auth-driver-acc-name');
             const errorField = document.getElementById('auth-acc-num-error');
-           
+            
             if(input.value.length === 10) {
                 nameField.value = "Verifying...";
                 setTimeout(() => {
@@ -1337,7 +1406,7 @@
             let isValid = true;
             const phone = document.getElementById('auth-phone').value;
             const pin = document.getElementById('auth-pin').value;
-           
+            
             if (phone.length < 10) { showError('phone-error', 'Phone must be 10 or 11 digits', 'auth-phone'); isValid = false; }
             if (pin.length !== 4) { showError('pin-error', 'PIN must be 4 digits', 'auth-pin'); isValid = false; }
  
@@ -1349,11 +1418,11 @@
                 const idType = document.getElementById('auth-idType').value;
                 const idNumber = document.getElementById('auth-idNumber').value;
                 const tcChecked = document.getElementById('auth-tc').checked;
-               
+                
                 if (name.length < 2) { showError('name-error', 'Enter valid name', 'auth-name'); isValid = false; }
                 if (state.role === 'driver' && plateNum.length < 5) { showError('plate-error', 'Enter valid Plate', 'auth-plateNumber'); isValid = false; }
                 if (!idType) { showError('idType-error', 'Please select an ID type', 'auth-idType'); isValid = false; }
-               
+                
                 if (idType === 'nin' && idNumber.length !== 11) {
                     showError('idNumber-error', 'NIN must be exactly 11 digits', 'auth-idNumber'); isValid = false;
                 } else if (idType && idNumber.length < 5) {
@@ -1361,7 +1430,7 @@
                 }
  
                 if (!tcChecked) { showError('tc-error', 'Must accept Terms & Privacy Policy', null); isValid = false; }
-               
+                
                 if (!authIdData) {
                     const status = document.getElementById('auth-id-status');
                     status.innerText = "Please upload ID document";
@@ -1377,7 +1446,7 @@
                     bankCode = bankSelect.value;
                     bankAccNum = accInput.value;
                     bankAccName = document.getElementById('auth-driver-acc-name').value;
-                   
+                    
                     if(!bankCode) { showError('auth-acc-num-error', 'Select your bank', 'auth-driver-bank'); isValid = false; }
                     if(bankAccNum.length !== 10) { showError('auth-acc-num-error', '10 digit account required', 'auth-driver-acc-num'); isValid = false; }
                 }
@@ -1389,10 +1458,10 @@
                 }
  
                 if (!isValid) return;
-               
+                
                 // Initialize Wallet for new user
                 const randomAcc = Math.floor(100000 + Math.random() * 900000).toString();
-               
+                
                 state.user = {
                     name, phone, role: state.role,
                     plateNumber: state.role === 'driver' ? plateNum : null,
@@ -1447,7 +1516,7 @@
             const percText = document.getElementById('verify-percentage');
             const progBar = document.getElementById('verify-progress-bar');
             const successDiv = document.getElementById('verify-success');
-           
+            
             // Ensure we have valid image data
             if (!authIdData || !authSelfieData) {
                 alert("Missing ID or Selfie data for verification.");
@@ -1457,10 +1526,10 @@
             // Populate images
             idImg.src = authIdData;
             selfieImg.src = authSelfieData;
-           
+            
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
-           
+            
             // Reset UI
             progBar.style.width = '0%';
             progBar.className = 'h-full bg-blue-500 w-0 transition-all duration-500 ease-out';
@@ -1468,14 +1537,14 @@
             percText.className = 'text-slate-400 transition-colors duration-300';
             statusText.innerText = 'Initializing AI Models...';
             statusText.className = 'text-slate-400 transition-colors duration-300';
-           
+            
             successDiv.classList.add('hidden');
             successDiv.classList.remove('flex');
             idImg.classList.add('grayscale', 'opacity-40');
             selfieImg.classList.add('grayscale', 'opacity-40');
             document.getElementById('scan-line-1').classList.remove('hidden');
             document.getElementById('scan-line-2').classList.remove('hidden');
-           
+            
             lucide.createIcons();
  
             const updateProgress = (perc, text) => {
@@ -1486,7 +1555,7 @@
  
             try {
                 updateProgress(15, 'Downloading Neural Nets (~5MB)...');
-               
+                
                 // Load face-api models from reliable CDN
                 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
                 await Promise.all([
@@ -1499,7 +1568,7 @@
                 // Wait for image to load in DOM
                 await new Promise(r => { idImg.complete ? r() : idImg.onload = r });
                 const idResult = await faceapi.detectSingleFace(idImg).withFaceLandmarks().withFaceDescriptor();
-               
+                
                 if (!idResult) throw new Error('Face not detected in ID photo.');
  
                 updateProgress(70, 'Locating face in Live Selfie...');
@@ -1511,7 +1580,7 @@
                 updateProgress(90, 'Computing facial similarity...');
                 // Calculate Euclidean distance (lower is more similar)
                 const distance = faceapi.euclideanDistance(idResult.descriptor, selfieResult.descriptor);
-               
+                
                 // Distance < 0.6 is a standard threshold for face-api.js
                 if (distance < 0.6) {
                     const matchScore = ((1 - distance) * 100).toFixed(1);
@@ -1519,21 +1588,21 @@
                     progBar.classList.replace('bg-blue-500', 'bg-green-500');
                     statusText.classList.replace('text-slate-400', 'text-green-400');
                     percText.classList.replace('text-slate-400', 'text-green-400');
-                   
+                    
                     idImg.classList.remove('grayscale', 'opacity-40');
                     selfieImg.classList.remove('grayscale', 'opacity-40');
-                   
+                    
                     // Hide scan lines
                     document.getElementById('scan-line-1').classList.add('hidden');
                     document.getElementById('scan-line-2').classList.add('hidden');
-                   
+                    
                     successDiv.classList.remove('hidden');
                     successDiv.classList.add('flex');
-                   
+                    
                     setTimeout(() => {
                         overlay.classList.add('hidden');
                         overlay.classList.remove('flex');
-                       
+                        
                         // Route to Destination Screen
                         setupDestinationScreen();
                         setStep('destination');
@@ -1549,7 +1618,7 @@
                 percText.classList.replace('text-slate-400', 'text-red-400');
                 document.getElementById('scan-line-1').classList.add('hidden');
                 document.getElementById('scan-line-2').classList.add('hidden');
-               
+                
                 // Wait a few seconds, then close overlay so they can try again
                 setTimeout(() => {
                     overlay.classList.add('hidden');
@@ -1567,7 +1636,7 @@
             const btnTrans = document.getElementById('tab-hist-trans');
             const listRides = document.getElementById('history-list');
             const listTrans = document.getElementById('transaction-list');
-           
+            
             if (mode === 'rides') {
                 btnRides.className = "flex-1 py-2.5 rounded-2xl font-black text-sm transition-all duration-300 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05)] text-blue-600 scale-100";
                 btnTrans.className = "flex-1 py-2.5 rounded-2xl font-black text-sm transition-all duration-300 text-slate-500 hover:text-slate-700 scale-95";
@@ -1589,7 +1658,7 @@
             document.getElementById('profile-phone').innerText = state.user.phone;
             document.getElementById('home-user-name').innerText = `Hi, ${state.user.name.split(' ')[0]}`;
             document.getElementById('home-user-initial').innerText = state.user.name.charAt(0).toUpperCase();
-           
+            
             // Set Profile Photo if available
             const img = document.getElementById('profile-display-img');
             const fallback = document.getElementById('profile-emoji-fallback');
@@ -1608,13 +1677,13 @@
             const payoutSec = document.getElementById('profile-payout');
             const walletBankInfo = document.getElementById('wallet-bank-info');
             const topupBtn = document.getElementById('wallet-topup-btn');
-           
+            
             // 1. Wallet is visible to EVERYONE
             walletSec.classList.remove('hidden');
             walletSec.classList.add('flex');
-           
+            
             document.getElementById('wallet-balance').innerHTML = `₦${state.user.wallet.balance.toLocaleString()}<span class="text-sm text-slate-400">.00</span>`;
-           
+            
             // Hide specific Stanbic bank info and Show/Hide Top Up based on role
             if (state.role === 'driver') {
                 if (walletBankInfo) walletBankInfo.classList.add('hidden');
@@ -1625,7 +1694,7 @@
                 document.getElementById('wallet-acc-num').innerText = state.user.wallet.accountNumber.replace(/(\d{4})(\d{4})(\d{2})/, '$1 $2 $3');
                 document.getElementById('wallet-acc-name').innerText = `AeroPool - ${state.user.name}`;
             }
-           
+            
             // Only show up to 3 recent in the profile mini-view
             const recentTx = state.user.wallet.history.slice(0, 3);
             const historyHtml = recentTx.map(tx => `
@@ -1655,7 +1724,7 @@
                 payoutSec.classList.add('hidden');
                 payoutSec.classList.remove('flex');
             }
-           
+            
             lucide.createIcons();
         }
  
@@ -1677,7 +1746,7 @@
         // Dynamic Withdrawal for Driver
         function handleWithdrawal() {
             if (!state.user) return;
-           
+            
             if(state.user.wallet.balance <= 0) {
                 alert("Insufficient funds to withdraw.");
                 return;
@@ -1685,7 +1754,7 @@
  
             const bank = document.getElementById('driver-bank-select').options[document.getElementById('driver-bank-select').selectedIndex].text;
             const accNum = document.getElementById('driver-acc-num').value;
-           
+            
             if(!accNum || accNum.length !== 10 || bank === 'Select Bank') {
                 alert("Please fill out your complete bank account details before withdrawing.");
                 return;
@@ -1693,14 +1762,14 @@
  
             const amount = state.user.wallet.balance;
             state.user.wallet.balance = 0; // Empty the wallet
-           
+            
             state.user.wallet.history.unshift({
                 desc: "Payout to Bank",
                 amount: `-₦${amount.toLocaleString()}`,
                 date: "Just now",
                 type: "debit"
             });
-           
+            
             renderProfile();
             alert(`Successfully withdrew ₦${amount.toLocaleString()} to your ${bank} account!`);
         }
@@ -1740,7 +1809,7 @@
             input.value = input.value.replace(/\D/g, '');
             const nameField = document.getElementById('driver-acc-name');
             const errorField = document.getElementById('payout-error');
-           
+            
             if(input.value.length === 10) {
                 // Simulate verification delay
                 nameField.value = "Verifying...";
@@ -1765,15 +1834,15 @@
         function openModal(contentId) {
             // Safety check: ensure '-content' suffix exists
             const targetId = contentId.endsWith('-content') ? contentId : contentId + '-content';
-           
+            
             const modal = document.getElementById('app-modal');
             const inner = document.getElementById('app-modal-inner');
-           
+            
             ['pin-modal-content', 'support-modal-content', 'complaint-modal-content', 'about-modal-content'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) { el.classList.add('hidden'); el.classList.remove('flex'); }
             });
-           
+            
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
                 targetEl.classList.remove('hidden');
@@ -1791,11 +1860,11 @@
         function closeModal() {
             const modal = document.getElementById('app-modal');
             const inner = document.getElementById('app-modal-inner');
-           
+            
             modal.classList.add('opacity-0');
             if(window.innerWidth < 768) inner.classList.add('translate-y-full');
             else { inner.classList.remove('scale-100'); inner.classList.add('scale-95'); }
-           
+            
             setTimeout(() => {
                 modal.classList.add('hidden'); modal.classList.remove('flex');
             }, 300);
@@ -1810,16 +1879,16 @@
             const modal = document.getElementById('camera-modal');
             const inner = document.getElementById('camera-modal-inner');
             const video = document.getElementById('camera-feed');
-           
+            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-           
+            
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 inner.classList.remove('scale-95');
                 inner.classList.add('scale-100');
             }, 10);
-           
+            
             try {
                 videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 video.srcObject = videoStream;
@@ -1833,11 +1902,11 @@
         function closeCamera() {
             const modal = document.getElementById('camera-modal');
             const inner = document.getElementById('camera-modal-inner');
-           
+            
             modal.classList.add('opacity-0');
             inner.classList.remove('scale-100');
             inner.classList.add('scale-95');
-           
+            
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
@@ -1853,16 +1922,16 @@
             const video = document.getElementById('camera-feed');
             const canvas = document.getElementById('camera-canvas');
             const ctx = canvas.getContext('2d');
-           
+            
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-           
+            
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-           
+            
             const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-           
+            
             if (currentCameraTarget === 'auth') {
                 authSelfieData = dataUrl;
                 document.getElementById('auth-selfie-preview').innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-full" />`;
@@ -1871,7 +1940,7 @@
             } else if (currentCameraTarget === 'passenger') {
                 state.rideDetails.passengerPhoto = dataUrl;
             }
-           
+            
             closeCamera();
         }
  
@@ -1880,7 +1949,7 @@
             const heading = document.getElementById('dest-heading');
             const btn = document.getElementById('btn-request');
             const driverOptionsContainer = document.getElementById('driver-options-container');
-           
+            
             if (state.role === 'driver') {
                 heading.innerHTML = "Where are you<br>heading back to?";
                 btn.innerText = "Go Online & Wait";
@@ -1905,11 +1974,11 @@
         function filterDestinations() {
             const query = document.getElementById('dest-search-input').value.toLowerCase();
             const dd = document.getElementById('dest-dropdown');
-           
+            
             const filtered = abujaDestinations.filter(d => d.area.toLowerCase().includes(query) || d.desc.toLowerCase().includes(query));
-           
+            
             let html = "";
-           
+            
             // Add flexible "Anywhere" option for drivers at the top
             if (state.role === 'driver' && ("anywhere".includes(query) || "city".includes(query) || query === "")) {
                 html += `
@@ -1926,7 +1995,7 @@
                     </div>
                 `;
             }
-           
+            
             if(filtered.length > 0) {
                 html += filtered.map(d => `
                     <div class="p-4 border-b border-slate-100 hover:bg-blue-50 cursor-pointer transition-colors flex justify-between items-center"
@@ -1939,7 +2008,7 @@
                     </div>
                 `).join('');
             }
-           
+            
             if (html !== "") {
                 dd.innerHTML = html;
                 dd.classList.remove('hidden');
@@ -1977,7 +2046,7 @@
             }
             state.destMapInstance.setCenter([loc.lng, loc.lat]);
             state.destMapInstance.setZoom(13);
-           
+            
             // Clear previous markers
             if (state.destMarkers.length > 0) {
                 state.destMarkers.forEach(m => m.remove());
@@ -2012,11 +2081,11 @@
             }
  
             state.rideDetails.pickup = document.getElementById('pickup-location').value;
-           
+            
             if(state.role === 'driver') {
                 state.rideDetails.seats = document.getElementById('driver-seats').value;
                 state.rideDetails.dropStyle = document.getElementById('driver-drop').value;
-               
+                
                 // Automatically assign a random route request if the driver chose the flexible option
                 if (state.rideDetails.area === 'Anywhere in City') {
                     const randomDest = abujaDestinations[Math.floor(Math.random() * abujaDestinations.length)];
@@ -2029,7 +2098,7 @@
             if(trackingEmoji) {
                 trackingEmoji.innerText = state.role === 'driver' ? '🚗' : '🧳';
             }
-           
+            
             if (state.role === 'driver') {
                 document.getElementById('search-heading').innerText = 'Online & Waiting...';
                 document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Listening for passengers';
@@ -2102,13 +2171,13 @@
                             <br><span class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full">Save ~₦${d.savings.toLocaleString()}</span>
                         </div>
                     </div>
-                   
+                    
                     <div class="grid grid-cols-3 gap-2 mb-3 bg-[#f8fafc] p-2 rounded-xl border border-slate-100">
                         <div class="text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">ETA</p><p class="text-xs font-black text-slate-700">${d.eta}</p></div>
                         <div class="text-center border-l border-r border-slate-200"><p class="text-[10px] text-slate-400 font-bold uppercase">Seats</p><p class="text-xs font-black text-slate-700">${d.seats}</p></div>
                         <div class="text-center"><p class="text-[10px] text-slate-400 font-bold uppercase">Style</p><p class="text-xs font-black text-slate-700">${d.drop}</p></div>
                     </div>
-                   
+                    
                     <div class="flex flex-wrap gap-1 mb-4">
                         <span class="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-0.5"><i data-lucide="star" width="10" fill="currentColor"></i> ${d.rating}</span>
                         ${d.badges.map(b => `<span class="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold">${b}</span>`).join('')}
@@ -2118,7 +2187,7 @@
                         <p class="text-[10px] font-bold text-slate-600 truncate"><span class="text-blue-500">${d.departure}</span></p>
                         <p class="text-[10px] font-bold text-slate-500 truncate">From ${state.rideDetails.pickup} • To ${state.rideDetails.area}</p>
                     </div>
-                   
+                    
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-black text-green-500 flex items-center gap-1">
                             <i data-lucide="check-circle-2" width="14"></i> ${d.match}% fit
@@ -2134,7 +2203,7 @@
  
         function chooseDriver(id) {
             state.selectedDriver = mockDrivers.find(d => d.id === id);
-           
+            
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/90 backdrop-blur-sm rounded-[2rem] border border-white">
@@ -2143,7 +2212,7 @@
                     <p class="text-sm font-bold text-slate-500">Contacting driver to confirm your ride request...</p>
                 </div>
             `;
-           
+            
             initMatchMap();
             setStep('matched');
  
@@ -2158,7 +2227,7 @@
         function initMatchMap() {
             const pLoc = state.currentLocation;
             let dLoc = { lat: pLoc.lat - 0.015, lng: pLoc.lng - 0.015 };
-           
+            
             if (!state.matchMapInstance) {
                 state.matchMapInstance = new mapboxgl.Map({
                     container: 'matched-real-map',
@@ -2170,11 +2239,11 @@
             } else {
                 state.matchMapInstance.resize();
             }
-           
+            
             // Clear markers
             if (state.matchPassengerMarker) state.matchPassengerMarker.remove();
             if (state.matchDriverMarker) state.matchDriverMarker.remove();
-           
+            
             const pEl = document.createElement('div');
             pEl.className = 'text-3xl drop-shadow-md';
             pEl.innerText = '🧍';
@@ -2188,19 +2257,19 @@
             state.matchDriverMarker = new mapboxgl.Marker({element: dEl, anchor: 'center'})
                 .setLngLat([dLoc.lng, dLoc.lat])
                 .addTo(state.matchMapInstance);
-           
+            
             state.driverDistance = 100;
-           
+            
             if(state.approachInterval) clearInterval(state.approachInterval);
             state.approachInterval = setInterval(() => {
                 dLoc.lat += (pLoc.lat - dLoc.lat) * 0.15;
                 dLoc.lng += (pLoc.lng - dLoc.lng) * 0.15;
                 state.matchDriverMarker.setLngLat([dLoc.lng, dLoc.lat]);
-               
+                
                 state.driverDistance -= 5;
                 const startBtn = document.getElementById('btn-start-ride');
                 const waitingText = document.getElementById('waiting-text');
-               
+                
                 if(startBtn && state.driverDistance <= 20) {
                     startBtn.disabled = false;
                     if(waitingText) {
@@ -2210,7 +2279,7 @@
                     }
                 }
             }, 1000);
-           
+            
             const sw = [Math.min(pLoc.lng, dLoc.lng), Math.min(pLoc.lat, dLoc.lat)];
             const ne = [Math.max(pLoc.lng, dLoc.lng), Math.max(pLoc.lat, dLoc.lat)];
             state.matchMapInstance.fitBounds([sw, ne], { padding: 50 });
@@ -2220,19 +2289,19 @@
         // --- COMPACT DRIVER REQUEST UI & MATCHED SCREEN --- //
         function setupMatchedDriverScreen() {
             initMatchMap();
-           
+            
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
                 <div class="bg-white rounded-[2rem] p-5 shadow-xl border border-slate-100 mb-6 relative overflow-hidden">
                     <h3 class="text-sm uppercase tracking-widest text-blue-600 font-black mb-4 flex items-center gap-1 justify-center w-full">
                         <i data-lucide="bell-ring" width="16" class="animate-bounce"></i> New Request
                     </h3>
-               
+                
                     <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full blur-xl"></div>
-                   
+                    
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-16 h-16 rounded-full bg-slate-200 border-2 border-white shadow-md overflow-hidden shrink-0">
-                            <img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" class="w-full h-full object-cover"/>
+                            <img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" alt="Passenger" class="w-full h-full object-cover"/>
                         </div>
                         <div>
                             <h4 class="font-black text-slate-800 text-xl">Sarah T.</h4>
@@ -2282,7 +2351,7 @@
                 <p id="waiting-text" class="text-center text-sm font-bold text-slate-500 animate-pulse">Drive to passenger location...</p>
                 <button id="btn-start-ride" onclick="startTracking()" class="btn-primary-3d w-full" disabled>Start Ride</button>
             `;
-           
+            
             if (state.driverDistance <= 20) {
                 const startBtn = document.getElementById('btn-start-ride');
                 const waitingText = document.getElementById('waiting-text');
@@ -2299,7 +2368,7 @@
         function setupMatchedPassengerScreen() {
             const container = document.getElementById('matched-card-container');
             const d = state.selectedDriver;
-           
+            
             container.innerHTML = `
                 <div class="bg-white rounded-[2rem] p-5 shadow-xl border border-slate-100 mb-6">
                     <h3 class="text-sm uppercase tracking-widest text-green-600 font-black mb-4 flex items-center gap-1 justify-center">
@@ -2340,7 +2409,7 @@
             `;
             lucide.createIcons();
         }
-       
+        
         function rejectRide() {
             setStep('searching');
             document.getElementById('search-heading').innerText = 'Online & Waiting...';
@@ -2358,12 +2427,12 @@
         // --- IN-RIDE TRACKING SCREEN --- //
         function startTracking() {
             setStep('tracking');
-           
+            
             const trackAvatar = document.getElementById('track-avatar');
             const trackName = document.getElementById('track-user-name');
-           
+            
             if (state.role === 'driver') {
-                trackAvatar.innerHTML = `<img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" class="w-full h-full object-cover"/>`;
+                trackAvatar.innerHTML = `<img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" class="w-full h-full object-cover" alt="Sarah"/>`;
                 trackName.innerText = 'Sarah T.';
             } else {
                 trackAvatar.innerHTML = state.selectedDriver ? state.selectedDriver.avatar : '👨';
@@ -2372,7 +2441,7 @@
  
             document.getElementById('tracking-status-title').innerText = "Approaching destination";
             document.getElementById('tracking-subtext').innerText = `Arriving at ${state.rideDetails.area}`;
-           
+            
             setTimeout(() => {
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition((pos) => {
@@ -2470,14 +2539,14 @@
                 })
                 .catch(err => console.error('Routing error:', err));
         }
-       
+        
         function shareRideDetails() {
             let message = "";
             if (state.role === 'passenger' && state.selectedDriver) {
                 const d = state.selectedDriver;
                 message = `I'm on my way to ${state.rideDetails.area} via AeroPool! \n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nTrack my ride: https://aeropool.app/track/demo-1234`;
             }
-           
+            
             if(message) {
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
@@ -2512,7 +2581,7 @@
             state.selectedDriver = null;
             state.rideDetails = { pickup: 'International Arrival', area: '', price: 0, seats: '1', departure: 'Leaving now', dropStyle: 'Hub drop', passengerPhoto: null };
             document.getElementById('dest-search-input').value = '';
-           
+            
             if (state.trackMapInstance) {
                 state.trackMapInstance.remove();
                 state.trackMapInstance = null;
@@ -2521,7 +2590,7 @@
  
             renderHistory();
             renderProfile(); // Update wallet screen
-           
+            
             setStep('idle', 'home');
         }
  
@@ -2574,7 +2643,7 @@
         async function initHeroSlider() {
             const track = document.getElementById('home-slider-track');
             if (!track) return;
-           
+            
             const sleep = ms => new Promise(r => setTimeout(r, ms));
  
             while(true) {
@@ -2585,7 +2654,7 @@
                 await sleep(3500);
                 currentBox.classList.add('is-flipped');
                 await sleep(3500);
-               
+                
                 track.style.transition = 'transform 0.8s cubic-bezier(0.65, 0, 0.35, 1)';
                 track.style.transform = `translateX(-100%)`;
  
@@ -2598,7 +2667,7 @@
                 const inner = currentBox.querySelector('.flip-box-inner');
                 inner.style.transition = 'none';
                 currentBox.classList.remove('is-flipped');
-               
+                
                 void currentBox.offsetWidth;
                 inner.style.transition = '';
             }
