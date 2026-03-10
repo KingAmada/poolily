@@ -587,8 +587,30 @@
                 <p class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2 shrink-0">12,000+ completed airport trips • 4.9/5 rider rating</p>
  
                 <div class="mt-2 sm:mt-3 dest-bottom-sheet glass-panel p-3.5 sm:p-4 relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
+                    <div class="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-3 rounded-2xl mt-3 shadow-sm relative z-30 border border-white/70">
+                        <div class="w-10 h-10 bg-[#e8eef3] rounded-xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
+                            <i data-lucide="map-pin" class="text-blue-500" width="18"></i>
+                        </div>
+                        <div class="flex-1 w-full">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Pickup Location</p>
+	                            <div class="relative w-full">
+	                                <select id="pickup-location" class="w-full bg-transparent font-bold text-slate-800 outline-none appearance-none cursor-pointer pr-5">
+	                                    <option value="International Arrival">International Arrival</option>
+	                                    <option value="Local Departure">Local Departure</option>
+                                    <option value="Parking Lot">Parking Lot</option>
+                                    <option value="Terminal A">Terminal A</option>
+                                    <option value="Terminal B">Terminal B</option>
+                                    <option value="Terminal C">Terminal C</option>
+                                    <option value="Terminal D">Terminal D</option>
+                                    <option value="On my way">On my way</option>
+                                </select>
+	                                <div class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
+	                            </div>
+	                        </div>
+	                    </div>
+
                     <!-- Searchable Destination Input -->
-                    <div class="flex items-center gap-3 sm:gap-4 relative z-40">
+                    <div class="flex items-center gap-3 sm:gap-4 relative z-40 mt-3">
                         <div class="w-12 flex justify-center text-red-500 drop-shadow-[0_4px_4px_rgba(239,68,68,0.4)] shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                         </div>
@@ -601,28 +623,6 @@
                             </div>
                         </div>
                     </div>
- 
-                    <div class="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-3 rounded-2xl mt-3 shadow-sm relative z-30 border border-white/70">
-                        <div class="w-10 h-10 bg-[#e8eef3] rounded-xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
-                            <i data-lucide="map-pin" class="text-blue-500" width="18"></i>
-                        </div>
-                        <div class="flex-1 w-full">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Pickup Location</p>
-                            <div class="relative w-full">
-                                <select id="pickup-location" class="w-full bg-transparent font-bold text-slate-800 outline-none appearance-none cursor-pointer pr-5">
-                                    <option value="International Arrival">International Arrival</option>
-                                    <option value="Local Departure">Local Departure</option>
-                                    <option value="Parking Lot">Parking Lot</option>
-                                    <option value="Terminal A">Terminal A</option>
-                                    <option value="Terminal B">Terminal B</option>
-                                    <option value="Terminal C">Terminal C</option>
-                                    <option value="Terminal D">Terminal D</option>
-                                    <option value="On my way">On my way</option>
-                                </select>
-                                <div class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
-                            </div>
-	                        </div>
-	                    </div>
 
                     <!-- Driver Trip Options -->
                     <div id="driver-options-container" class="hidden flex-col gap-3 mt-3 pt-3 border-t-2 border-dashed border-slate-300/50">
