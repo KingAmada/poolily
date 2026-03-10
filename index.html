@@ -167,18 +167,40 @@
         .flip-box-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); transform-style: preserve-3d; border-radius: 2rem; }
         .flip-box.is-flipped .flip-box-inner { transform: rotateY(180deg); }
         
-        .flip-face { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; color: white; box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15); border: 1px solid rgba(255,255,255,0.2); transform-style: preserve-3d; }
+        .flip-face { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.25rem 1.25rem 3.15rem; color: white; box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15); border: 1px solid rgba(255,255,255,0.2); transform-style: preserve-3d; }
         .flip-back { transform: rotateY(180deg); }
         
         .flip-bg { position: absolute; inset: 0; z-index: 0; border-radius: 2rem; background-size: cover; background-position: center; }
         .flip-bg::after { content: ''; position: absolute; inset: 0; border-radius: 2rem; background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 100%); }
         .flip-back .flip-bg::after { background: linear-gradient(to top, rgba(2,6,23,0.98) 0%, rgba(15,23,42,0.7) 100%); }
         
-        .flip-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 0.25rem; transform: translateZ(50px) scale(0.95); transform-style: preserve-3d; }
+        .flip-content { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 0.18rem; transform: translateZ(50px) scale(0.95); transform-style: preserve-3d; margin-bottom: 0.45rem; }
         .flip-kicker { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 900; color: #60a5fa; transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
         .flip-back .flip-kicker { color: #4ade80; }
         .flip-title { font-size: 1.5rem; font-weight: 900; line-height: 1.2; transform: translateZ(40px); text-shadow: 0 8px 16px rgba(0,0,0,0.9); }
-        .flip-desc { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; line-height: 1.4; transform: translateZ(25px); text-shadow: 0 4px 8px rgba(0,0,0,0.8); }
+        .flip-desc { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; line-height: 1.3; transform: translateZ(25px); text-shadow: 0 4px 8px rgba(0,0,0,0.8); max-width: 95%; }
+        .flip-price-tag {
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            bottom: 0.55rem;
+            z-index: 12;
+            border-radius: 0.75rem;
+            border: 1px solid #15803d;
+            background: #16a34a;
+            color: #ffffff;
+            padding: 0.4rem 0.55rem;
+            font-size: 0.53rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            line-height: 1.2;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+        .social-proof-toast {
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            will-change: opacity, transform;
+        }
         
         .profile-img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: inherit; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; cursor: pointer; }
         .profile-img-container:hover .profile-img-overlay { opacity: 1; }
@@ -247,6 +269,11 @@
  
         <!-- ==================== HOME SCREEN ==================== -->
         <div id="screen-home" class="app-screen flex flex-col h-full relative p-6 pt-10 animate-pop-in overflow-y-auto no-scrollbar pb-28">
+            <div id="home-social-proof-toast" class="social-proof-toast pointer-events-none absolute top-[44%] right-6 z-40 w-[54%] max-w-[230px] opacity-0 translate-x-8">
+                <div class="bg-white border border-slate-200 rounded-2xl px-5 py-4 min-h-[78px] shadow-[0_12px_30px_rgba(15,23,42,0.18)] flex items-center">
+                    <span id="home-social-proof-text" class="text-[13px] leading-snug font-black text-slate-700 block">Passenger just boarded a cheaper ride in Abuja.</span>
+                </div>
+            </div>
             <div class="flex justify-between items-center mb-8 shrink-0">
                 <div class="text-3xl font-black text-slate-700 tracking-tighter drop-shadow-sm flex items-center gap-2">
                     Aero<span class="text-blue-500">Pool</span>
@@ -273,6 +300,7 @@
                                         <h3 class="flip-title">AeroPool</h3>
                                         <p class="flip-desc">Drivers pick up a fare back to the city. Passengers get a cheaper ride home.</p>
                                     </div>
+                                    <p class="flip-price-tag">Save Big: Other apps ₦20,000 • AeroPool from ₦7,000.</p>
                                 </div>
                                 <div class="flip-face flip-back">
                                     <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop');"></div>
@@ -281,6 +309,7 @@
                                         <h3 class="flip-title">Shared Return</h3>
                                         <p class="flip-desc">One airport. Two wins. Empty seats become cheaper trips.</p>
                                     </div>
+                                    <p class="flip-price-tag">Save Big: Other apps ₦20,000 • AeroPool from ₦7,000.</p>
                                 </div>
                             </div>
                         </div>
@@ -296,6 +325,7 @@
                                         <h3 class="flip-title">Travel Cheaper</h3>
                                         <p class="flip-desc">Pay up to 50% less by matching with an empty returning vehicle.</p>
                                     </div>
+                                    <p class="flip-price-tag">Save Big: Other apps ₦20,000 • AeroPool from ₦7,000.</p>
                                 </div>
                                 <div class="flip-face flip-back">
                                     <div class="flip-bg" style="background-image: url('https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=800&auto=format&fit=crop');"></div>
@@ -304,13 +334,14 @@
                                         <h3 class="flip-title">Zero Wait Time</h3>
                                         <p class="flip-desc">Choose from ready drivers and depart straight from the terminal.</p>
                                     </div>
+                                    <p class="flip-price-tag">Save Big: Other apps ₦20,000 • AeroPool from ₦7,000.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
- 
+
             <div class="space-y-5 flex-1 flex flex-col justify-start pt-1 pb-8">
                 <button id="btn-role-driver" onclick="handleRoleSelect('driver')" class="glass-panel w-full relative p-7 hover:shadow-[8px_8px_16px_#c4d0dc,-8px_-8px_16px_#ffffff] active:shadow-[inset_8px_8px_16px_#c4d0dc,inset_-8px_-8px_16px_#ffffff] transition-all duration-300 flex flex-col items-center justify-center gap-3 group">
                     <div class="relative inline-block text-7xl drop-shadow-[0_12px_12px_rgba(0,0,0,0.25)] group-hover:scale-110 transition-transform">🚗</div>
@@ -324,7 +355,7 @@
                     <div class="relative inline-block text-7xl drop-shadow-[0_12px_12px_rgba(0,0,0,0.25)] group-hover:scale-110 transition-transform">🧳</div>
                     <div class="text-center mt-2">
                         <h2 class="text-3xl font-black text-slate-800 mb-1 drop-shadow-sm">Need a Ride</h2>
-                        <p class="text-slate-500 font-bold px-4 text-sm">Hop in with a driver heading back.</p>
+                        <p class="text-slate-500 font-bold px-4 text-sm">Hop in with a driver heading back and keep more money.</p>
                     </div>
                 </button>
             </div>
@@ -478,6 +509,7 @@
                 <h1 id="dest-heading" class="text-3xl sm:text-4xl font-black text-slate-800 mb-4 sm:mb-6 drop-shadow-sm leading-tight whitespace-pre-line shrink-0">
                     Where in the city<br>are you heading?
                 </h1>
+                <p class="text-xs font-black uppercase tracking-wider text-slate-500 mb-4 shrink-0">12,000+ completed airport trips • 4.9/5 rider rating</p>
  
                 <div class="mt-auto dest-bottom-sheet glass-panel p-4 sm:p-6 relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
                     <!-- Searchable Destination Input -->
@@ -556,13 +588,18 @@
                                 </select>
                                 <div class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
                             </div>
-                        </div>
-                    </div>
+	                        </div>
+	                    </div>
 
-                    <button id="btn-request" onclick="startSearching()" class="btn-primary-3d mt-5 shrink-0 relative z-20">Request City Ride</button>
-                </div>
-            </div>
-        </div>
+                        <div id="dest-savings-banner" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-2 mt-4">
+                            <p class="text-[11px] font-black text-green-700">Regular fare: ₦20,000</p>
+                            <p class="text-xs font-black text-green-600">AeroPool fare: ₦0 • You save: ₦0</p>
+                        </div>
+
+	                    <button id="btn-request" onclick="startSearching()" class="btn-primary-3d mt-5 shrink-0 relative z-20">Request City Ride</button>
+	                </div>
+	            </div>
+	        </div>
  
         <!-- ==================== SEARCHING SCREEN ==================== -->
         <div id="screen-searching" class="app-screen hidden-screen flex flex-col items-center justify-center h-full relative p-6 animate-pop-in">
@@ -590,6 +627,7 @@
                     <i data-lucide="loader-2" class="animate-spin" width="18"></i> Matching city routes
                 </p>
             </div>
+            <p id="search-savings-text" class="hidden mt-4 text-xs font-black text-green-600 bg-green-50 border border-green-200 px-4 py-2 rounded-full relative z-10">You save ₦0 vs regular ₦20,000 fare</p>
         </div>
  
         <!-- ==================== MARKETPLACE SCREEN (Passengers Only) ==================== -->
@@ -600,12 +638,17 @@
                 </button>
                 <div class="text-right">
                     <h1 class="text-2xl font-black text-slate-800 tracking-tight leading-tight">3 Drivers found</h1>
-                    <p class="text-slate-500 font-bold text-xs uppercase tracking-wider">Heading to your area</p>
+                    <p class="text-slate-500 font-bold text-xs uppercase tracking-wider">Heading to your area • pick one & save</p>
                 </div>
             </div>
  
             <div id="marketplace-filters" class="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-2 shrink-0">
                 <!-- Filters injected via JS -->
+            </div>
+
+            <div id="marketplace-savings-banner" class="hidden bg-green-50 border border-green-200 rounded-2xl px-4 py-3 mb-4 shrink-0">
+                <p class="text-[10px] font-black uppercase text-green-700">You are beating regular fares</p>
+                <p class="text-sm font-black text-green-600">Regular: ₦20,000 • AeroPool: ₦0 • Save: ₦0</p>
             </div>
  
             <div id="marketplace-list" class="flex-1 overflow-y-auto no-scrollbar space-y-5 pb-10">
@@ -942,6 +985,58 @@
             "UNION BANK": "000015", "UNITY BANK": "000011", "VFD MFB": "090110", "WEMA BANK": "000017", "ZENITH BANK": "000015"
         };
  
+        const regularRideFare = 20000;
+
+        function formatNaira(value) {
+            return `₦${Math.max(0, Math.round(value)).toLocaleString()}`;
+        }
+
+        function getSavingsAgainstRegularFare(price) {
+            return Math.max(0, regularRideFare - (Number(price) || 0));
+        }
+
+        let socialProofMessages = [
+            "Passenger just boarded a cheaper ride to Wuse.",
+            "Driver just got paid after dropping someone at the airport.",
+            "Driver got ₦13,000 instead of returning empty.",
+            "Driver just saved fuel money on the return leg from the airport.",
+            "Passengers are getting cheaper rides. What are you waiting for?",
+            "Passenger got to Asokoro for just ₦4,000.",
+            "2 days ago, a passenger landed and got to Maitama for just ₦5,000.",
+            "Last week this time, a passenger saved ₦7,000 on one trip.",
+            "Just now: rider matched to Gwarinpa and saved ₦9,500.",
+            "Today: passenger reached Jabi for ₦4,500 instead of ₦11,000+.",
+            "Tonight: airport pickup to Garki locked in at ₦4,000.",
+            "A rider reached Utako for ₦4,500 and skipped surge pricing.",
+            "A passenger shared to Wuye and cut fare by over 40%.",
+            "This morning: first-time user reached Apo for just ₦3,800.",
+            "Yesterday: rider got to Guzape and saved ₦6,200.",
+            "Today: 2 passengers split a ride to Katampe and both saved.",
+            "Airport to Lokogoma just matched below ₦5,000.",
+            "Passenger landed and got to Lugbe at nearly half price.",
+            "Airport run to Life Camp closed at ₦5,200.",
+            "A rider just chose Kubwa and saved more than ₦8,000.",
+            "Late-night passenger reached Kado for a budget fare.",
+            "Return driver to Durumi got paid within minutes.",
+            "Passenger to Central Area matched instantly at a low fare.",
+            "Recent trip: Nyanya route completed at a discounted rate.",
+            "Passenger to Mabushi paid less and arrived sooner.",
+            "Airport to Jahi just cleared at a reduced fare.",
+            "Quick match: rider heading to Dakibiyu saved big.",
+            "A passenger to Galadimawa paid under usual market fare."
+        ];
+
+        function shuffleSocialProofMessages() {
+            for (let i = socialProofMessages.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [socialProofMessages[i], socialProofMessages[j]] = [socialProofMessages[j], socialProofMessages[i]];
+            }
+        }
+
+        let socialProofIndex = 0;
+        let socialProofInterval = null;
+        let socialProofHideTimeout = null;
+
         // State
         const state = {
             user: null,
@@ -1167,6 +1262,7 @@
             renderHistory();
             populateBanks();
             updateUI();
+            initSocialProofTicker();
 
             if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
                 navigator.serviceWorker.register('./sw.js').catch((err) => {
@@ -1183,6 +1279,53 @@
                 }
             });
         };
+
+        function initSocialProofTicker() {
+            const box = document.getElementById('home-social-proof-toast');
+            const textEl = document.getElementById('home-social-proof-text');
+            if (!box || !textEl) return;
+            const cycleMs = 8000;
+            const visibleMs = 5000;
+
+            shuffleSocialProofMessages();
+            socialProofIndex = 0;
+
+            if (socialProofInterval) {
+                clearInterval(socialProofInterval);
+                socialProofInterval = null;
+            }
+            if (socialProofHideTimeout) {
+                clearTimeout(socialProofHideTimeout);
+                socialProofHideTimeout = null;
+            }
+
+            const showCurrent = () => {
+                textEl.innerText = socialProofMessages[socialProofIndex];
+                box.style.transition = 'none';
+                box.style.opacity = '0';
+                box.style.transform = 'translateX(28px)';
+                requestAnimationFrame(() => {
+                    box.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+                    box.style.opacity = '1';
+                    box.style.transform = 'translateX(0)';
+                });
+            };
+
+            const hideCurrent = () => {
+                box.style.opacity = '0';
+                box.style.transform = 'translateX(28px)';
+            };
+
+            showCurrent();
+            socialProofHideTimeout = setTimeout(hideCurrent, visibleMs);
+
+            socialProofInterval = setInterval(() => {
+                socialProofIndex = (socialProofIndex + 1) % socialProofMessages.length;
+                showCurrent();
+                if (socialProofHideTimeout) clearTimeout(socialProofHideTimeout);
+                socialProofHideTimeout = setTimeout(hideCurrent, visibleMs);
+            }, cycleMs);
+        }
  
         // UI Core
         function updateUI() {
@@ -1988,7 +2131,7 @@
                 driverOptionsContainer.classList.remove('hidden'); driverOptionsContainer.classList.add('flex');
             } else {
                 heading.innerHTML = "Where to in<br>the city?";
-                btn.innerText = "Find a Ride";
+                btn.innerText = "Find a Ride & Save";
                 driverOptionsContainer.classList.add('hidden'); driverOptionsContainer.classList.remove('flex');
             }
  
@@ -2000,9 +2143,27 @@
                     state.destMapInstance.flyTo({center: [coords.lng, coords.lat], zoom: 16});
                 }
                 updateDestinationRoutePreview();
+                updateDestinationSavingsBanner();
             };
- 
+
             setTimeout(initDestinationMap, 100);
+            updateDestinationSavingsBanner();
+        }
+
+        function updateDestinationSavingsBanner() {
+            const banner = document.getElementById('dest-savings-banner');
+            if (!banner) return;
+            if (state.role !== 'passenger' || !state.rideDetails.area || !state.rideDetails.price) {
+                banner.classList.add('hidden');
+                return;
+            }
+
+            const savings = getSavingsAgainstRegularFare(state.rideDetails.price);
+            banner.innerHTML = `
+                <p class="text-[11px] font-black text-green-700">Regular fare: ${formatNaira(regularRideFare)}</p>
+                <p class="text-xs font-black text-green-600">AeroPool fare: ${formatNaira(state.rideDetails.price)} • You save: ${formatNaira(savings)}</p>
+            `;
+            banner.classList.remove('hidden');
         }
  
         function filterDestinations() {
@@ -2058,6 +2219,7 @@
             state.rideDetails.area = area;
             state.rideDetails.price = price;
             updateDestinationRoutePreview();
+            updateDestinationSavingsBanner();
         }
  
         function updateDepartureDisplay(val) {
@@ -2209,9 +2371,14 @@
             if (state.role === 'driver') {
                 document.getElementById('search-heading').innerText = 'Online & Waiting...';
                 document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Listening for passengers';
+                document.getElementById('search-savings-text').classList.add('hidden');
             } else {
                 document.getElementById('search-heading').innerText = 'Scanning Airport...';
-                document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Matching city routes';
+                document.getElementById('search-subtext').innerHTML = '<i data-lucide="loader-2" class="animate-spin" width="18"></i> Matching city routes trusted by 12k+ riders';
+                const savings = getSavingsAgainstRegularFare(state.rideDetails.price);
+                const searchSavingsText = document.getElementById('search-savings-text');
+                searchSavingsText.innerText = `You save ${formatNaira(savings)} vs regular ${formatNaira(regularRideFare)} fare`;
+                searchSavingsText.classList.remove('hidden');
             }
             lucide.createIcons();
  
@@ -2236,6 +2403,7 @@
  
         function renderMarketplace() {
             const filterContainer = document.getElementById('marketplace-filters');
+            const marketSavingsBanner = document.getElementById('marketplace-savings-banner');
             if (filterContainer) {
                 const filters = [
                     { id: 'best', label: 'Best Match' },
@@ -2249,6 +2417,15 @@
                     const inactiveClass = "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 font-bold";
                     return `<span onclick="applySort('${f.id}')" class="${baseClass} ${isActive ? activeClass : inactiveClass}">${f.label}</span>`;
                 }).join('');
+            }
+
+            if (marketSavingsBanner && state.role === 'passenger' && state.rideDetails.price) {
+                const selectedSavings = getSavingsAgainstRegularFare(state.rideDetails.price);
+                marketSavingsBanner.innerHTML = `
+                    <p class="text-[10px] font-black uppercase text-green-700">Trusted by frequent airport riders</p>
+                    <p class="text-sm font-black text-green-600">Regular: ${formatNaira(regularRideFare)} • AeroPool: ${formatNaira(state.rideDetails.price)} • Save: ${formatNaira(selectedSavings)}</p>
+                `;
+                marketSavingsBanner.classList.remove('hidden');
             }
  
             let sortedDrivers = [...mockDrivers];
@@ -2275,7 +2452,7 @@
                         </div>
                         <div class="text-right">
                             <span class="font-black text-xl text-slate-800">₦${d.price.toLocaleString()}</span>
-                            <br><span class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full">Save ~₦${d.savings.toLocaleString()}</span>
+                            <br><span class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full">Save ${formatNaira(getSavingsAgainstRegularFare(d.price))}</span>
                         </div>
                     </div>
                     
@@ -2300,7 +2477,7 @@
                             <i data-lucide="check-circle-2" width="14"></i> ${d.match}% fit
                         </span>
                         <button onclick="chooseDriver(${d.id})" class="btn-primary-3d !py-2 !px-6 !rounded-xl !text-sm !w-auto">
-                            Choose
+                            Choose & Save ${formatNaira(getSavingsAgainstRegularFare(d.price))}
                         </button>
                     </div>
                 </div>
@@ -2310,6 +2487,7 @@
  
         function chooseDriver(id) {
             state.selectedDriver = mockDrivers.find(d => d.id === id);
+            const savings = getSavingsAgainstRegularFare(state.selectedDriver.price);
             
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
@@ -2317,6 +2495,7 @@
                     <div class="w-16 h-16 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mb-6"></div>
                     <h3 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Waiting for ${state.selectedDriver.name}</h3>
                     <p class="text-sm font-bold text-slate-500">Contacting driver to confirm your ride request...</p>
+                    <p class="text-xs font-black text-green-600 mt-3 bg-green-50 border border-green-200 rounded-full px-4 py-2">Locked fare: ${formatNaira(state.selectedDriver.price)} • Saving ${formatNaira(savings)} vs regular fare</p>
                 </div>
             `;
             
@@ -2400,6 +2579,7 @@
         // --- COMPACT DRIVER REQUEST UI & MATCHED SCREEN --- //
         function setupMatchedDriverScreen() {
             initMatchMap(false);
+            const driverSideSavings = getSavingsAgainstRegularFare(state.rideDetails.price);
             
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
@@ -2443,6 +2623,10 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mt-3 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                        <p class="text-[10px] font-black uppercase text-green-700">Value Signal</p>
+                        <p class="text-xs font-black text-green-600">Passenger saves ${formatNaira(driverSideSavings)} vs regular fare when you accept.</p>
+                    </div>
                 </div>
  
                 <div class="flex flex-col gap-4 w-full" id="driver-match-actions">
@@ -2470,6 +2654,7 @@
         function setupMatchedPassengerScreen() {
             const container = document.getElementById('matched-card-container');
             const d = state.selectedDriver;
+            const savings = getSavingsAgainstRegularFare(d.price);
             
             container.innerHTML = `
                 <div class="bg-white rounded-[2rem] p-5 shadow-xl border border-slate-100 mb-6">
@@ -2501,6 +2686,10 @@
                             <p class="text-[10px] uppercase font-bold text-slate-400">Total Fare</p>
                             <p class="text-lg font-black text-slate-800">₦${d.price.toLocaleString()}</p>
                         </div>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 rounded-xl px-3 py-2 mt-3">
+                        <p class="text-[10px] font-black uppercase text-green-700">Savings Locked In</p>
+                        <p class="text-xs font-black text-green-600">Regular fare: ${formatNaira(regularRideFare)} • You pay: ${formatNaira(d.price)} • Save: ${formatNaira(savings)}</p>
                     </div>
                 </div>
  
@@ -2543,7 +2732,13 @@
             }
  
             document.getElementById('tracking-status-title').innerText = "Approaching destination";
-            document.getElementById('tracking-subtext').innerText = `Arriving at ${state.rideDetails.area}`;
+            if (state.role === 'passenger') {
+                const trackedPrice = state.selectedDriver ? state.selectedDriver.price : state.rideDetails.price;
+                const savings = getSavingsAgainstRegularFare(trackedPrice);
+                document.getElementById('tracking-subtext').innerText = `Arriving at ${state.rideDetails.area} • Saved ${formatNaira(savings)}`;
+            } else {
+                document.getElementById('tracking-subtext').innerText = `Arriving at ${state.rideDetails.area}`;
+            }
             
             setTimeout(() => {
                 // Always render the map from the last known location first.
