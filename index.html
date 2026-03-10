@@ -576,24 +576,24 @@
  
             <div class="absolute inset-0 bg-gradient-to-b from-[#e8eef3]/80 via-[#e8eef3]/20 to-[#e8eef3]/80 pointer-events-none z-10"></div>
  
-            <div class="relative z-20 p-4 sm:p-6 pt-8 sm:pt-10 pb-36 sm:pb-40 flex-1 flex flex-col overflow-y-auto no-scrollbar pointer-events-auto">
+            <div class="relative z-20 p-4 sm:p-5 pt-7 sm:pt-8 pb-24 sm:pb-28 flex-1 flex flex-col overflow-y-auto no-scrollbar pointer-events-auto">
                 <button onclick="setStep('idle', 'home')" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#e8eef3] shadow-[6px_6px_12px_#c4d0dc,-6px_-6px_12px_#ffffff] flex items-center justify-center mb-4 sm:mb-6 active:shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] transition-all border-2 border-white cursor-pointer shrink-0">
                     <i data-lucide="chevron-left" class="text-slate-600" width="28"></i>
                 </button>
  
-                <h1 id="dest-heading" class="text-3xl sm:text-4xl font-black text-slate-800 mb-4 sm:mb-6 drop-shadow-sm leading-tight whitespace-pre-line shrink-0">
+                <h1 id="dest-heading" class="text-3xl sm:text-4xl font-black text-slate-800 mb-3 sm:mb-4 drop-shadow-sm leading-tight whitespace-pre-line shrink-0">
                     Where in the city<br>are you heading?
                 </h1>
-                <p class="text-xs font-black uppercase tracking-wider text-slate-500 mb-4 shrink-0">12,000+ completed airport trips • 4.9/5 rider rating</p>
+                <p class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2 shrink-0">12,000+ completed airport trips • 4.9/5 rider rating</p>
  
-                <div class="mt-4 sm:mt-6 dest-bottom-sheet glass-panel p-4 sm:p-6 relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
+                <div class="mt-2 sm:mt-3 dest-bottom-sheet glass-panel p-3.5 sm:p-4 relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
                     <!-- Searchable Destination Input -->
                     <div class="flex items-center gap-3 sm:gap-4 relative z-40">
                         <div class="w-12 flex justify-center text-red-500 drop-shadow-[0_4px_4px_rgba(239,68,68,0.4)] shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                         </div>
                         <div class="w-full relative">
-                            <input type="text" id="dest-search-input" placeholder="Search destination area..." class="input-3d px-4 sm:px-5 py-3.5 sm:py-4 focus:ring-4 ring-blue-400/30 bg-white/80 backdrop-blur-md" oninput="filterDestinations()" onclick="filterDestinations()" autocomplete="off">
+                            <input type="text" id="dest-search-input" placeholder="Search destination area..." class="input-3d px-4 sm:px-5 py-3 sm:py-3.5 focus:ring-4 ring-blue-400/30 bg-white/80 backdrop-blur-md" oninput="filterDestinations()" onclick="filterDestinations()" autocomplete="off">
                             
                             <!-- Custom Dropdown -->
                             <div id="dest-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.15)] border-2 border-slate-100 max-h-60 overflow-y-auto z-50">
@@ -603,13 +603,13 @@
                     </div>
  
                     <!-- Driver Trip Options -->
-                    <div id="driver-options-container" class="hidden flex-col gap-4 mt-5 pt-4 border-t-2 border-dashed border-slate-300/50">
-                        <h3 class="font-black text-slate-700 mb-1">Trip Details</h3>
+                    <div id="driver-options-container" class="hidden flex-col gap-3 mt-3 pt-3 border-t-2 border-dashed border-slate-300/50">
+                        <h3 class="font-black text-slate-700 mb-0">Trip Details</h3>
                         
-                        <div class="flex gap-4">
+                        <div class="flex gap-3">
                             <div class="flex-1 relative">
                                 <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Seats available</p>
-                                <select id="driver-seats" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                <select id="driver-seats" class="input-3d px-4 py-2.5 text-sm appearance-none cursor-pointer bg-white/60">
                                     <option value="1">1 seat</option>
                                     <option value="2">2 seats</option>
                                     <option value="3">3 seats</option>
@@ -622,7 +622,7 @@
                             </div>
                             <div class="flex-1 relative">
                                 <p class="text-xs font-bold text-slate-500 mb-1 ml-2">Drop style</p>
-                                <select id="driver-drop" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer bg-white/60">
+                                <select id="driver-drop" class="input-3d px-4 py-2.5 text-sm appearance-none cursor-pointer bg-white/60">
                                     <option value="Hub drop">Hub drop</option>
                                     <option value="Door drop">Door drop</option>
                                 </select>
@@ -630,12 +630,12 @@
                             </div>
                         </div>
                         
-                        <div class="relative w-full mt-2">
+                        <div class="relative w-full mt-1">
                             <div class="flex justify-between items-end mb-2 ml-2 mr-2">
                                 <p class="text-xs font-bold text-slate-500">Departure window</p>
                                 <p id="departure-display" class="text-sm font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-full">Leaving now</p>
                             </div>
-                            <input type="range" id="driver-departure" min="0" max="60" step="5" value="0" class="w-full mt-2" oninput="updateDepartureDisplay(this.value)">
+                            <input type="range" id="driver-departure" min="0" max="60" step="5" value="0" class="w-full mt-1" oninput="updateDepartureDisplay(this.value)">
                             <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-bold px-1">
                                 <span>Now</span>
                                 <span>30m</span>
@@ -644,7 +644,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-3 rounded-2xl mt-5 shadow-sm relative z-30 border border-white/70">
+                    <div class="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-3 rounded-2xl mt-3 shadow-sm relative z-30 border border-white/70">
                         <div class="w-10 h-10 bg-[#e8eef3] rounded-xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
                             <i data-lucide="map-pin" class="text-blue-500" width="18"></i>
                         </div>
@@ -666,12 +666,12 @@
 	                        </div>
 	                    </div>
 
-                        <div id="dest-savings-banner" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-2 mt-4">
+                        <div id="dest-savings-banner" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-2 mt-3">
                             <p class="text-[11px] font-black text-green-700">Regular fare: --</p>
                             <p class="text-xs font-black text-green-600">Poolily fare: ₦0 • You save: ₦0</p>
                         </div>
 
-	                    <button id="btn-request" onclick="startSearching()" class="btn-primary-3d mt-5 shrink-0 relative z-20">Request City Ride</button>
+	                    <button id="btn-request" onclick="startSearching()" class="btn-primary-3d mt-3 shrink-0 relative z-20">Request City Ride</button>
 	                </div>
 	            </div>
 	        </div>
