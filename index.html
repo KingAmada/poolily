@@ -602,6 +602,28 @@
                         </div>
                     </div>
  
+                    <div class="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-3 rounded-2xl mt-3 shadow-sm relative z-30 border border-white/70">
+                        <div class="w-10 h-10 bg-[#e8eef3] rounded-xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
+                            <i data-lucide="map-pin" class="text-blue-500" width="18"></i>
+                        </div>
+                        <div class="flex-1 w-full">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Pickup Location</p>
+                            <div class="relative w-full">
+                                <select id="pickup-location" class="w-full bg-transparent font-bold text-slate-800 outline-none appearance-none cursor-pointer pr-5">
+                                    <option value="International Arrival">International Arrival</option>
+                                    <option value="Local Departure">Local Departure</option>
+                                    <option value="Parking Lot">Parking Lot</option>
+                                    <option value="Terminal A">Terminal A</option>
+                                    <option value="Terminal B">Terminal B</option>
+                                    <option value="Terminal C">Terminal C</option>
+                                    <option value="Terminal D">Terminal D</option>
+                                    <option value="On my way">On my way</option>
+                                </select>
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
+                            </div>
+	                        </div>
+	                    </div>
+
                     <!-- Driver Trip Options -->
                     <div id="driver-options-container" class="hidden flex-col gap-3 mt-3 pt-3 border-t-2 border-dashed border-slate-300/50">
                         <h3 class="font-black text-slate-700 mb-0">Trip Details</h3>
@@ -643,28 +665,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-3 rounded-2xl mt-3 shadow-sm relative z-30 border border-white/70">
-                        <div class="w-10 h-10 bg-[#e8eef3] rounded-xl flex items-center justify-center shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] shrink-0">
-                            <i data-lucide="map-pin" class="text-blue-500" width="18"></i>
-                        </div>
-                        <div class="flex-1 w-full">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Pickup Location</p>
-                            <div class="relative w-full">
-                                <select id="pickup-location" class="w-full bg-transparent font-bold text-slate-800 outline-none appearance-none cursor-pointer pr-5">
-                                    <option value="International Arrival">International Arrival</option>
-                                    <option value="Local Departure">Local Departure</option>
-                                    <option value="Parking Lot">Parking Lot</option>
-                                    <option value="Terminal A">Terminal A</option>
-                                    <option value="Terminal B">Terminal B</option>
-                                    <option value="Terminal C">Terminal C</option>
-                                    <option value="Terminal D">Terminal D</option>
-                                    <option value="On my way">On my way</option>
-                                </select>
-                                <div class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">▼</div>
-                            </div>
-	                        </div>
-	                    </div>
 
                         <div id="dest-savings-banner" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-2 mt-3">
                             <p class="text-[11px] font-black text-green-700">Regular fare: --</p>
