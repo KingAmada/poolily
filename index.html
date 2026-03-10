@@ -576,7 +576,7 @@
  
             <div class="absolute inset-0 bg-gradient-to-b from-[#e8eef3]/80 via-[#e8eef3]/20 to-[#e8eef3]/80 pointer-events-none z-10"></div>
  
-            <div class="relative z-20 p-4 sm:p-6 pt-8 sm:pt-10 pb-28 sm:pb-32 flex-1 flex flex-col pointer-events-auto">
+            <div class="relative z-20 p-4 sm:p-6 pt-8 sm:pt-10 pb-36 sm:pb-40 flex-1 flex flex-col overflow-y-auto no-scrollbar pointer-events-auto">
                 <button onclick="setStep('idle', 'home')" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#e8eef3] shadow-[6px_6px_12px_#c4d0dc,-6px_-6px_12px_#ffffff] flex items-center justify-center mb-4 sm:mb-6 active:shadow-[inset_4px_4px_8px_#c4d0dc,inset_-4px_-4px_8px_#ffffff] transition-all border-2 border-white cursor-pointer shrink-0">
                     <i data-lucide="chevron-left" class="text-slate-600" width="28"></i>
                 </button>
@@ -586,7 +586,7 @@
                 </h1>
                 <p class="text-xs font-black uppercase tracking-wider text-slate-500 mb-4 shrink-0">12,000+ completed airport trips • 4.9/5 rider rating</p>
  
-                <div class="mt-auto dest-bottom-sheet glass-panel p-4 sm:p-6 relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
+                <div class="mt-4 sm:mt-6 dest-bottom-sheet glass-panel p-4 sm:p-6 relative z-30 shadow-[0_20px_40px_rgba(0,0,0,0.1),12px_12px_24px_#c4d0dc,-12px_-12px_24px_#ffffff]">
                     <!-- Searchable Destination Input -->
                     <div class="flex items-center gap-3 sm:gap-4 relative z-40">
                         <div class="w-12 flex justify-center text-red-500 drop-shadow-[0_4px_4px_rgba(239,68,68,0.4)] shrink-0">
@@ -2204,7 +2204,9 @@
                 setStep('destination');
             } catch (err) {
                 if (err.code === 'USER_EXISTS') {
-                    setAuthServerMessage('error', 'Account already exists for this phone and role. Please log in instead.');
+                    setAuthServerMessage('error', 'This phone number is already registered. Please log in instead.');
+                } else if (err.code === 'USER_ROLE_MISMATCH') {
+                    setAuthServerMessage('error', 'This phone number is already linked to a different account type.');
                 } else if (err.code === 'INVALID_PIN' || err.code === 'USER_NOT_FOUND') {
                     setAuthServerMessage('error', 'Login failed. Check phone/PIN and try again.');
                 } else {
