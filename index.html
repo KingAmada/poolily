@@ -550,7 +550,7 @@
                             </div>
                         </div>
                     </div>
-                    <p id="auth-id-status" class="text-red-500 text-sm font-black mt-2 text-center bg-white/50 py-1 rounded-full mx-8 border border-white">Not uploaded</p>
+                    <p id="auth-id-status" class="hidden text-red-500 text-sm font-black mt-2 text-center bg-white/50 py-1 rounded-full mx-8 border border-white"></p>
  
                     <!-- Terms & Conditions / Privacy Checkbox -->
                     <div class="flex items-start gap-3 mt-4 ml-2">
@@ -561,7 +561,7 @@
                 </div>
             </div>
  
-            <button id="btn-auth-submit" onclick="validateAuth()" class="btn-primary-3d mt-8 shrink-0">Create Profile & Continue</button>
+            <button id="btn-auth-submit" onclick="validateAuth()" class="btn-primary-3d mt-8 shrink-0">Create Profile</button>
             <div id="auth-server-message" class="hidden mt-4 rounded-2xl border px-4 py-3 text-sm font-bold"></div>
         </div>
  
@@ -1624,7 +1624,7 @@
             }
             btn.disabled = false;
             btn.classList.remove('opacity-70', 'cursor-not-allowed');
-            btn.innerText = btn.dataset.defaultText || (state.authMode === 'signup' ? 'Create Profile & Continue' : 'Log In');
+            btn.innerText = btn.dataset.defaultText || (state.authMode === 'signup' ? 'Create Profile' : 'Log In');
         }
 
         async function backendRequest(action, payload = {}) {
@@ -1909,8 +1909,8 @@
                 btnLogin.className = "flex-1 py-3 rounded-2xl font-black text-sm transition-all duration-300 text-slate-500 hover:text-slate-700 scale-95";
                 document.getElementById('signup-fields').classList.remove('hidden');
                 document.getElementById('auth-heading').innerText = "Create Profile";
-                document.getElementById('btn-auth-submit').innerText = "Create Profile & Continue";
-                document.getElementById('btn-auth-submit').dataset.defaultText = "Create Profile & Continue";
+                document.getElementById('btn-auth-submit').innerText = "Create Profile";
+                document.getElementById('btn-auth-submit').dataset.defaultText = "Create Profile";
                 
                 if(state.role === 'driver') {
                     document.getElementById('plateNumber-container').classList.remove('hidden');
