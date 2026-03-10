@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="Poolily">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://poolily.app/">
+    <link rel="canonical" href="https://aeropool.app/">
 
     <!-- PWA -->
     <link rel="manifest" href="./manifest.webmanifest">
@@ -28,7 +28,7 @@
 
     <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://poolily.app/">
+    <meta property="og:url" content="https://aeropool.app/">
     <meta property="og:title" content="Poolily - Airport Carpooling | Travel Cheaper">
     <meta property="og:description" content="Pay up to 50% less by matching with an empty returning vehicle from the airport. Safe, AI-verified, and fast matches.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&auto=format&fit=crop">
@@ -37,7 +37,7 @@
 
     <!-- Twitter Cards -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://poolily.app/">
+    <meta property="twitter:url" content="https://aeropool.app/">
     <meta property="twitter:title" content="Poolily - Premium Airport Carpooling">
     <meta property="twitter:description" content="Don't ride back to the city empty. Drivers earn more, passengers pay less. Join Poolily today.">
     <meta property="twitter:image" content="https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=1200&auto=format&fit=crop">
@@ -48,7 +48,7 @@
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "Poolily",
-      "url": "https://poolily.app",
+      "url": "https://aeropool.app",
       "operatingSystem": "Web, iOS, Android",
       "applicationCategory": "TravelApplication",
       "aggregateRating": {
@@ -71,8 +71,8 @@
       "provider": {
         "@type": "Organization",
         "name": "Poolily Inc.",
-        "url": "https://poolily.app",
-        "logo": "https://poolily.app/logo.png"
+        "url": "https://aeropool.app",
+        "logo": "https://aeropool.app/logo.png"
       }
     }
     </script>
@@ -310,7 +310,8 @@
             <div class="flex justify-between items-center mb-8 shrink-0">
                     <div>
                     <div class="text-3xl font-black text-slate-700 tracking-tighter drop-shadow-sm flex items-center gap-0.5">
-                    Pool<span class="text-blue-500">ily</span> 
+                    Pool<span class="text-blue-500">ily</span>
+                    <span class="text-2xl animate-float">✈️</span>
                     </div>
                     <p id="home-brand-tagline" class="text-[11px] font-black text-slate-500 mt-1">Cheaper rides from the airport</p>
                     </div>
@@ -447,6 +448,39 @@
                         <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"><i data-lucide="car" width="20"></i></div>
                         <input type="text" id="auth-plateNumber" placeholder="Vehicle Plate (Max 7 chars)" maxlength="7" class="input-3d pl-14 pr-5 py-4 focus:ring-4 ring-blue-400/30 uppercase" oninput="clearError('plate-error')">
                         <p id="plate-error" class="text-red-500 text-xs font-bold mt-2 ml-4 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
+                    </div>
+
+                    <div id="driver-car-details-container" class="hidden bg-[#e8eef3] p-4 rounded-[1.25rem] shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] border border-white/60">
+                        <p class="font-black text-slate-700 text-sm mb-3 flex items-center gap-2"><i data-lucide="car-front" class="text-blue-500" width="16"></i> Car Details</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="relative">
+                                <select id="auth-car-year" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer font-bold text-slate-700 bg-white/70" onchange="handleDriverCarYearChange(); clearCarError();">
+                                    <option value="" selected disabled>Year</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]">▼</div>
+                            </div>
+                            <div class="relative">
+                                <select id="auth-car-type" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer font-bold text-slate-700 bg-white/70" onchange="clearCarError()">
+                                    <option value="" selected disabled>Type</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="Saloon">Saloon</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]">▼</div>
+                            </div>
+                            <div class="relative col-span-2">
+                                <select id="auth-car-make" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer font-bold text-slate-700 bg-white/70" onchange="handleDriverCarMakeChange(); clearCarError();">
+                                    <option value="" selected disabled>Make</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]">▼</div>
+                            </div>
+                            <div class="relative col-span-2">
+                                <select id="auth-car-model" class="input-3d px-4 py-3 text-sm appearance-none cursor-pointer font-bold text-slate-700 bg-white/70" onchange="clearCarError()">
+                                    <option value="" selected disabled>Model</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]">▼</div>
+                            </div>
+                        </div>
+                        <p id="car-error" class="text-red-500 text-xs font-bold mt-2 hidden items-center gap-1"><i data-lucide="alert-circle" width="12"></i> <span class="error-text"></span></p>
                     </div>
  
                     <div class="relative">
@@ -1063,6 +1097,21 @@
             return { regular, aero, savings, savingsPct };
         }
 
+        const CAR_DATA_URL = 'https://raw.githubusercontent.com/demirelarda/CarMakesAndModels/master/carData.json';
+        const FALLBACK_CAR_DATA = {
+            "2026": { "Toyota": ["Corolla", "Camry", "RAV4", "Highlander"], "Honda": ["Civic", "Accord", "CR-V"], "Lexus": ["ES 350", "RX 350"] },
+            "2025": { "Toyota": ["Corolla", "Camry", "RAV4", "Highlander"], "Honda": ["Civic", "Accord", "CR-V"], "Nissan": ["Altima", "Rogue", "X-Trail"] },
+            "2024": { "Toyota": ["Corolla", "Camry", "Venza"], "Hyundai": ["Elantra", "Sonata", "Tucson"], "Kia": ["Sportage", "Sorento", "Rio"] },
+            "2023": { "Toyota": ["Corolla", "Camry", "RAV4"], "Mercedes-Benz": ["C300", "E350", "GLC"], "BMW": ["320i", "X3", "X5"] },
+            "2022": { "Toyota": ["Corolla", "Camry", "Yaris"], "Honda": ["Civic", "Accord"], "Ford": ["Escape", "Explorer", "Edge"] },
+            "2021": { "Toyota": ["Corolla", "Camry"], "Lexus": ["ES 350", "RX 350"], "Nissan": ["Altima", "Sentra"] },
+            "2020": { "Toyota": ["Corolla", "Camry"], "Hyundai": ["Elantra", "Sonata"], "Kia": ["Rio", "Cerato"] },
+            "2019": { "Toyota": ["Corolla", "Camry"], "Honda": ["Accord", "Civic"], "Lexus": ["RX 350"] },
+            "2018": { "Toyota": ["Corolla", "Camry"], "Nissan": ["Altima", "Sentra"], "Hyundai": ["Elantra"] },
+            "2017": { "Toyota": ["Corolla", "Camry"], "Honda": ["Civic", "Accord"], "Ford": ["Escape", "Edge"] }
+        };
+        let driverCarCatalog = {};
+
         let socialProofMessages = [
             "Passenger just boarded a cheaper ride to Wuse.",
             "Driver just got paid after dropping someone at the airport.",
@@ -1108,11 +1157,11 @@
         let isStandaloneInstalled = false;
         let brandTaglineInterval = null;
         const STORAGE_KEYS = {
-            backendUrl: 'poolily_backend_url',
-            userSession: 'poolily_user_session'
+            backendUrl: 'aeropool_backend_url',
+            userSession: 'aeropool_user_session'
         };
         const DEFAULT_BACKEND_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyQ6h_6TUR5TRMDbs4lKIyXIkiKvVUvP091SllczKWGd4TMET6WJxwwr-AIPjpV7ALY5w/exec';
-        const BACKEND_ENDPOINT = (window.POOLILY_BACKEND_URL || localStorage.getItem(STORAGE_KEYS.backendUrl) || DEFAULT_BACKEND_ENDPOINT).trim();
+        const BACKEND_ENDPOINT = (window.AEROPOOL_BACKEND_URL || localStorage.getItem(STORAGE_KEYS.backendUrl) || DEFAULT_BACKEND_ENDPOINT).trim();
 
         // State
         const state = {
@@ -1339,6 +1388,7 @@
             restoreUserSession();
             renderHistory();
             populateBanks();
+            loadDriverCarCatalog();
             updateUI();
             initSocialProofTicker();
             initBrandTaglineRotator();
@@ -1362,7 +1412,7 @@
             });
 
             if (!isBackendConfigured()) {
-                console.warn('Poolily backend URL is not configured. Run setPoolilyBackendUrl("YOUR_APPS_SCRIPT_WEB_APP_URL") in console.');
+                console.warn('AeroPool backend URL is not configured. Run setAeroPoolBackendUrl("YOUR_APPS_SCRIPT_WEB_APP_URL") in console.');
             }
         };
 
@@ -1522,7 +1572,7 @@
             updateInstallButtonVisibility();
         }
 
-        function setPoolilyBackendUrl(url) {
+        function setAeroPoolBackendUrl(url) {
             const normalized = String(url || '').trim();
             if (normalized) {
                 localStorage.setItem(STORAGE_KEYS.backendUrl, normalized);
@@ -1531,7 +1581,7 @@
             }
             location.reload();
         }
-        window.setPoolilyBackendUrl = setPoolilyBackendUrl;
+        window.setAeroPoolBackendUrl = setAeroPoolBackendUrl;
 
         function isBackendConfigured() {
             return !!BACKEND_ENDPOINT;
@@ -1580,7 +1630,7 @@
 
         async function backendRequest(action, payload = {}) {
             if (!isBackendConfigured()) {
-                throw new Error('Backend is not configured. Set your Apps Script URL with setPoolilyBackendUrl("...").');
+                throw new Error('Backend is not configured. Set your Apps Script URL with setAeroPoolBackendUrl("...").');
             }
 
             const controller = new AbortController();
@@ -1683,6 +1733,10 @@
             const bankCode = document.getElementById('auth-driver-bank') ? document.getElementById('auth-driver-bank').value : "";
             const bankAccNum = document.getElementById('auth-driver-acc-num') ? document.getElementById('auth-driver-acc-num').value : "";
             const bankAccName = document.getElementById('auth-driver-acc-name') ? document.getElementById('auth-driver-acc-name').value : "";
+            const carYear = document.getElementById('auth-car-year') ? document.getElementById('auth-car-year').value : "";
+            const carMake = document.getElementById('auth-car-make') ? document.getElementById('auth-car-make').value : "";
+            const carModel = document.getElementById('auth-car-model') ? document.getElementById('auth-car-model').value : "";
+            const carType = document.getElementById('auth-car-type') ? document.getElementById('auth-car-type').value : "";
 
             return {
                 name,
@@ -1690,6 +1744,10 @@
                 phoneNormalized: phone,
                 role: state.role,
                 plateNumber: state.role === 'driver' ? plateNum : null,
+                carYear: state.role === 'driver' ? carYear : null,
+                carMake: state.role === 'driver' ? carMake : null,
+                carModel: state.role === 'driver' ? carModel : null,
+                carType: state.role === 'driver' ? carType : null,
                 profilePhoto: authSelfieData || '',
                 idPhoto: authIdData || '',
                 idType,
@@ -1857,10 +1915,12 @@
                 
                 if(state.role === 'driver') {
                     document.getElementById('plateNumber-container').classList.remove('hidden');
+                    document.getElementById('driver-car-details-container').classList.remove('hidden');
                     document.getElementById('auth-driver-payout-container').classList.remove('hidden');
                     document.getElementById('auth-driver-payout-container').classList.add('flex');
                 } else {
                     document.getElementById('plateNumber-container').classList.add('hidden');
+                    document.getElementById('driver-car-details-container').classList.add('hidden');
                     document.getElementById('auth-driver-payout-container').classList.add('hidden');
                     document.getElementById('auth-driver-payout-container').classList.remove('flex');
                 }
@@ -1936,10 +1996,80 @@
                 e.target.value = e.target.value.slice(0, 12);
             }
         }
+
+        function setSelectOptions(selectId, placeholder, values) {
+            const el = document.getElementById(selectId);
+            if (!el) return;
+            const opts = [`<option value="" selected disabled>${placeholder}</option>`];
+            values.forEach(v => opts.push(`<option value="${v}">${v}</option>`));
+            el.innerHTML = opts.join('');
+        }
+
+        function normalizeCarData(raw) {
+            const out = {};
+            const years = raw && raw.data && raw.data[0] && Array.isArray(raw.data[0].years) ? raw.data[0].years : [];
+            years.forEach(yearNode => {
+                const yearKey = String(yearNode.year || '').trim();
+                if (!yearKey) return;
+                const makesMap = {};
+                (yearNode.makes || []).forEach(makeNode => {
+                    const makeName = String(makeNode.makeName || '').trim();
+                    if (!makeName) return;
+                    makesMap[makeName] = (makeNode.models || []).map(m => String(m.modelName || '').trim()).filter(Boolean);
+                });
+                if (Object.keys(makesMap).length > 0) out[yearKey] = makesMap;
+            });
+            return out;
+        }
+
+        function populateDriverCarYears() {
+            const years = Object.keys(driverCarCatalog).sort((a, b) => Number(b) - Number(a));
+            setSelectOptions('auth-car-year', 'Year', years);
+            setSelectOptions('auth-car-make', 'Make', []);
+            setSelectOptions('auth-car-model', 'Model', []);
+        }
+
+        function handleDriverCarYearChange() {
+            const year = document.getElementById('auth-car-year').value;
+            const makes = year && driverCarCatalog[year] ? Object.keys(driverCarCatalog[year]).sort() : [];
+            setSelectOptions('auth-car-make', 'Make', makes);
+            setSelectOptions('auth-car-model', 'Model', []);
+        }
+
+        function handleDriverCarMakeChange() {
+            const year = document.getElementById('auth-car-year').value;
+            const make = document.getElementById('auth-car-make').value;
+            const models = year && make && driverCarCatalog[year] && driverCarCatalog[year][make] ? driverCarCatalog[year][make] : [];
+            setSelectOptions('auth-car-model', 'Model', models);
+        }
+
+        async function loadDriverCarCatalog() {
+            driverCarCatalog = FALLBACK_CAR_DATA;
+            try {
+                const res = await fetch(CAR_DATA_URL);
+                if (!res.ok) throw new Error('car data request failed');
+                const json = await res.json();
+                const normalized = normalizeCarData(json);
+                if (Object.keys(normalized).length > 0) {
+                    driverCarCatalog = normalized;
+                }
+            } catch (err) {
+                console.warn('Car catalog fallback in use:', err.message || err);
+            }
+            populateDriverCarYears();
+        }
         
         function clearError(id) {
             const el = document.getElementById(id);
             if(el) { el.classList.add('hidden'); el.classList.remove('flex'); const input = el.previousElementSibling; if(input && input.tagName==='INPUT') input.classList.remove('input-error', 'animate-shake'); }
+        }
+
+        function clearCarError() {
+            clearError('car-error');
+            ['auth-car-year', 'auth-car-make', 'auth-car-model', 'auth-car-type'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('input-error', 'animate-shake');
+            });
         }
  
         function showError(id, msg, inputId) {
@@ -1960,7 +2090,7 @@
                 nameField.value = "Verifying...";
                 setTimeout(() => {
                     const typedName = document.getElementById('auth-name').value.trim();
-                    nameField.value = typedName ? typedName.toUpperCase() : "POOLILY DRIVER";
+                    nameField.value = typedName ? typedName.toUpperCase() : "AEROPOOL DRIVER";
                     nameField.classList.remove('text-red-500');
                     nameField.classList.add('text-green-600');
                     errorField.classList.add('hidden');
@@ -1983,7 +2113,7 @@
  
             if (!isValid) return;
             if (!isBackendConfigured()) {
-                setAuthServerMessage('error', 'Backend is not configured. Open console and run setPoolilyBackendUrl("YOUR_APPS_SCRIPT_URL").');
+                setAuthServerMessage('error', 'Backend is not configured. Open console and run setAeroPoolBackendUrl("YOUR_APPS_SCRIPT_URL").');
                 return;
             }
 
@@ -2022,9 +2152,14 @@
                         const accInput = document.getElementById('auth-driver-acc-num');
                         const bankCode = bankSelect.value;
                         const bankAccNum = accInput.value;
+                        const carYear = document.getElementById('auth-car-year').value;
+                        const carMake = document.getElementById('auth-car-make').value;
+                        const carModel = document.getElementById('auth-car-model').value;
+                        const carType = document.getElementById('auth-car-type').value;
                         
                         if(!bankCode) { showError('auth-acc-num-error', 'Select your bank', 'auth-driver-bank'); isValid = false; }
                         if(bankAccNum.length !== 10) { showError('auth-acc-num-error', '10 digit account required', 'auth-driver-acc-num'); isValid = false; }
+                        if(!carYear || !carMake || !carModel || !carType) { showError('car-error', 'Select year, make, model and type', 'auth-car-year'); isValid = false; }
                     }
     
                     if(!authSelfieData) {
@@ -3348,7 +3483,7 @@
             let message = "";
             if (state.role === 'passenger' && state.selectedDriver) {
                 const d = state.selectedDriver;
-                message = `I'm on my way to ${state.rideDetails.area} via Poolily! \n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nTrack my ride: https://poolily.app/track/demo-1234`;
+                message = `I'm on my way to ${state.rideDetails.area} via Poolily! \n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nTrack my ride: https://aeropool.app/track/demo-1234`;
             }
             
             if(message) {
