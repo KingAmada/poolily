@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="Poolily">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://aeropool.app/">
+    <link rel="canonical" href="https://poolily.app/">
 
     <!-- PWA -->
     <link rel="manifest" href="./manifest.webmanifest">
@@ -28,7 +28,7 @@
 
     <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://aeropool.app/">
+    <meta property="og:url" content="https://poolily.app/">
     <meta property="og:title" content="Poolily - Airport Carpooling | Travel Cheaper">
     <meta property="og:description" content="Pay up to 50% less by matching with an empty returning vehicle from the airport. Safe, AI-verified, and fast matches.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&auto=format&fit=crop">
@@ -37,7 +37,7 @@
 
     <!-- Twitter Cards -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://aeropool.app/">
+    <meta property="twitter:url" content="https://poolily.app/">
     <meta property="twitter:title" content="Poolily - Premium Airport Carpooling">
     <meta property="twitter:description" content="Don't ride back to the city empty. Drivers earn more, passengers pay less. Join Poolily today.">
     <meta property="twitter:image" content="https://images.unsplash.com/photo-1556122071-e404eaedb77f?q=80&w=1200&auto=format&fit=crop">
@@ -48,7 +48,7 @@
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "Poolily",
-      "url": "https://aeropool.app",
+      "url": "https://poolily.app",
       "operatingSystem": "Web, iOS, Android",
       "applicationCategory": "TravelApplication",
       "aggregateRating": {
@@ -71,8 +71,8 @@
       "provider": {
         "@type": "Organization",
         "name": "Poolily Inc.",
-        "url": "https://aeropool.app",
-        "logo": "https://aeropool.app/logo.png"
+        "url": "https://poolily.app",
+        "logo": "https://poolily.app/logo.png"
       }
     }
     </script>
@@ -1108,11 +1108,11 @@
         let isStandaloneInstalled = false;
         let brandTaglineInterval = null;
         const STORAGE_KEYS = {
-            backendUrl: 'aeropool_backend_url',
-            userSession: 'aeropool_user_session'
+            backendUrl: 'poolily_backend_url',
+            userSession: 'poolily_user_session'
         };
         const DEFAULT_BACKEND_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyQ6h_6TUR5TRMDbs4lKIyXIkiKvVUvP091SllczKWGd4TMET6WJxwwr-AIPjpV7ALY5w/exec';
-        const BACKEND_ENDPOINT = (window.AEROPOOL_BACKEND_URL || localStorage.getItem(STORAGE_KEYS.backendUrl) || DEFAULT_BACKEND_ENDPOINT).trim();
+        const BACKEND_ENDPOINT = (window.POOLILY_BACKEND_URL || localStorage.getItem(STORAGE_KEYS.backendUrl) || DEFAULT_BACKEND_ENDPOINT).trim();
 
         // State
         const state = {
@@ -1362,7 +1362,7 @@
             });
 
             if (!isBackendConfigured()) {
-                console.warn('AeroPool backend URL is not configured. Run setAeroPoolBackendUrl("YOUR_APPS_SCRIPT_WEB_APP_URL") in console.');
+                console.warn('Poolily backend URL is not configured. Run setPoolilyBackendUrl("YOUR_APPS_SCRIPT_WEB_APP_URL") in console.');
             }
         };
 
@@ -1522,7 +1522,7 @@
             updateInstallButtonVisibility();
         }
 
-        function setAeroPoolBackendUrl(url) {
+        function setPoolilyBackendUrl(url) {
             const normalized = String(url || '').trim();
             if (normalized) {
                 localStorage.setItem(STORAGE_KEYS.backendUrl, normalized);
@@ -1531,7 +1531,7 @@
             }
             location.reload();
         }
-        window.setAeroPoolBackendUrl = setAeroPoolBackendUrl;
+        window.setPoolilyBackendUrl = setPoolilyBackendUrl;
 
         function isBackendConfigured() {
             return !!BACKEND_ENDPOINT;
@@ -1580,7 +1580,7 @@
 
         async function backendRequest(action, payload = {}) {
             if (!isBackendConfigured()) {
-                throw new Error('Backend is not configured. Set your Apps Script URL with setAeroPoolBackendUrl("...").');
+                throw new Error('Backend is not configured. Set your Apps Script URL with setPoolilyBackendUrl("...").');
             }
 
             const controller = new AbortController();
@@ -1960,7 +1960,7 @@
                 nameField.value = "Verifying...";
                 setTimeout(() => {
                     const typedName = document.getElementById('auth-name').value.trim();
-                    nameField.value = typedName ? typedName.toUpperCase() : "AEROPOOL DRIVER";
+                    nameField.value = typedName ? typedName.toUpperCase() : "POOLILY DRIVER";
                     nameField.classList.remove('text-red-500');
                     nameField.classList.add('text-green-600');
                     errorField.classList.add('hidden');
@@ -1983,7 +1983,7 @@
  
             if (!isValid) return;
             if (!isBackendConfigured()) {
-                setAuthServerMessage('error', 'Backend is not configured. Open console and run setAeroPoolBackendUrl("YOUR_APPS_SCRIPT_URL").');
+                setAuthServerMessage('error', 'Backend is not configured. Open console and run setPoolilyBackendUrl("YOUR_APPS_SCRIPT_URL").');
                 return;
             }
 
@@ -3348,7 +3348,7 @@
             let message = "";
             if (state.role === 'passenger' && state.selectedDriver) {
                 const d = state.selectedDriver;
-                message = `I'm on my way to ${state.rideDetails.area} via Poolily! \n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nTrack my ride: https://aeropool.app/track/demo-1234`;
+                message = `I'm on my way to ${state.rideDetails.area} via Poolily! \n\nDriver: ${d.name}\nVehicle: ${d.car} (${d.plate})\nTrack my ride: https://poolily.app/track/demo-1234`;
             }
             
             if(message) {
