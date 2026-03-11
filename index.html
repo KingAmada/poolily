@@ -3221,6 +3221,15 @@
                     state.driverDistance -= 5;
                     const startBtn = document.getElementById('btn-start-ride');
                     const waitingText = document.getElementById('waiting-text');
+                    const distancePill = document.getElementById('driver-distance-pill');
+
+                    if (distancePill) {
+                        const dist = Math.max(0, state.driverDistance);
+                        distancePill.innerText = dist <= 20 ? 'Passenger reached' : `${dist}m away`;
+                        if (dist <= 20) {
+                            distancePill.className = 'text-[10px] font-black px-2 py-1 rounded-full bg-green-100 text-green-700';
+                        }
+                    }
                     
                     if(startBtn && state.driverDistance <= 20) {
                         startBtn.disabled = false;
@@ -3244,11 +3253,11 @@
         // --- COMPACT DRIVER REQUEST UI & MATCHED SCREEN --- //
         function setupMatchedDriverScreen() {
             initMatchMap(false);
+            const container = document.getElementById('matched-card-container');
+            container.className = 'glass-panel p-6 w-full';
             const passengerChecks = [
                 { label: 'Phone verified', passed: true },
                 { label: 'ID verified', passed: true },
-                { label: 'GPS verified', passed: !!(state.currentLocation && Number.isFinite(state.currentLocation.lat) && Number.isFinite(state.currentLocation.lng)) },
-                { label: 'Amount verified', passed: Number(state.rideDetails.price) > 0 },
                 { label: 'Photo verified', passed: !!state.rideDetails.passengerPhoto }
             ];
             const passedCount = passengerChecks.filter(c => c.passed).length;
@@ -3259,7 +3268,6 @@
                 </span>
             `).join('');
             
-            const container = document.getElementById('matched-card-container');
             container.innerHTML = `
                 <div class="bg-white rounded-[2rem] p-5 shadow-xl border border-slate-100 mb-6 relative overflow-hidden">
                     <h3 class="text-sm uppercase tracking-widest text-blue-600 font-black mb-4 flex items-center gap-1 justify-center w-full">
@@ -3326,12 +3334,27 @@
         }
  
         function acceptTrip() {
-            const actionsContainer = document.getElementById('driver-match-actions');
-            actionsContainer.innerHTML = `
-                <p id="waiting-text" class="text-center text-sm font-bold text-slate-500 animate-pulse">Drive to passenger location...</p>
-                <button id="btn-start-ride" onclick="startTracking()" class="btn-primary-3d w-full" disabled>Start Ride</button>
+            const container = document.getElementById('matched-card-container');
+            container.className = 'glass-panel p-3.5 w-[90%] max-w-[330px] ml-auto';
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl p-3.5 shadow-xl border border-slate-100 relative overflow-hidden">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 border border-white overflow-hidden shrink-0">
+                            <img src="https://ui-avatars.com/api/?name=Sarah+T&background=0D8ABC&color=fff" alt="Passenger" class="w-full h-full object-cover"/>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[11px] uppercase font-black tracking-wider text-blue-600">Accepted Request</p>
+                            <p class="text-sm font-black text-slate-800 truncate">To ${state.rideDetails.area}</p>
+                        </div>
+                        <span class="ml-auto text-sm font-black text-green-600 shrink-0">₦${state.rideDetails.price.toLocaleString()}</span>
+                    </div>
+                    <div class="mt-2.5 flex items-center justify-between gap-2">
+                        <p id="waiting-text" class="text-[11px] font-black text-slate-600 animate-pulse">Driving to passenger...</p>
+                        <span id="driver-distance-pill" class="text-[10px] font-black px-2 py-1 rounded-full bg-blue-100 text-blue-700">100m away</span>
+                    </div>
+                    <button id="btn-start-ride" onclick="startTracking()" class="btn-primary-3d w-full !py-3 mt-2.5" disabled>Start Ride</button>
+                </div>
             `;
-
             initMatchMap(true);
             lucide.createIcons();
         }
