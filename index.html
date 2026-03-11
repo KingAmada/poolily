@@ -3254,10 +3254,9 @@
             const passedCount = passengerChecks.filter(c => c.passed).length;
             const scorePct = Math.round((passedCount / passengerChecks.length) * 100);
             const checksHtml = passengerChecks.map(check => `
-                <div class="flex items-center justify-between gap-3 py-1">
-                    <span class="text-xs font-black ${check.passed ? 'text-slate-700' : 'text-red-600'}">${check.label}</span>
-                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${check.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${check.passed ? 'Verified' : 'Failed'}</span>
-                </div>
+                <span class="text-[10px] font-black px-2 py-1 rounded-full ${check.passed ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}">
+                    ${check.label.replace(' verified', '')}: ${check.passed ? 'OK' : 'X'}
+                </span>
             `).join('');
             
             const container = document.getElementById('matched-card-container');
@@ -3307,11 +3306,11 @@
                     </div>
 
                     <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                        <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center justify-between gap-2 mb-2">
                             <p class="text-[10px] font-black uppercase tracking-wider text-slate-500">Passenger Verification</p>
-                            <p class="text-[10px] font-black ${scorePct >= 80 ? 'text-green-600' : 'text-red-600'}">Score: ${passedCount}/${passengerChecks.length} (${scorePct}%)</p>
+                            <p class="text-[10px] font-black ${scorePct >= 80 ? 'text-green-600' : 'text-red-600'}">${passedCount}/${passengerChecks.length} • ${scorePct}%</p>
                         </div>
-                        <div class="space-y-0.5">${checksHtml}</div>
+                        <div class="flex flex-wrap gap-1.5">${checksHtml}</div>
                     </div>
                 </div>
  
