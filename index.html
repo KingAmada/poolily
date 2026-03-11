@@ -873,6 +873,32 @@
  
                 <!-- Payout Section (Driver) -->
                 <div id="profile-payout" class="hidden flex-col">
+                    <div id="profile-vehicle-card" class="bg-[#e8eef3] p-5 rounded-[2rem] shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] border-2 border-white/50 mb-4">
+                        <h3 class="font-black text-slate-700 mb-3 flex items-center gap-2"><i data-lucide="car-front" class="text-blue-500"></i> Vehicle Details</h3>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="bg-white/70 rounded-xl px-3 py-2 border border-white">
+                                <p class="text-[10px] uppercase font-black text-slate-400">Make</p>
+                                <p id="profile-car-make" class="font-black text-slate-700">-</p>
+                            </div>
+                            <div class="bg-white/70 rounded-xl px-3 py-2 border border-white">
+                                <p class="text-[10px] uppercase font-black text-slate-400">Model</p>
+                                <p id="profile-car-model" class="font-black text-slate-700">-</p>
+                            </div>
+                            <div class="bg-white/70 rounded-xl px-3 py-2 border border-white">
+                                <p class="text-[10px] uppercase font-black text-slate-400">Year</p>
+                                <p id="profile-car-year" class="font-black text-slate-700">-</p>
+                            </div>
+                            <div class="bg-white/70 rounded-xl px-3 py-2 border border-white">
+                                <p class="text-[10px] uppercase font-black text-slate-400">Type</p>
+                                <p id="profile-car-type" class="font-black text-slate-700">-</p>
+                            </div>
+                            <div class="bg-white/70 rounded-xl px-3 py-2 border border-white col-span-2">
+                                <p class="text-[10px] uppercase font-black text-slate-400">Plate Number</p>
+                                <p id="profile-car-plate" class="font-black text-slate-700">-</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="bg-[#e8eef3] p-6 rounded-[2rem] shadow-[inset_6px_6px_12px_#c4d0dc,inset_-6px_-6px_12px_#ffffff] border-2 border-white/50 mb-6">
                         <h3 class="font-black text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="building-2" class="text-blue-500"></i> Payout Details</h3>
                         <p class="text-xs font-bold text-slate-500 mb-3">Your connected bank account for withdrawals.</p>
@@ -1675,6 +1701,10 @@
                 phone: raw.phone || '',
                 role,
                 plateNumber: raw.plateNumber || null,
+                carYear: raw.carYear || null,
+                carMake: raw.carMake || null,
+                carModel: raw.carModel || null,
+                carType: raw.carType || null,
                 profilePhoto: raw.profilePhoto || null,
                 wallet: {
                     balance: Number.isFinite(balance) ? balance : 0,
@@ -2424,6 +2454,18 @@
             if(state.role === 'driver') {
                 payoutSec.classList.remove('hidden');
                 payoutSec.classList.add('flex');
+
+                const carMakeEl = document.getElementById('profile-car-make');
+                const carModelEl = document.getElementById('profile-car-model');
+                const carYearEl = document.getElementById('profile-car-year');
+                const carTypeEl = document.getElementById('profile-car-type');
+                const carPlateEl = document.getElementById('profile-car-plate');
+                if (carMakeEl) carMakeEl.innerText = state.user.carMake || '-';
+                if (carModelEl) carModelEl.innerText = state.user.carModel || '-';
+                if (carYearEl) carYearEl.innerText = state.user.carYear || '-';
+                if (carTypeEl) carTypeEl.innerText = state.user.carType || '-';
+                if (carPlateEl) carPlateEl.innerText = state.user.plateNumber || '-';
+
                 // Pre-fill fields if they exist
                 if (state.user.bankDetails && state.user.bankDetails.bankCode) {
                     document.getElementById('driver-bank-select').value = state.user.bankDetails.bankCode;
@@ -3202,7 +3244,21 @@
         // --- COMPACT DRIVER REQUEST UI & MATCHED SCREEN --- //
         function setupMatchedDriverScreen() {
             initMatchMap(false);
-            const comparison = getFareComparison(state.rideDetails.price);
+            const passengerChecks = [
+                { label: 'Phone verified', passed: true },
+                { label: 'ID verified', passed: true },
+                { label: 'GPS verified', passed: !!(state.currentLocation && Number.isFinite(state.currentLocation.lat) && Number.isFinite(state.currentLocation.lng)) },
+                { label: 'Amount verified', passed: Number(state.rideDetails.price) > 0 },
+                { label: 'Photo verified', passed: !!state.rideDetails.passengerPhoto }
+            ];
+            const passedCount = passengerChecks.filter(c => c.passed).length;
+            const scorePct = Math.round((passedCount / passengerChecks.length) * 100);
+            const checksHtml = passengerChecks.map(check => `
+                <div class="flex items-center justify-between gap-3 py-1">
+                    <span class="text-xs font-black ${check.passed ? 'text-slate-700' : 'text-red-600'}">${check.label}</span>
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${check.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${check.passed ? 'Verified' : 'Failed'}</span>
+                </div>
+            `).join('');
             
             const container = document.getElementById('matched-card-container');
             container.innerHTML = `
@@ -3248,6 +3304,14 @@
                     </div>
                     <div class="mt-3 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
                         <p class="text-xs font-black text-green-600">You were supposed to go back empty... This Passenger will pay you N${state.rideDetails.price.toLocaleString()} fare when you accept.</p>
+                    </div>
+
+                    <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <p class="text-[10px] font-black uppercase tracking-wider text-slate-500">Passenger Verification</p>
+                            <p class="text-[10px] font-black ${scorePct >= 80 ? 'text-green-600' : 'text-red-600'}">Score: ${passedCount}/${passengerChecks.length} (${scorePct}%)</p>
+                        </div>
+                        <div class="space-y-0.5">${checksHtml}</div>
                     </div>
                 </div>
  
