@@ -1636,7 +1636,16 @@
         }
 
         function normalizePhone(phone) {
-            return String(phone || '').replace(/\D/g, '');
+            let digits = String(phone || '').replace(/\D/g, '');
+            if (!digits) return '';
+            if (digits.startsWith('234') && digits.length >= 13) {
+                digits = '0' + digits.slice(-10);
+            } else if (digits.length === 10) {
+                digits = '0' + digits;
+            } else if (digits.length > 11) {
+                digits = '0' + digits.slice(-10);
+            }
+            return digits;
         }
 
         function normalizeText(txt) {
@@ -1766,13 +1775,24 @@
             } catch (_) {}
         }
 
-        async function syncRecord(entity, data, mode = 'append', idField = '', idValue = '') {
-            if (!isBackendConfigured()) return;
-            try {
-                await backendRequest('syncRecord', { entity, data, mode, idField, idValue });
-            } catch (err) {
-                console.warn('Sync error:', err.message || err);
+        async function syncRecord(entity, data, mode = 'append', idField = '', idValue = '', required = false) {
+            if (!isBackendConfigured()) {
+                if (required) throw new Error('Backend is not configured.');
+                return false;
             }
+            const maxAttempts = required ? 2 : 1;
+            let lastErr = null;
+            for (let i = 0; i < maxAttempts; i++) {
+                try {
+                    await backendRequest('syncRecord', { entity, data, mode, idField, idValue });
+                    return true;
+                } catch (err) {
+                    lastErr = err;
+                    console.warn('Sync error:', err.message || err);
+                }
+            }
+            if (required && lastErr) throw lastErr;
+            return false;
         }
 
         function getAuthPayload() {
@@ -2035,7 +2055,7 @@
             else { container.classList.add('hidden-screen'); }
         }
  
-        function handlePhoneInput(e) { clearError('phone-error'); e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11); }
+        function handlePhoneInput(e) { clearError('phone-error'); e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13); }
         function handlePinInput(e) { clearError('pin-error'); e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); }
         function handleIdNumberInput(e) {
             clearError('idNumber-error');
@@ -2157,10 +2177,11 @@
  
         async function validateAuth() {
             let isValid = true;
-            const phone = document.getElementById('auth-phone').value;
+            const rawPhone = document.getElementById('auth-phone').value;
+            const phone = normalizePhone(rawPhone);
             const pin = document.getElementById('auth-pin').value;
             
-            if (phone.length < 10) { showError('phone-error', 'Phone must be 10 or 11 digits', 'auth-phone'); isValid = false; }
+            if (phone.length < 11) { showError('phone-error', 'Phone must be a valid mobile number', 'auth-phone'); isValid = false; }
             if (pin.length !== 4) { showError('pin-error', 'PIN must be 4 digits', 'auth-pin'); isValid = false; }
  
             if (!isValid) return;
@@ -2222,6 +2243,16 @@
     
                     if (!isValid) return;
 
+                    const phoneCheck = await backendRequest('checkUserByPhone', { phone });
+                    if (phoneCheck.exists) {
+                        if (phoneCheck.role && phoneCheck.role !== state.role) {
+                            setAuthServerMessage('error', `This phone number is already registered as a ${phoneCheck.role} account.`);
+                        } else {
+                            setAuthServerMessage('error', 'This phone number is already registered. Please log in instead.');
+                        }
+                        return;
+                    }
+
                     const verified = await runFaceVerification();
                     if (!verified) {
                         setAuthServerMessage('error', 'Identity verification failed. Please re-upload clear selfie and ID photo.');
@@ -2237,10 +2268,10 @@
                         userId: state.user.id,
                         role: state.role,
                         phone: normalizePhone(state.user.phone)
-                    });
+                    }, 'append', '', '', true);
                 } else {
                     const response = await backendRequest('loginUser', {
-                        phone: normalizePhone(phone),
+                        phone,
                         role: state.role,
                         pin
                     });
@@ -2250,7 +2281,7 @@
                         userId: state.user.id,
                         role: state.role,
                         phone: normalizePhone(state.user.phone)
-                    });
+                    }, 'append', '', '', true);
                 }
 
                 setupDestinationScreen();
@@ -2715,11 +2746,22 @@
             otherField.classList.add('hidden');
             state.cancellationReason = '';
 
-            optionsWrap.innerHTML = cancellationOptions.map(reason => `
-                <button onclick="selectCancelReason('${reason.replace(/'/g, "\\'")}')" class="w-full text-left bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-black text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all">
+            optionsWrap.innerHTML = cancellationOptions.map((reason, idx) => `
+                <button type="button" data-cancel-idx="${idx}" class="cancel-reason-option w-full text-left bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-black text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all">
                     ${reason}
                 </button>
             `).join('');
+            optionsWrap.querySelectorAll('.cancel-reason-option').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const idx = Number(btn.dataset.cancelIdx);
+                    const selected = cancellationOptions[idx] || '';
+                    selectCancelReason(selected);
+                    optionsWrap.querySelectorAll('.cancel-reason-option').forEach((x) => {
+                        x.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
+                    });
+                    btn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+                });
+            });
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -2756,7 +2798,7 @@
             }, 300);
         }
 
-        function submitTripCancellation() {
+        async function submitTripCancellation() {
             const otherField = document.getElementById('cancel-trip-other');
             let reason = state.cancellationReason;
             if (reason === 'Other') {
@@ -2768,7 +2810,7 @@
             }
 
             closeCancelTripModal();
-            finalizeTrip('cancelled', reason);
+            await finalizeTrip('cancelled', reason);
         }
  
         // --- CAMERA LOGIC --- //
@@ -3083,7 +3125,7 @@
         }
  
         // --- FLOW TRANSITIONS --- //
-        function startSearching() {
+        async function startSearching() {
             const destInput = document.getElementById('dest-search-input');
             if(!state.rideDetails.area || destInput.value.trim() === '') {
                 destInput.classList.add('input-error', 'animate-shake'); setTimeout(() => destInput.classList.remove('animate-shake'), 300); return;
@@ -3094,16 +3136,21 @@
             if (!ensurePassengerWalletFunded()) return;
 
             if (state.user) {
-                syncRecord('RideRequests', {
-                    userId: state.user.id,
-                    role: state.role,
-                    pickup: state.rideDetails.pickup,
-                    destination: state.rideDetails.area,
-                    quotedFare: state.rideDetails.price,
-                    seats: state.rideDetails.seats,
-                    dropStyle: state.rideDetails.dropStyle,
-                    status: 'requested'
-                });
+                try {
+                    await syncRecord('RideRequests', {
+                        userId: state.user.id,
+                        role: state.role,
+                        pickup: state.rideDetails.pickup,
+                        destination: state.rideDetails.area,
+                        quotedFare: state.rideDetails.price,
+                        seats: state.rideDetails.seats,
+                        dropStyle: state.rideDetails.dropStyle,
+                        status: 'requested'
+                    }, 'append', '', '', true);
+                } catch (err) {
+                    showSystemMessage('Could not save this ride request. Please check internet and try again.', 'Sync Failed', 'error');
+                    return;
+                }
             }
             
             if(state.role === 'driver') {
@@ -3734,7 +3781,7 @@
             return score > 0 ? `Verified User • ${score}/5` : 'Unverified';
         }
 
-        function finalizeTrip(status = 'completed', reason = '') {
+        async function finalizeTrip(status = 'completed', reason = '') {
             const price = state.role === 'passenger'
                 ? Number((state.selectedDriver && state.selectedDriver.price) || state.rideDetails.price || 0)
                 : Number(state.rideDetails.price || 0);
@@ -3780,36 +3827,41 @@
 
             if (state.user) {
                 persistUserSession();
-                syncRecord('Rides', {
-                    userId: state.user.id,
-                    role: state.role,
-                    destination: dest,
-                    pickup: state.rideDetails.pickup,
-                    price,
-                    status,
-                    cancelledBy: isCancelled ? state.role : '',
-                    cancellationReason: isCancelled ? reason : '',
-                    reachedDestination: state.hasReachedDestination,
-                    tripStartedAt: state.tripStartedAt ? new Date(state.tripStartedAt).toISOString() : '',
-                    tripEndedAt: new Date().toISOString()
-                });
-
-                if (!isCancelled) {
-                    syncRecord('WalletTransactions', {
+                try {
+                    await syncRecord('Rides', {
                         userId: state.user.id,
                         role: state.role,
-                        type: state.role === 'passenger' ? 'debit' : 'credit',
-                        amount: price,
-                        description: `Ride to ${dest}`,
-                        balanceAfter: state.user.wallet.balance
-                    });
-                }
+                        destination: dest,
+                        pickup: state.rideDetails.pickup,
+                        price,
+                        status,
+                        cancelledBy: isCancelled ? state.role : '',
+                        cancellationReason: isCancelled ? reason : '',
+                        reachedDestination: state.hasReachedDestination,
+                        tripStartedAt: state.tripStartedAt ? new Date(state.tripStartedAt).toISOString() : '',
+                        tripEndedAt: new Date().toISOString()
+                    }, 'append', '', '', true);
 
-                syncRecord('Users', {
-                    userId: state.user.id,
-                    walletBalance: state.user.wallet.balance,
-                    walletHistory: state.user.wallet.history
-                }, 'upsert', 'userId', state.user.id);
+                    if (!isCancelled) {
+                        await syncRecord('WalletTransactions', {
+                            userId: state.user.id,
+                            role: state.role,
+                            type: state.role === 'passenger' ? 'debit' : 'credit',
+                            amount: price,
+                            description: `Ride to ${dest}`,
+                            balanceAfter: state.user.wallet.balance
+                        }, 'append', '', '', true);
+                    }
+
+                    await syncRecord('Users', {
+                        userId: state.user.id,
+                        walletBalance: state.user.wallet.balance,
+                        walletHistory: state.user.wallet.history
+                    }, 'upsert', 'userId', state.user.id, true);
+                } catch (err) {
+                    showSystemMessage('Trip state could not be fully synced. Please check network and retry.', 'Sync Failed', 'error');
+                    return;
+                }
             }
 
             state.selectedDriver = null;
@@ -3835,12 +3887,12 @@
             setStep('idle', 'home');
         }
 
-        function endTrip() {
+        async function endTrip() {
             if (!state.hasReachedDestination) {
                 openCancelTripModal();
                 return;
             }
-            finalizeTrip('completed', '');
+            await finalizeTrip('completed', '');
         }
  
         function renderHistory() {
