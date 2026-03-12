@@ -1205,7 +1205,7 @@
             backendUrl: 'poolily_backend_url',
             userSession: 'poolily_user_session'
         };
-        const DEFAULT_BACKEND_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyQ6h_6TUR5TRMDbs4lKIyXIkiKvVUvP091SllczKWGd4TMET6WJxwwr-AIPjpV7ALY5w/exec';
+        const DEFAULT_BACKEND_ENDPOINT = 'https://objcsfzlelbdswfcaerb.supabase.co/functions/v1/poolily-gateway';
         const BACKEND_ENDPOINT = (window.POOLILY_BACKEND_URL || localStorage.getItem(STORAGE_KEYS.backendUrl) || DEFAULT_BACKEND_ENDPOINT).trim();
 
         // State
@@ -1468,7 +1468,9 @@
             });
 
             if (!isBackendConfigured()) {
-                console.warn('Poolily backend URL is not configured. Run setPoolilyBackendUrl("YOUR_APPS_SCRIPT_WEB_APP_URL") in console.');
+                console.warn('Poolily backend URL is not configured. Run setPoolilyBackendUrl("YOUR_SUPABASE_FUNCTION_URL") in console.');
+            } else if (state.user) {
+                refreshWalletFromBackend({ silent: true });
             }
         };
 
@@ -1796,7 +1798,7 @@
 
         async function backendRequest(action, payload = {}) {
             if (!isBackendConfigured()) {
-                throw new Error('Backend is not configured. Set your Apps Script URL with setPoolilyBackendUrl("...").');
+                throw new Error('Backend is not configured. Set your Supabase function URL with setPoolilyBackendUrl("...").');
             }
 
             const controller = new AbortController();
@@ -1828,6 +1830,32 @@
                 return data;
             } finally {
                 clearTimeout(timeout);
+            }
+        }
+
+        async function refreshWalletFromBackend(options = {}) {
+            const silent = options.silent !== false;
+            if (!state.user || !isBackendConfigured()) return false;
+
+            try {
+                const response = await backendRequest('getWalletStatus', {
+                    userId: state.user.id,
+                    phone: state.user.phone,
+                    role: state.role
+                });
+                if (!response || !response.user) return false;
+
+                hydrateUserFromBackend({
+                    ...state.user,
+                    ...response.user
+                }, state.role);
+                renderProfile();
+                return true;
+            } catch (err) {
+                if (!silent) {
+                    showSystemMessage(err.message || 'Could not refresh wallet status.', 'Wallet Sync Failed', 'error');
+                }
+                return false;
             }
         }
 
@@ -2332,7 +2360,7 @@
  
             if (!isValid) return;
             if (!isBackendConfigured()) {
-                setAuthServerMessage('error', 'Backend is not configured. Open console and run setPoolilyBackendUrl("YOUR_APPS_SCRIPT_URL").');
+                setAuthServerMessage('error', 'Backend is not configured. Open console and run setPoolilyBackendUrl("YOUR_SUPABASE_FUNCTION_URL").');
                 return;
             }
             if (actionLocks.auth_submit) return;
@@ -3321,6 +3349,7 @@
                 }
 
                 state.rideDetails.pickup = document.getElementById('pickup-location').value;
+                await refreshWalletFromBackend({ silent: true });
 
                 if (!ensurePassengerWalletFunded()) {
                     endActionLock('start_searching', btn);
