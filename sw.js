@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aeropool-v2';
+const CACHE_NAME = 'Poolily';
 const APP_SHELL = [
   './',
   './index.html',
