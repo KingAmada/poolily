@@ -15,6 +15,7 @@
     <meta name="language" content="English">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Poolily">
 
@@ -1194,7 +1195,12 @@
         let deferredInstallPrompt = null;
         let isStandaloneInstalled = false;
         let brandTaglineInterval = null;
+        let isApplyingPopState = false;
+        let verifyAccountTimer = null;
+        let verifyAccountToken = 0;
         const actionLocks = {};
+        const MAX_IMAGE_SIDE = 1280;
+        const IMAGE_COMPRESSION_QUALITY = 0.72;
         const STORAGE_KEYS = {
             backendUrl: 'poolily_backend_url',
             userSession: 'poolily_user_session'
@@ -1444,6 +1450,7 @@
             applyPriceTagCharAnimation();
             isStandaloneInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
             updateInstallButtonVisibility();
+            syncRouteState(true);
 
             if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
                 navigator.serviceWorker.register('./sw.js').catch((err) => {
@@ -1475,6 +1482,17 @@
             isStandaloneInstalled = true;
             deferredInstallPrompt = null;
             updateInstallButtonVisibility();
+        });
+
+        window.addEventListener('popstate', (event) => {
+            const route = event.state;
+            if (!route || route.poolilyRoute !== true) return;
+            isApplyingPopState = true;
+            try {
+                setStep(String(route.step || 'idle'), String(route.tab || 'home'), false);
+            } finally {
+                isApplyingPopState = false;
+            }
         });
 
         function initBrandTaglineRotator() {
@@ -1651,6 +1669,69 @@
 
         function normalizeText(txt) {
             return String(txt || '').trim().toLowerCase();
+        }
+
+        function getRouteState() {
+            return {
+                poolilyRoute: true,
+                step: state.step,
+                tab: state.activeTab
+            };
+        }
+
+        function syncRouteState(replace = false) {
+            if (isApplyingPopState || !window.history || typeof window.history.pushState !== 'function') return;
+            const next = getRouteState();
+            const current = window.history.state;
+            if (current && current.poolilyRoute === true && current.step === next.step && current.tab === next.tab) {
+                if (replace) window.history.replaceState(next, '');
+                return;
+            }
+            if (replace) window.history.replaceState(next, '');
+            else window.history.pushState(next, '');
+        }
+
+        function readFileAsDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => resolve(ev.target.result);
+                reader.onerror = () => reject(new Error('Failed to read image file'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function resizeDataUrlImage(dataUrl, maxSide = MAX_IMAGE_SIDE, quality = IMAGE_COMPRESSION_QUALITY) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+                    const longest = Math.max(width, height);
+                    if (longest > maxSide) {
+                        const scale = maxSide / longest;
+                        width = Math.max(1, Math.round(width * scale));
+                        height = Math.max(1, Math.round(height * scale));
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        reject(new Error('Failed to create image canvas'));
+                        return;
+                    }
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = dataUrl;
+            });
+        }
+
+        async function compressImageFile(file) {
+            const rawDataUrl = await readFileAsDataUrl(file);
+            return resizeDataUrlImage(rawDataUrl);
         }
 
         function setAuthServerMessage(type, msg) {
@@ -1938,17 +2019,18 @@
             });
         }
  
-        function setTab(tab) {
+        function setTab(tab, syncHistory = true) {
             // Allow bottom nav to return user to the main tab shell from flow screens.
             if (state.user && state.step !== 'idle') {
-                setStep('idle', tab);
+                setStep('idle', tab, syncHistory);
                 return;
             }
             state.activeTab = tab;
             updateUI();
+            if (syncHistory) syncRouteState();
         }
  
-        function setStep(newStep, newTab = null) {
+        function setStep(newStep, newTab = null, syncHistory = true) {
             state.step = newStep;
             if (newTab) state.activeTab = newTab;
 
@@ -1971,6 +2053,7 @@
             }
  
             updateUI();
+            if (syncHistory) syncRouteState();
             
             setTimeout(() => {
                 if (state.destMapInstance && state.step === 'destination') state.destMapInstance.resize();
@@ -2036,28 +2119,32 @@
             }
         }
  
-        function handleAuthSelfieUpload(e) {
-            if (e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    authSelfieData = ev.target.result;
-                    document.getElementById('auth-selfie-preview').innerHTML = `<img src="${ev.target.result}" class="w-full h-full object-cover rounded-full" />`;
-                    const err = document.getElementById('auth-selfie-error');
-                    if(err) { err.classList.add('hidden'); err.classList.remove('flex'); }
-                };
-                reader.readAsDataURL(e.target.files[0]);
+        async function handleAuthSelfieUpload(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            try {
+                authSelfieData = await compressImageFile(file);
+            } catch (err) {
+                console.warn('Selfie compression failed, using original image:', err);
+                authSelfieData = await readFileAsDataUrl(file);
             }
+            document.getElementById('auth-selfie-preview').innerHTML = `<img src="${authSelfieData}" class="w-full h-full object-cover rounded-full" />`;
+            const err = document.getElementById('auth-selfie-error');
+            if(err) { err.classList.add('hidden'); err.classList.remove('flex'); }
         }
  
-        function handleAuthIdUpload(e) {
+        async function handleAuthIdUpload(e) {
             const status = document.getElementById('auth-id-status');
             if(e.target.files.length > 0) {
-                status.innerText = 'Uploaded: ' + e.target.files[0].name;
+                const file = e.target.files[0];
+                status.innerText = 'Uploaded: ' + file.name;
                 status.className = 'text-green-600 text-sm font-black mt-2 text-center bg-white/50 py-1 rounded-full mx-8 border border-white';
-                
-                const reader = new FileReader();
-                reader.onload = (ev) => { authIdData = ev.target.result; };
-                reader.readAsDataURL(e.target.files[0]);
+                try {
+                    authIdData = await compressImageFile(file);
+                } catch (err) {
+                    console.warn('ID compression failed, using original image:', err);
+                    authIdData = await readFileAsDataUrl(file);
+                }
             }
         }
  
@@ -2613,24 +2700,27 @@
             showSystemMessage(`Successfully withdrew ₦${amount.toLocaleString()} to your ${bank} account.`, "Withdrawal Successful", "success");
         }
  
-        function handleProfilePhoto(e) {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const img = document.getElementById('profile-display-img');
-                    img.src = ev.target.result;
-                    img.classList.remove('hidden');
-                    document.getElementById('profile-emoji-fallback').classList.add('hidden');
-                    if(state.user) {
-                        state.user.profilePhoto = ev.target.result;
-                        persistUserSession();
-                        syncRecord('Users', {
-                            userId: state.user.id,
-                            profilePhoto: state.user.profilePhoto
-                        }, 'upsert', 'userId', state.user.id);
-                    }
-                };
-                reader.readAsDataURL(e.target.files[0]);
+        async function handleProfilePhoto(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            let photoData = '';
+            try {
+                photoData = await compressImageFile(file);
+            } catch (err) {
+                console.warn('Profile photo compression failed, using original image:', err);
+                photoData = await readFileAsDataUrl(file);
+            }
+            const img = document.getElementById('profile-display-img');
+            img.src = photoData;
+            img.classList.remove('hidden');
+            document.getElementById('profile-emoji-fallback').classList.add('hidden');
+            if(state.user) {
+                state.user.profilePhoto = photoData;
+                persistUserSession();
+                syncRecord('Users', {
+                    userId: state.user.id,
+                    profilePhoto: state.user.profilePhoto
+                }, 'upsert', 'userId', state.user.id);
             }
         }
  
@@ -2655,24 +2745,43 @@
             input.value = input.value.replace(/\D/g, '');
             const nameField = document.getElementById('driver-acc-name');
             const errorField = document.getElementById('payout-error');
+            if (!nameField || !errorField) return;
+            verifyAccountToken += 1;
+            const currentToken = verifyAccountToken;
+            if (verifyAccountTimer) {
+                clearTimeout(verifyAccountTimer);
+                verifyAccountTimer = null;
+            }
             
             if(input.value.length === 10) {
                 // Simulate verification delay
                 nameField.value = "Verifying...";
-                setTimeout(() => {
+                nameField.classList.remove('text-red-500', 'text-green-600');
+                nameField.classList.add('text-slate-500');
+                verifyAccountTimer = setTimeout(() => {
+                    verifyAccountTimer = null;
+                    if (currentToken !== verifyAccountToken) return;
+                    const liveInput = document.getElementById('driver-acc-num');
+                    const liveNameField = document.getElementById('driver-acc-name');
+                    const liveErrorField = document.getElementById('payout-error');
+                    if (!liveInput || !liveNameField || !liveErrorField || !document.body.contains(liveNameField)) return;
+                    if (liveInput.value.length !== 10) return;
                     // Auto match name for demo purposes if valid, else show error
                     if(state.user && state.user.name) {
-                        nameField.value = state.user.name.toUpperCase();
-                        nameField.classList.remove('text-red-500');
-                        nameField.classList.add('text-green-600');
-                        errorField.classList.add('hidden');
-                        errorField.classList.remove('flex');
+                        liveNameField.value = state.user.name.toUpperCase();
+                        liveNameField.classList.remove('text-red-500');
+                        liveNameField.classList.add('text-green-600');
+                        liveErrorField.classList.add('hidden');
+                        liveErrorField.classList.remove('flex');
                     }
                 }, 1000);
             } else {
                 nameField.value = "";
+                nameField.classList.remove('text-red-500');
                 nameField.classList.remove('text-green-600');
                 nameField.classList.add('text-slate-500');
+                errorField.classList.add('hidden');
+                errorField.classList.remove('flex');
             }
         }
  
@@ -2903,15 +3012,21 @@
             const video = document.getElementById('camera-feed');
             const canvas = document.getElementById('camera-canvas');
             const ctx = canvas.getContext('2d');
+            if (!ctx) return;
             
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            const sourceWidth = video.videoWidth;
+            const sourceHeight = video.videoHeight;
+            const longest = Math.max(sourceWidth, sourceHeight);
+            const scale = longest > MAX_IMAGE_SIDE ? (MAX_IMAGE_SIDE / longest) : 1;
+            canvas.width = Math.max(1, Math.round(sourceWidth * scale));
+            canvas.height = Math.max(1, Math.round(sourceHeight * scale));
             
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            const dataUrl = canvas.toDataURL('image/jpeg', IMAGE_COMPRESSION_QUALITY);
             
             if (currentCameraTarget === 'auth') {
                 authSelfieData = dataUrl;

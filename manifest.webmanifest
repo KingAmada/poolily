@@ -1,6 +1,6 @@
 {
-  "name": "AeroPool",
-  "short_name": "AeroPool",
+  "name": "Poolily",
+  "short_name": "Poolily",
   "description": "Airport carpooling web app for drivers and passengers.",
   "start_url": "./index.html",
   "scope": "./",
