@@ -1065,8 +1065,8 @@
             <canvas id="camera-canvas" class="hidden"></canvas>
         </div>
 
-        <div id="system-message-modal" class="fixed inset-0 bg-slate-900/75 z-[350] hidden items-center justify-center p-6 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-            <div id="system-message-inner" class="w-full max-w-[340px] bg-[#e8eef3] rounded-[2rem] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] border border-white/70 transform scale-95 transition-transform duration-300">
+        <div id="system-message-modal" class="fixed inset-0 bg-slate-900/35 z-[350] hidden items-end justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-[2px] opacity-0 transition-opacity duration-300 pointer-events-none">
+            <div id="system-message-inner" class="w-full max-w-[360px] bg-[#e8eef3] rounded-[1.8rem] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.28)] border border-white/70 transform translate-y-6 transition-transform duration-300 pointer-events-auto">
                 <div class="flex items-start gap-3">
                     <div id="system-message-icon-wrap" class="w-11 h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                         <i id="system-message-icon" data-lucide="info" width="20"></i>
@@ -1080,8 +1080,8 @@
             </div>
         </div>
 
-        <div id="cancel-trip-modal" class="fixed inset-0 bg-slate-900/75 z-[360] hidden items-center justify-center p-6 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-            <div id="cancel-trip-inner" class="w-full max-w-[360px] bg-[#e8eef3] rounded-[2rem] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] border border-white/70 transform scale-95 transition-transform duration-300">
+        <div id="cancel-trip-modal" class="fixed inset-0 bg-slate-900/45 z-[360] hidden items-end justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm opacity-0 transition-opacity duration-300">
+            <div id="cancel-trip-inner" class="w-full max-w-[360px] bg-[#e8eef3] rounded-[1.8rem] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] border border-white/70 transform translate-y-6 transition-transform duration-300">
                 <h4 class="text-xl font-black text-slate-800 mb-1">Cancel Trip</h4>
                 <p id="cancel-trip-subtitle" class="text-xs font-bold text-slate-500 mb-4">Tell us why you want to cancel this trip.</p>
                 <div id="cancel-trip-options" class="space-y-2"></div>
@@ -1099,9 +1099,12 @@
     <script>
         const runtimeConfig = window.POOLILY_RUNTIME_CONFIG || {};
         const mapboxToken = String(runtimeConfig.mapboxToken || '').trim();
-        const MAPBOX_STYLE_URL = String(runtimeConfig.mapStyle || 'mapbox://styles/mapbox/navigation-day-v1').trim();
+        const MAPBOX_STYLE_URL = String(runtimeConfig.mapStyle || 'mapbox://styles/mapbox/standard').trim();
         const MAP_DEFAULT_ZOOM = Number(runtimeConfig.mapDefaultZoom || 14.5);
-        const MAP_ROUTE_MAX_ZOOM = Number(runtimeConfig.mapRouteMaxZoom || 15.5);
+        const MAP_ROUTE_MAX_ZOOM = Number(runtimeConfig.mapRouteMaxZoom || 16.5);
+        const FACE_MATCH_MAX_DISTANCE = Number(runtimeConfig.faceMatchMaxDistance || 0.42);
+        const FACE_MIN_DETECTION_SCORE = Number(runtimeConfig.faceMinDetectionScore || 0.8);
+        const TRACKING_ARRIVAL_RADIUS_METERS = Number(runtimeConfig.trackingArrivalRadiusMeters || 50);
 
         // Bank List Data
         const BANK_NAMES = [
@@ -1195,6 +1198,7 @@
         let isApplyingPopState = false;
         let verifyAccountTimer = null;
         let verifyAccountToken = 0;
+        let systemMessageAnchorTarget = null;
         const actionLocks = {};
         const MAX_IMAGE_SIDE = 1280;
         const IMAGE_COMPRESSION_QUALITY = 0.72;
@@ -2531,24 +2535,27 @@
                 ]);
  
                 updateProgress(40, 'Locating face in ID Document...');
-                // Wait for image to load in DOM
                 await new Promise(r => { idImg.complete ? r() : idImg.onload = r });
-                const idResult = await faceapi.detectSingleFace(idImg).withFaceLandmarks().withFaceDescriptor();
-                
-                if (!idResult) throw new Error('Face not detected in ID photo.');
- 
+                const idFaces = await faceapi.detectAllFaces(idImg).withFaceLandmarks().withFaceDescriptors();
+                if (idFaces.length !== 1) throw new Error('ID photo must contain exactly one clear face.');
+                const idResult = idFaces[0];
+                if ((idResult.detection?.score || 0) < FACE_MIN_DETECTION_SCORE) {
+                    throw new Error('ID photo is too unclear for safe verification.');
+                }
+
                 updateProgress(70, 'Locating face in Live Selfie...');
                 await new Promise(r => { selfieImg.complete ? r() : selfieImg.onload = r });
-                const selfieResult = await faceapi.detectSingleFace(selfieImg).withFaceLandmarks().withFaceDescriptor();
- 
-                if (!selfieResult) throw new Error('Face not detected in Selfie.');
- 
+                const selfieFaces = await faceapi.detectAllFaces(selfieImg).withFaceLandmarks().withFaceDescriptors();
+                if (selfieFaces.length !== 1) throw new Error('Selfie must contain exactly one clear face.');
+                const selfieResult = selfieFaces[0];
+                if ((selfieResult.detection?.score || 0) < FACE_MIN_DETECTION_SCORE) {
+                    throw new Error('Selfie is too unclear for safe verification.');
+                }
+
                 updateProgress(90, 'Computing facial similarity...');
-                // Calculate Euclidean distance (lower is more similar)
                 const distance = faceapi.euclideanDistance(idResult.descriptor, selfieResult.descriptor);
                 
-                // Distance < 0.6 is a standard threshold for face-api.js
-                if (distance < 0.6) {
+                if (distance <= FACE_MATCH_MAX_DISTANCE) {
                     const matchScore = ((1 - distance) * 100).toFixed(1);
                     updateProgress(100, `Match Confirmed: ${matchScore}% Similarity`);
                     progBar.classList.replace('bg-blue-500', 'bg-green-500');
@@ -2569,7 +2576,7 @@
                     overlay.classList.remove('flex');
                     return true;
                 } else {
-                    throw new Error('Faces do not match. Identity verification failed.');
+                    throw new Error('Face match failed. Please retry with a clearer selfie.');
                 }
  
             } catch (err) {
@@ -2880,7 +2887,38 @@
             }, 300);
         }
 
-        function showSystemMessage(message, title = 'Notice', type = 'info') {
+        function getDefaultSystemMessageAnchor() {
+            return document.querySelector('.app-screen:not(.hidden-screen) .btn-primary-3d:not([disabled])')
+                || document.querySelector('.app-screen:not(.hidden-screen) button:not([disabled])');
+        }
+
+        function positionSystemMessage(anchorTarget = null) {
+            const inner = document.getElementById('system-message-inner');
+            if (!inner) return;
+
+            const anchor = anchorTarget instanceof HTMLElement ? anchorTarget : getDefaultSystemMessageAnchor();
+            inner.style.position = 'fixed';
+            inner.style.width = `${Math.min(360, window.innerWidth - 24)}px`;
+            inner.style.left = '';
+            inner.style.right = '';
+            inner.style.top = '';
+            inner.style.bottom = '';
+
+            if (!anchor) return;
+
+            const rect = anchor.getBoundingClientRect();
+            const desiredTop = rect.top - inner.offsetHeight - 12;
+            const left = Math.max(12, Math.min(rect.left + (rect.width / 2) - (inner.offsetWidth / 2), window.innerWidth - inner.offsetWidth - 12));
+
+            inner.style.left = `${left}px`;
+            if (desiredTop > 24) {
+                inner.style.top = `${desiredTop}px`;
+            } else {
+                inner.style.bottom = `${Math.max(16, window.innerHeight - rect.top + 12)}px`;
+            }
+        }
+
+        function showSystemMessage(message, title = 'Notice', type = 'info', anchorTarget = null) {
             const modal = document.getElementById('system-message-modal');
             const inner = document.getElementById('system-message-inner');
             const titleEl = document.getElementById('system-message-title');
@@ -2888,6 +2926,7 @@
             const iconWrap = document.getElementById('system-message-icon-wrap');
             const icon = document.getElementById('system-message-icon');
             if (!modal || !inner || !titleEl || !textEl || !iconWrap || !icon) return;
+            systemMessageAnchorTarget = anchorTarget instanceof HTMLElement ? anchorTarget : null;
 
             titleEl.innerText = title;
             textEl.innerText = message;
@@ -2906,9 +2945,10 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             setTimeout(() => {
+                positionSystemMessage(systemMessageAnchorTarget);
                 modal.classList.remove('opacity-0');
-                inner.classList.remove('scale-95');
-                inner.classList.add('scale-100');
+                inner.classList.remove('translate-y-6');
+                inner.classList.add('translate-y-0');
                 lucide.createIcons();
             }, 10);
         }
@@ -2919,12 +2959,19 @@
             if (!modal || !inner) return;
 
             modal.classList.add('opacity-0');
-            inner.classList.remove('scale-100');
-            inner.classList.add('scale-95');
+            inner.classList.remove('translate-y-0');
+            inner.classList.add('translate-y-6');
 
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
+                inner.style.position = '';
+                inner.style.width = '';
+                inner.style.left = '';
+                inner.style.right = '';
+                inner.style.top = '';
+                inner.style.bottom = '';
+                systemMessageAnchorTarget = null;
             }, 300);
         }
 
@@ -2962,8 +3009,8 @@
             modal.classList.add('flex');
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
-                inner.classList.remove('scale-95');
-                inner.classList.add('scale-100');
+                inner.classList.remove('translate-y-6');
+                inner.classList.add('translate-y-0');
             }, 10);
         }
 
@@ -2985,8 +3032,8 @@
             if (!modal || !inner) return;
 
             modal.classList.add('opacity-0');
-            inner.classList.remove('scale-100');
-            inner.classList.add('scale-95');
+            inner.classList.remove('translate-y-0');
+            inner.classList.add('translate-y-6');
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
@@ -3142,12 +3189,12 @@
             banner.classList.remove('hidden');
         }
 
-        function ensurePassengerWalletFunded() {
+        function ensurePassengerWalletFunded(anchorTarget = null) {
             if (state.role !== 'passenger') return true;
             if (!state.user || !state.user.wallet) return true;
             if (state.user.wallet.balance > 0) return true;
 
-            showSystemMessage("Wallet balance is ₦0. Transfer to the account shown on your profile to fund your wallet before ordering a ride.", "Wallet Not Funded", "error");
+            showSystemMessage("Wallet balance is ₦0. Transfer to the account shown on your profile to fund your wallet before ordering a ride.", "Wallet Not Funded", "error", anchorTarget);
             setStep('idle', 'profile');
             setTimeout(() => {
                 const walletInfo = document.getElementById('wallet-bank-info');
@@ -3226,7 +3273,8 @@
                     style: MAPBOX_STYLE_URL,
                     center: [loc.lng, loc.lat],
                     zoom: MAP_DEFAULT_ZOOM,
-                    accessToken: mapboxToken
+                    accessToken: mapboxToken,
+                    antialias: true
                 });
             } else {
                 state.destMapInstance.resize();
@@ -3347,7 +3395,7 @@
                 state.rideDetails.pickup = document.getElementById('pickup-location').value;
                 await refreshWalletFromBackend({ silent: true });
 
-                if (!ensurePassengerWalletFunded()) {
+                if (!ensurePassengerWalletFunded(btn)) {
                     endActionLock('start_searching', btn);
                     return;
                 }
@@ -3365,7 +3413,7 @@
                             status: 'requested'
                         }, 'append', '', '', true);
                     } catch (err) {
-                        showSystemMessage('Could not save this ride request. Please check internet and try again.', 'Sync Failed', 'error');
+                        showSystemMessage('Could not save this ride request. Please check internet and try again.', 'Sync Failed', 'error', btn);
                         endActionLock('start_searching', btn);
                         return;
                     }
@@ -3416,7 +3464,7 @@
                 }, 2500);
             } catch (err) {
                 console.error('startSearching error', err);
-                showSystemMessage('Something went wrong. Please try again.', 'Request Failed', 'error');
+                showSystemMessage('Something went wrong. Please try again.', 'Request Failed', 'error', btn);
                 endActionLock('start_searching', btn);
             }
         }
@@ -3555,7 +3603,8 @@
                     style: MAPBOX_STYLE_URL,
                     center: [pLoc.lng, pLoc.lat],
                     zoom: MAP_DEFAULT_ZOOM,
-                    accessToken: mapboxToken
+                    accessToken: mapboxToken,
+                    antialias: true
                 });
             } else {
                 state.matchMapInstance.resize();
@@ -3837,6 +3886,7 @@
                 initOrUpdateTrackingMap(state.currentLocation);
 
                 if (!("geolocation" in navigator)) {
+                    showSystemMessage('GPS is not available on this device/browser.', 'Location Unavailable', 'error', btn);
                     endActionLock('start_tracking', btn);
                     return;
                 }
@@ -3845,7 +3895,7 @@
                     state.currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     initOrUpdateTrackingMap(state.currentLocation);
                 }, () => {
-                    console.warn("GPS Position Error");
+                    showSystemMessage('Unable to get your current GPS position. Please enable precise location and try again.', 'GPS Error', 'error', btn);
                 });
 
                 if (state.watchId) {
@@ -3859,11 +3909,11 @@
                             state.currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
                             initOrUpdateTrackingMap(state.currentLocation);
                         },
-                        () => console.warn("GPS Watch Error"),
-                        { enableHighAccuracy: false, maximumAge: 15000, timeout: 10000 }
+                        () => showSystemMessage('Live GPS tracking was interrupted. Check location permission and signal strength.', 'Tracking Paused', 'error', btn),
+                        { enableHighAccuracy: true, maximumAge: 3000, timeout: 20000 }
                     );
                 } catch (err) {
-                    console.warn("GPS Watch Setup Error");
+                    showSystemMessage('Could not start live GPS tracking.', 'Tracking Error', 'error', btn);
                 }
                 endActionLock('start_tracking', btn);
             }, 300);
@@ -3886,7 +3936,7 @@
             const destLoc = destData ? [destData.lng, destData.lat] : [loc.lng, loc.lat];
             const destPoint = destData ? { lat: destData.lat, lng: destData.lng } : { lat: loc.lat, lng: loc.lng };
             const distanceToDestination = getDistanceMeters(loc, destPoint);
-            const reachedNow = distanceToDestination <= 150;
+            const reachedNow = distanceToDestination <= TRACKING_ARRIVAL_RADIUS_METERS;
 
             if (reachedNow && !state.hasReachedDestination) {
                 state.hasReachedDestination = true;
@@ -3902,7 +3952,8 @@
                     style: MAPBOX_STYLE_URL,
                     center: [loc.lng, loc.lat],
                     zoom: MAP_DEFAULT_ZOOM,
-                    accessToken: mapboxToken
+                    accessToken: mapboxToken,
+                    antialias: true
                 });
                 state.trackMapLoaded = false;
  
@@ -3927,6 +3978,12 @@
             } else {
                 state.trackMapInstance.resize();
                 state.trackMarkerInstance.setLngLat([loc.lng, loc.lat]);
+                state.trackMapInstance.easeTo({
+                    center: [loc.lng, loc.lat],
+                    duration: 800,
+                    zoom: Math.max(MAP_DEFAULT_ZOOM, 15.2),
+                    essential: true
+                });
                 if (state.trackMapLoaded || state.trackMapInstance.isStyleLoaded()) {
                     state.trackMapLoaded = true;
                     fetchRoute([loc.lng, loc.lat], destLoc);
