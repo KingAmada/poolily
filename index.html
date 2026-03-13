@@ -981,11 +981,11 @@
                     <h3 class="font-black text-slate-800 text-2xl mb-2 flex items-center gap-2 mt-4"><i data-lucide="key" class="text-blue-500"></i> Change PIN</h3>
                     <p class="text-sm font-bold text-slate-500 mb-6">Create a new 4-digit security PIN.</p>
                     <div class="space-y-4">
-                        <input type="password" placeholder="Current PIN" maxlength="4" class="input-3d px-5 py-4 tracking-[0.5em] font-black focus:ring-4 ring-blue-400/30 placeholder:tracking-normal placeholder:font-bold">
-                        <input type="password" placeholder="New PIN" maxlength="4" class="input-3d px-5 py-4 tracking-[0.5em] font-black focus:ring-4 ring-blue-400/30 placeholder:tracking-normal placeholder:font-bold">
-                        <input type="password" placeholder="Confirm New PIN" maxlength="4" class="input-3d px-5 py-4 tracking-[0.5em] font-black focus:ring-4 ring-blue-400/30 placeholder:tracking-normal placeholder:font-bold">
+                        <input id="pin-current" type="password" placeholder="Current PIN" maxlength="4" class="input-3d px-5 py-4 tracking-[0.5em] font-black focus:ring-4 ring-blue-400/30 placeholder:tracking-normal placeholder:font-bold" oninput="handlePinInput(event)">
+                        <input id="pin-new" type="password" placeholder="New PIN" maxlength="4" class="input-3d px-5 py-4 tracking-[0.5em] font-black focus:ring-4 ring-blue-400/30 placeholder:tracking-normal placeholder:font-bold" oninput="handlePinInput(event)">
+                        <input id="pin-confirm" type="password" placeholder="Confirm New PIN" maxlength="4" class="input-3d px-5 py-4 tracking-[0.5em] font-black focus:ring-4 ring-blue-400/30 placeholder:tracking-normal placeholder:font-bold" oninput="handlePinInput(event)">
                     </div>
-                    <button onclick="closeModal()" class="btn-primary-3d mt-auto md:mt-8">Update PIN</button>
+                    <button onclick="submitPinChange(this)" class="btn-primary-3d mt-auto md:mt-8">Update PIN</button>
                 </div>
  
                 <div id="support-modal-content" class="hidden flex-col h-full overflow-y-auto no-scrollbar pb-6">
@@ -1017,16 +1017,16 @@
                     <p class="text-sm font-bold text-slate-500 mb-6">Let us know about your recent experience.</p>
                     
                     <div class="space-y-4 flex-1">
-                        <select class="input-3d px-5 py-4 font-bold text-slate-700 appearance-none bg-white">
+                        <select id="complaint-category" class="input-3d px-5 py-4 font-bold text-slate-700 appearance-none bg-white">
                             <option>Driver/Passenger Behavior</option>
                             <option>Vehicle Condition</option>
                             <option>App/Payment Issue</option>
                             <option>Other</option>
                         </select>
-                        <textarea class="input-3d px-5 py-4 h-32 resize-none font-bold text-slate-600 bg-white" placeholder="Describe what happened..."></textarea>
+                        <textarea id="complaint-message" class="input-3d px-5 py-4 h-32 resize-none font-bold text-slate-600 bg-white" placeholder="Describe what happened..."></textarea>
                     </div>
                     
-                    <button onclick="closeModal()" class="btn-primary-3d mt-auto md:mt-8">Submit Feedback</button>
+                    <button onclick="submitFeedbackComplaint(this)" class="btn-primary-3d mt-auto md:mt-8">Submit Feedback</button>
                 </div>
  
                 <div id="about-modal-content" class="hidden flex-col h-full overflow-y-auto no-scrollbar pb-6">
@@ -3094,10 +3094,88 @@
             if(state.user) {
                 state.user.profilePhoto = photoData;
                 persistUserSession();
-                syncRecord('Users', {
+                try {
+                    await syncRecord('Users', {
+                        userId: state.user.id,
+                        profilePhoto: state.user.profilePhoto
+                    }, 'upsert', 'userId', state.user.id, true);
+                } catch (err) {
+                    showSystemMessage(err.message || 'Could not save profile photo to your account.', 'Profile Update Failed', 'error');
+                    return;
+                }
+                showSystemMessage('Profile photo updated successfully.', 'Profile Updated', 'success');
+            }
+        }
+
+        async function submitPinChange(btn) {
+            if (!state.user) return;
+            const currentPin = document.getElementById('pin-current').value;
+            const newPin = document.getElementById('pin-new').value;
+            const confirmPin = document.getElementById('pin-confirm').value;
+
+            if (currentPin.length !== 4 || newPin.length !== 4 || confirmPin.length !== 4) {
+                showSystemMessage('Current PIN, new PIN, and confirmation PIN must all be 4 digits.', 'Invalid PIN', 'error');
+                return;
+            }
+            if (newPin !== confirmPin) {
+                showSystemMessage('New PIN and confirmation PIN do not match.', 'PIN Mismatch', 'error');
+                return;
+            }
+            if (currentPin === newPin) {
+                showSystemMessage('New PIN must be different from your current PIN.', 'PIN Unchanged', 'error');
+                return;
+            }
+            if (!beginActionLock('pin_change', btn, 'Updating PIN...')) return;
+            try {
+                const response = await backendRequest('changePin', {
                     userId: state.user.id,
-                    profilePhoto: state.user.profilePhoto
-                }, 'upsert', 'userId', state.user.id);
+                    phone: state.user.phone,
+                    currentPin,
+                    newPin
+                });
+                hydrateUserFromBackend(response.user || state.user, state.role);
+                ['pin-current', 'pin-new', 'pin-confirm'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                closeModal();
+                showSystemMessage('Your PIN has been updated successfully.', 'PIN Updated', 'success');
+            } catch (err) {
+                showSystemMessage(err.message || 'Could not update your PIN right now.', 'PIN Update Failed', 'error');
+            } finally {
+                endActionLock('pin_change', btn);
+            }
+        }
+
+        async function submitFeedbackComplaint(btn) {
+            if (!state.user) return;
+            const category = document.getElementById('complaint-category').value;
+            const message = document.getElementById('complaint-message').value.trim();
+
+            if (message.length < 8) {
+                showSystemMessage('Please add more detail before submitting your feedback.', 'More Detail Needed', 'error');
+                return;
+            }
+            if (!beginActionLock('complaint_submit', btn, 'Submitting...')) return;
+            try {
+                await syncRecord('Events', {
+                    event: 'feedback_complaint_submitted',
+                    userId: state.user.id,
+                    role: state.role,
+                    category,
+                    message,
+                    activeRideId: state.activeRide ? state.activeRide.id : null,
+                    activeRideRequestId: state.activeRideRequest ? state.activeRideRequest.id : null,
+                    submittedAt: new Date().toISOString()
+                }, 'append', '', '', true);
+                document.getElementById('complaint-message').value = '';
+                document.getElementById('complaint-category').selectedIndex = 0;
+                closeModal();
+                showSystemMessage('Your feedback has been saved. We will review it shortly.', 'Feedback Submitted', 'success');
+            } catch (err) {
+                showSystemMessage(err.message || 'Could not save your feedback right now.', 'Submission Failed', 'error');
+            } finally {
+                endActionLock('complaint_submit', btn);
             }
         }
  
