@@ -2,12 +2,16 @@
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#ffffff"/>
     </linearGradient>
   </defs>
   <rect width="192" height="192" rx="44" fill="url(#bg)"/>
-  <circle cx="96" cy="96" r="52" fill="#e8eef3" opacity="0.14"/>
-  <text x="96" y="88" text-anchor="middle" font-family="Nunito, Arial, sans-serif" font-size="38" font-weight="900" fill="#60a5fa">Aero</text>
-  <text x="96" y="124" text-anchor="middle" font-family="Nunito, Arial, sans-serif" font-size="38" font-weight="900" fill="#f8fafc">Pool</text>
-  <text x="152" y="48" text-anchor="middle" font-size="24">✈️</text>
+  <circle cx="96" cy="96" r="60" fill="#ffffff" opacity="0.08"/>
+  <path d="M67 56h29c24 0 39 13 39 34 0 23-17 36-41 36H84v25H67V56zm17 14v42h9c16 0 25-7 25-21 0-14-9-21-24-21H84z" fill="url(#mark)"/>
+  <path d="M96 112c8 0 15 7 15 16s-7 16-15 16-15-7-15-16 7-16 15-16zm0 8a8 8 0 1 0 0 16 8 8 0 0 0 0-16z" fill="#34d399"/>
+  <circle cx="126" cy="66" r="8" fill="#34d399"/>
 </svg>
