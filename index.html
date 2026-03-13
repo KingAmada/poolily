@@ -88,6 +88,9 @@
     <!-- Mapbox GL JS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+
+    <!-- Runtime Config -->
+    <script src="./app.config.js"></script>
  
     <!-- Face API Library for Real Facial Recognition -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
@@ -1094,25 +1097,19 @@
  
     <!-- Application Logic -->
     <script>
-        // Mapbox Access Token (Replace with your own)
-        const mapboxToken = 'pk.eyJ1IjoiYWVyb3Bvb2wiLCJhIjoiY21tamRpY2N6MWkycDJvczZ5dmVkYjZiaiJ9.Vx88t1T4vmyJhcHWT9Bggg';
- 
+        const runtimeConfig = window.POOLILY_RUNTIME_CONFIG || {};
+        const mapboxToken = String(runtimeConfig.mapboxToken || '').trim();
+        const MAPBOX_STYLE_URL = String(runtimeConfig.mapStyle || 'mapbox://styles/mapbox/navigation-day-v1').trim();
+        const MAP_DEFAULT_ZOOM = Number(runtimeConfig.mapDefaultZoom || 14.5);
+        const MAP_ROUTE_MAX_ZOOM = Number(runtimeConfig.mapRouteMaxZoom || 15.5);
+
         // Bank List Data
-        const bankListJSON = {
-            "9 payment service Bank": "120001", "AB MICROFINANCE BANK": "090270", "ABBEY MORTGAGE BANK": "070010",
-            "ABOVE ONLY MICROFINANCE BANK": "090260", "ABU MICROFINANCE BANK": "090197", "ACCESS BANK": "000014",
-            "ACCESSMONEY": "100013", "ACCION MFB": "090134", "ADDOSSER MFBB": "090160", "ADEYEMI COLLEGE STAFF MICROFINANCE BANK": "090268",
-            "ADVANS LA FAYETTE MFB": "090155", "AG MORTGAGE BANK PLC": "100028", "AGOSASA MICROFINANCE BANK": "090371",
-            "AL-BARKAH MFB": "090133", "ALEKUN MICROFINANCE BANK": "090259", "ALERT MFB": "090297", "ALHAYAT MFB": "090277",
-            "ALLWORKERS MFB": "090131", "ALPHAKAPITAL MFB": "090169", "AMJU MFB": "090180", "AMML MFB": "090116",
-            "APEKS MICROFINANCE BANK": "090143", "APPLE MICROFINANCE BANK": "090376", "ARISE MFB": "090282",
-            "CHAMPION MFB": "090123", "CITIBANK": "000009", "ECOBANK": "000010", "FIDELITY BANK": "000007",
-            "FIRST BANK": "000016", "FCMB": "000003", "GTBANK": "000013", "HERITAGE BANK": "000020",
-            "KEYSTONE BANK": "000002", "KUDA BANK": "090267", "MONIEPOINT": "090405", "OPAY": "090273",
-            "PALMPAY": "090279", "POLARIS BANK": "000008", "PROVIDUS BANK": "000023", "STANBIC IBTC": "000012",
-            "STANDARD CHARTERED": "000021", "STERLING BANK": "000001", "TAJ BANK": "000026", "UBA": "000018",
-            "UNION BANK": "000015", "UNITY BANK": "000011", "VFD MFB": "090110", "WEMA BANK": "000017", "ZENITH BANK": "000015"
-        };
+        const BANK_NAMES = [
+            "Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank", "FCMB", "GTBank",
+            "Heritage Bank", "Keystone Bank", "Kuda Bank", "Moniepoint", "OPay", "PalmPay",
+            "Polaris Bank", "Providus Bank", "Stanbic IBTC", "Standard Chartered", "Sterling Bank",
+            "Taj Bank", "UBA", "Union Bank", "Unity Bank", "VFD MFB", "Wema Bank", "Zenith Bank"
+        ];
  
         function formatNaira(value) {
             return `₦${Math.max(0, Math.round(value)).toLocaleString()}`;
@@ -2406,7 +2403,6 @@
                         const carModel = document.getElementById('auth-car-model').value;
                         const carType = document.getElementById('auth-car-type').value;
                         
-                        if(!bankCode) { showError('auth-acc-num-error', 'Select your bank', 'auth-driver-bank'); isValid = false; }
                         if(bankAccNum.length !== 10) { showError('auth-acc-num-error', '10 digit account required', 'auth-driver-acc-num'); isValid = false; }
                         if(!carYear || !carMake || !carModel || !carType) { showError('car-error', 'Select year, make, model and type', 'auth-car-year'); isValid = false; }
                     }
@@ -2784,14 +2780,14 @@
         }
  
         function populateBanks() {
-            const sortedBanks = Object.keys(bankListJSON).sort();
+            const sortedBanks = [...BANK_NAMES].sort();
             // Target both the auth signup select and the profile select
             ['driver-bank-select', 'auth-driver-bank'].forEach(selectId => {
                 const select = document.getElementById(selectId);
                 if (select) {
                     sortedBanks.forEach(bank => {
                         const opt = document.createElement('option');
-                        opt.value = bankListJSON[bank];
+                        opt.value = bank;
                         opt.text = bank;
                         select.appendChild(opt);
                     });
@@ -3227,16 +3223,16 @@
             if (!state.destMapInstance) {
                 state.destMapInstance = new mapboxgl.Map({
                     container: 'dest-real-map',
-                    style: 'mapbox://styles/mapbox/streets-v12',
+                    style: MAPBOX_STYLE_URL,
                     center: [loc.lng, loc.lat],
-                    zoom: 13,
+                    zoom: MAP_DEFAULT_ZOOM,
                     accessToken: mapboxToken
                 });
             } else {
                 state.destMapInstance.resize();
             }
             state.destMapInstance.setCenter([loc.lng, loc.lat]);
-            state.destMapInstance.setZoom(13);
+            state.destMapInstance.setZoom(MAP_DEFAULT_ZOOM);
             
             // Clear previous markers
             if (state.destMarkers.length > 0) {
@@ -3324,7 +3320,7 @@
 
                         const coordinates = routeGeo.coordinates;
                         const bounds = coordinates.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-                        state.destMapInstance.fitBounds(bounds, { padding: 60 });
+                        state.destMapInstance.fitBounds(bounds, { padding: 60, maxZoom: MAP_ROUTE_MAX_ZOOM });
                     })
                     .catch(err => console.warn('Destination route preview error:', err));
             };
@@ -3556,9 +3552,9 @@
             if (!state.matchMapInstance) {
                 state.matchMapInstance = new mapboxgl.Map({
                     container: 'matched-real-map',
-                    style: 'mapbox://styles/mapbox/streets-v12',
+                    style: MAPBOX_STYLE_URL,
                     center: [pLoc.lng, pLoc.lat],
-                    zoom: 13,
+                    zoom: MAP_DEFAULT_ZOOM,
                     accessToken: mapboxToken
                 });
             } else {
@@ -3903,9 +3899,9 @@
             if (!state.trackMapInstance) {
                 state.trackMapInstance = new mapboxgl.Map({
                     container: 'real-map-container',
-                    style: 'mapbox://styles/mapbox/streets-v12',
+                    style: MAPBOX_STYLE_URL,
                     center: [loc.lng, loc.lat],
-                    zoom: 13,
+                    zoom: MAP_DEFAULT_ZOOM,
                     accessToken: mapboxToken
                 });
                 state.trackMapLoaded = false;
@@ -3965,7 +3961,7 @@
                             type: 'line',
                             source: 'route',
                             layout: { 'line-join': 'round', 'line-cap': 'round' },
-                            paint: { 'line-color': '#3b82f6', 'line-width': 5, 'line-dasharray': [2, 2] }
+                            paint: { 'line-color': '#2563eb', 'line-width': 6, 'line-opacity': 0.9 }
                         });
                         state.trackRouteSource = true;
                     }
@@ -3975,7 +3971,7 @@
                     const bounds = coordinates.reduce((bounds, coord) => {
                         return bounds.extend(coord);
                     }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-                    state.trackMapInstance.fitBounds(bounds, { padding: 50 });
+                    state.trackMapInstance.fitBounds(bounds, { padding: 50, maxZoom: MAP_ROUTE_MAX_ZOOM });
                 })
                 .catch(err => console.error('Routing error:', err));
         }
