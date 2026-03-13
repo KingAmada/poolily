@@ -2887,35 +2887,16 @@
             }, 300);
         }
 
-        function getDefaultSystemMessageAnchor() {
-            return document.querySelector('.app-screen:not(.hidden-screen) .btn-primary-3d:not([disabled])')
-                || document.querySelector('.app-screen:not(.hidden-screen) button:not([disabled])');
-        }
-
-        function positionSystemMessage(anchorTarget = null) {
+        function positionSystemMessage() {
             const inner = document.getElementById('system-message-inner');
             if (!inner) return;
 
-            const anchor = anchorTarget instanceof HTMLElement ? anchorTarget : getDefaultSystemMessageAnchor();
             inner.style.position = 'fixed';
             inner.style.width = `${Math.min(360, window.innerWidth - 24)}px`;
-            inner.style.left = '';
-            inner.style.right = '';
-            inner.style.top = '';
-            inner.style.bottom = '';
-
-            if (!anchor) return;
-
-            const rect = anchor.getBoundingClientRect();
-            const desiredTop = rect.top - inner.offsetHeight - 12;
-            const left = Math.max(12, Math.min(rect.left + (rect.width / 2) - (inner.offsetWidth / 2), window.innerWidth - inner.offsetWidth - 12));
-
-            inner.style.left = `${left}px`;
-            if (desiredTop > 24) {
-                inner.style.top = `${desiredTop}px`;
-            } else {
-                inner.style.bottom = `${Math.max(16, window.innerHeight - rect.top + 12)}px`;
-            }
+            inner.style.left = `${Math.max(12, (window.innerWidth - Math.min(360, window.innerWidth - 24)) / 2)}px`;
+            inner.style.right = 'auto';
+            inner.style.top = 'auto';
+            inner.style.bottom = window.innerWidth < 768 ? '96px' : '24px';
         }
 
         function showSystemMessage(message, title = 'Notice', type = 'info', anchorTarget = null) {
@@ -2945,7 +2926,7 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             setTimeout(() => {
-                positionSystemMessage(systemMessageAnchorTarget);
+                positionSystemMessage();
                 modal.classList.remove('opacity-0');
                 inner.classList.remove('translate-y-6');
                 inner.classList.add('translate-y-0');
