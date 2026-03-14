@@ -1328,22 +1328,23 @@
             };
         }
  
-        async function detectFacesRobust(imgEl, { forId = false } = {}) {
+        async function detectFacesRobust(imgEl, { forId = false, includeExpressions = false } = {}) {
             const runDetectionsOn = async (targetImg) => {
+                const detectWithOptions = (options) => {
+                    let chain = faceapi.detectAllFaces(targetImg, options).withFaceLandmarks().withFaceDescriptors();
+                    if (includeExpressions) chain = chain.withFaceExpressions();
+                    return chain;
+                };
+                const detectDefault = () => {
+                    let chain = faceapi.detectAllFaces(targetImg).withFaceLandmarks().withFaceDescriptors();
+                    if (includeExpressions) chain = chain.withFaceExpressions();
+                    return chain;
+                };
                 const attempts = [
-                    () => faceapi.detectAllFaces(
-                        targetImg,
-                        new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.18 })
-                    ).withFaceLandmarks().withFaceDescriptors(),
-                    () => faceapi.detectAllFaces(
-                        targetImg,
-                        new faceapi.TinyFaceDetectorOptions({ inputSize: 640, scoreThreshold: 0.12 })
-                    ).withFaceLandmarks().withFaceDescriptors(),
-                    () => faceapi.detectAllFaces(
-                        targetImg,
-                        new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.1 })
-                    ).withFaceLandmarks().withFaceDescriptors(),
-                    () => faceapi.detectAllFaces(targetImg).withFaceLandmarks().withFaceDescriptors(),
+                    () => detectWithOptions(new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.18 })),
+                    () => detectWithOptions(new faceapi.TinyFaceDetectorOptions({ inputSize: 640, scoreThreshold: 0.12 })),
+                    () => detectWithOptions(new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.1 })),
+                    () => detectDefault(),
                 ];
 
                 for (const run of attempts) {
@@ -1740,7 +1741,8 @@
                     faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
                     faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
                     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
                 ]);
  
                 updateProgress(40, 'Locating face in ID Document...');
@@ -1752,9 +1754,9 @@
                     throw new Error('ID photo is too unclear for safe verification.');
                 }
 
-                updateProgress(70, 'Locating face in Live Selfie...');
+                updateProgress(70, 'Checking for a smiling live selfie...');
                 await new Promise(r => { selfieImg.complete ? r() : selfieImg.onload = r });
-                const selfieFaces = await detectFacesRobust(selfieImg, { forId: false });
+                const selfieFaces = await detectFacesRobust(selfieImg, { forId: false, includeExpressions: true });
                 if (!selfieFaces.length) throw new Error('Kindly retake your selfie in better lighting and face the camera directly.');
                 const selfieResult = selfieFaces[0];
                 const selfieSecondFace = selfieFaces[1];
@@ -1766,8 +1768,12 @@
                 if ((selfieResult.detection?.score || 0) < Math.max(0.45, FACE_MIN_DETECTION_SCORE - 0.2)) {
                     throw new Error('Selfie is too unclear for safe verification.');
                 }
+                const smileScore = Number(selfieResult.expressions?.happy || 0);
+                if (smileScore < 0.78) {
+                    throw new Error('Please smile clearly in your selfie before continuing.');
+                }
 
-                updateProgress(90, 'Computing facial similarity...');
+                updateProgress(90, 'Smile confirmed. Computing facial similarity...');
                 const distance = faceapi.euclideanDistance(idResult.descriptor, selfieResult.descriptor);
                 
                 if (distance <= FACE_MATCH_MAX_DISTANCE) {
