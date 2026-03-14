@@ -3,26 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poolily Admin Dashboard</title>
+  <title>Poolily Ops Console</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="./admin.css">
   <script src="./app.config.js"></script>
 </head>
 <body>
-  <main class="admin-shell">
-    <section class="admin-topbar">
-      <div>
-        <p class="eyebrow">Poolily Control</p>
-        <h1>Admin Dashboard</h1>
-        <p class="subtle">Live monitoring for users, rides, requests, deposits, wallets, and events.</p>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <p class="brand-kicker">Poolily</p>
+        <h1>Ops Console</h1>
+        <p class="brand-copy">Realtime oversight for rides, users, payments, and support issues.</p>
       </div>
-      <div class="topbar-actions">
-        <button id="refresh-btn" class="button button-primary" type="button">Refresh</button>
-      </div>
-    </section>
 
-    <section class="admin-panel admin-auth">
-      <div class="field-grid">
+      <section class="sidebar-card">
+        <div class="sidebar-card-head">
+          <h2>Connection</h2>
+          <span id="live-indicator" class="live-indicator idle">Idle</span>
+        </div>
         <label class="field">
           <span>Backend URL</span>
           <input id="admin-backend-url" type="url" placeholder="https://<project>.supabase.co/functions/v1/poolily-gateway">
@@ -31,65 +30,279 @@
           <span>Admin Key</span>
           <input id="admin-api-key" type="password" placeholder="Enter POOLILY_ADMIN_KEY">
         </label>
-      </div>
-      <div class="inline-actions">
-        <button id="connect-btn" class="button" type="button">Connect</button>
-        <p id="admin-status" class="status">Enter your backend URL and admin key.</p>
-      </div>
-    </section>
-
-    <section id="summary-grid" class="summary-grid"></section>
-
-    <section class="admin-grid">
-      <article class="admin-panel">
-        <div class="panel-head">
-          <h2>Recent Users</h2>
-          <span id="users-count" class="pill">0</span>
+        <label class="field">
+          <span>Refresh Interval</span>
+          <select id="refresh-interval">
+            <option value="0">Manual only</option>
+            <option value="10000">Every 10s</option>
+            <option value="15000" selected>Every 15s</option>
+            <option value="30000">Every 30s</option>
+            <option value="60000">Every 60s</option>
+          </select>
+        </label>
+        <div class="button-row">
+          <button id="connect-btn" class="button button-primary" type="button">Connect</button>
+          <button id="refresh-btn" class="button" type="button">Refresh</button>
         </div>
-        <div id="users-table" class="table-wrap"></div>
-      </article>
+        <p id="admin-status" class="status">Enter your backend URL and admin key to start monitoring.</p>
+      </section>
 
-      <article class="admin-panel">
-        <div class="panel-head">
-          <h2>Open Ride Requests</h2>
-          <span id="requests-count" class="pill">0</span>
+      <section class="sidebar-card">
+        <div class="sidebar-card-head">
+          <h2>Views</h2>
         </div>
-        <div id="requests-table" class="table-wrap"></div>
-      </article>
+        <nav class="tab-nav">
+          <button class="tab-button active" data-tab="overview" type="button">Overview</button>
+          <button class="tab-button" data-tab="operations" type="button">Operations</button>
+          <button class="tab-button" data-tab="users" type="button">Users</button>
+          <button class="tab-button" data-tab="payments" type="button">Payments</button>
+          <button class="tab-button" data-tab="complaints" type="button">Complaints</button>
+        </nav>
+      </section>
 
-      <article class="admin-panel">
-        <div class="panel-head">
-          <h2>Recent Rides</h2>
-          <span id="rides-count" class="pill">0</span>
+      <section class="sidebar-card">
+        <div class="sidebar-card-head">
+          <h2>Filters</h2>
         </div>
-        <div id="rides-table" class="table-wrap"></div>
-      </article>
+        <label class="field">
+          <span>Time Window</span>
+          <select id="time-filter">
+            <option value="today">Today</option>
+            <option value="7d" selected>Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="all">All loaded rows</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Search</span>
+          <input id="search-filter" type="search" placeholder="Search users, rides, phones, banks">
+        </label>
+        <label class="field">
+          <span>Ride Status</span>
+          <select id="ride-status-filter">
+            <option value="all">All statuses</option>
+            <option value="requested">Requested</option>
+            <option value="matched">Matched</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>User Role</span>
+          <select id="role-filter">
+            <option value="all">All roles</option>
+            <option value="passenger">Passengers</option>
+            <option value="driver">Drivers</option>
+            <option value="admin">Admins</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Sort By</span>
+          <select id="sort-filter">
+            <option value="latest" selected>Latest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="highestFare">Highest fare</option>
+            <option value="highestWallet">Highest wallet</option>
+          </select>
+        </label>
+      </section>
+    </aside>
 
-      <article class="admin-panel">
-        <div class="panel-head">
-          <h2>Wallet Transactions</h2>
-          <span id="transactions-count" class="pill">0</span>
+    <main class="main-panel">
+      <header class="hero-panel">
+        <div>
+          <p class="eyebrow">Airport Mobility Operations</p>
+          <h2>Control the marketplace, not just the tables.</h2>
+          <p class="hero-copy">Track supply, demand, signup velocity, money flow, and customer issues in one place.</p>
         </div>
-        <div id="transactions-table" class="table-wrap"></div>
-      </article>
+        <div class="hero-meta">
+          <div class="hero-stat">
+            <span>Last Sync</span>
+            <strong id="last-sync-label">Not connected</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Loaded Rows</span>
+            <strong id="loaded-rows-label">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Ops Pulse</span>
+            <strong id="ops-pulse-label">Quiet</strong>
+          </div>
+        </div>
+      </header>
 
-      <article class="admin-panel">
-        <div class="panel-head">
-          <h2>Deposits</h2>
-          <span id="deposits-count" class="pill">0</span>
-        </div>
-        <div id="deposits-table" class="table-wrap"></div>
-      </article>
+      <section id="summary-grid" class="summary-grid"></section>
 
-      <article class="admin-panel">
-        <div class="panel-head">
-          <h2>Events and Complaints</h2>
-          <span id="events-count" class="pill">0</span>
+      <section class="dashboard-tab active" data-tab-panel="overview">
+        <div class="dashboard-grid dashboard-grid-overview">
+          <article class="panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Demand vs Supply</p>
+                <h3>Rides Today</h3>
+              </div>
+              <span id="rides-today-pill" class="pill">0 today</span>
+            </div>
+            <div id="rides-bar-chart" class="chart-canvas"></div>
+          </article>
+
+          <article class="panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Marketplace Mix</p>
+                <h3>Users by Role</h3>
+              </div>
+              <span class="pill accent">Live mix</span>
+            </div>
+            <div id="role-pie-chart" class="pie-wrap"></div>
+          </article>
+
+          <article class="panel wide-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Abuja Operations Board</p>
+                <h3>Drivers, Riders, and Airport Flow</h3>
+              </div>
+              <span class="pill muted-pill">Inferred positions</span>
+            </div>
+            <div class="ops-map-shell">
+              <div id="ops-map" class="ops-map"></div>
+              <div class="map-legend">
+                <span><i class="legend-dot airport"></i>Airport hub</span>
+                <span><i class="legend-dot driver"></i>Drivers</span>
+                <span><i class="legend-dot request"></i>Ride requests</span>
+                <span><i class="legend-dot ride"></i>Active rides</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Velocity</p>
+                <h3>New Signups</h3>
+              </div>
+            </div>
+            <div id="signup-feed" class="signal-list"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Exceptions</p>
+                <h3>Complaints & Cancellations</h3>
+              </div>
+            </div>
+            <div id="exceptions-feed" class="signal-list"></div>
+          </article>
         </div>
-        <div id="events-table" class="table-wrap"></div>
-      </article>
-    </section>
-  </main>
+      </section>
+
+      <section class="dashboard-tab" data-tab-panel="operations">
+        <div class="dashboard-grid">
+          <article class="panel wide-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Requests Queue</p>
+                <h3>Ride Requests</h3>
+              </div>
+              <span id="requests-count" class="pill">0</span>
+            </div>
+            <div id="requests-table" class="table-wrap"></div>
+          </article>
+
+          <article class="panel wide-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Trip Monitor</p>
+                <h3>Rides</h3>
+              </div>
+              <span id="rides-count" class="pill">0</span>
+            </div>
+            <div id="rides-table" class="table-wrap"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard-tab" data-tab-panel="users">
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Population</p>
+                <h3>Users</h3>
+              </div>
+              <span id="users-count" class="pill">0</span>
+            </div>
+            <div id="users-table" class="table-wrap"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Driver Supply</p>
+                <h3>Driver Roster</h3>
+              </div>
+              <span id="drivers-count" class="pill">0</span>
+            </div>
+            <div id="drivers-table" class="table-wrap"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard-tab" data-tab-panel="payments">
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Cash In</p>
+                <h3>Deposits</h3>
+              </div>
+              <span id="deposits-count" class="pill">0</span>
+            </div>
+            <div id="deposits-table" class="table-wrap"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Wallet Ledger</p>
+                <h3>Transactions</h3>
+              </div>
+              <span id="transactions-count" class="pill">0</span>
+            </div>
+            <div id="transactions-table" class="table-wrap"></div>
+          </article>
+
+          <article class="panel wide-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Revenue Shape</p>
+                <h3>Payments Breakdown</h3>
+              </div>
+            </div>
+            <div id="payments-bar-chart" class="chart-canvas"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard-tab" data-tab-panel="complaints">
+        <div class="dashboard-grid">
+          <article class="panel wide-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Support Desk</p>
+                <h3>Events & Complaints</h3>
+              </div>
+              <span id="events-count" class="pill">0</span>
+            </div>
+            <div id="events-table" class="table-wrap"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="./admin.js"></script>
 </body>
