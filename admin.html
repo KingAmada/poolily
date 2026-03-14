@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poolily Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="./admin.css">
+  <script src="./app.config.js"></script>
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="admin-topbar">
+      <div>
+        <p class="eyebrow">Poolily Control</p>
+        <h1>Admin Dashboard</h1>
+        <p class="subtle">Live monitoring for users, rides, requests, deposits, wallets, and events.</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="refresh-btn" class="button button-primary" type="button">Refresh</button>
+      </div>
+    </section>
+
+    <section class="admin-panel admin-auth">
+      <div class="field-grid">
+        <label class="field">
+          <span>Backend URL</span>
+          <input id="admin-backend-url" type="url" placeholder="https://<project>.supabase.co/functions/v1/poolily-gateway">
+        </label>
+        <label class="field">
+          <span>Admin Key</span>
+          <input id="admin-api-key" type="password" placeholder="Enter POOLILY_ADMIN_KEY">
+        </label>
+      </div>
+      <div class="inline-actions">
+        <button id="connect-btn" class="button" type="button">Connect</button>
+        <p id="admin-status" class="status">Enter your backend URL and admin key.</p>
+      </div>
+    </section>
+
+    <section id="summary-grid" class="summary-grid"></section>
+
+    <section class="admin-grid">
+      <article class="admin-panel">
+        <div class="panel-head">
+          <h2>Recent Users</h2>
+          <span id="users-count" class="pill">0</span>
+        </div>
+        <div id="users-table" class="table-wrap"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="panel-head">
+          <h2>Open Ride Requests</h2>
+          <span id="requests-count" class="pill">0</span>
+        </div>
+        <div id="requests-table" class="table-wrap"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="panel-head">
+          <h2>Recent Rides</h2>
+          <span id="rides-count" class="pill">0</span>
+        </div>
+        <div id="rides-table" class="table-wrap"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="panel-head">
+          <h2>Wallet Transactions</h2>
+          <span id="transactions-count" class="pill">0</span>
+        </div>
+        <div id="transactions-table" class="table-wrap"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="panel-head">
+          <h2>Deposits</h2>
+          <span id="deposits-count" class="pill">0</span>
+        </div>
+        <div id="deposits-table" class="table-wrap"></div>
+      </article>
+
+      <article class="admin-panel">
+        <div class="panel-head">
+          <h2>Events and Complaints</h2>
+          <span id="events-count" class="pill">0</span>
+        </div>
+        <div id="events-table" class="table-wrap"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="./admin.js"></script>
+</body>
+</html>
